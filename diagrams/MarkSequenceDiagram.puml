@@ -1,0 +1,91 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as Logic LOGIC_COLOR
+participant ":AddressBookParser" as Parser LOGIC_COLOR
+participant ":MarkCommandParser" as MarkParser LOGIC_COLOR
+participant "m:MarkCommand" as Command LOGIC_COLOR
+end box
+box Model MODEL_COLOR_T1
+participant "live:Model" as Live MODEL_COLOR
+participant "pending:ModelManager" as Pending MODEL_COLOR
+participant "student:Person" as Student MODEL_COLOR
+end box
+participant ":Storage" as Storage STORAGE_COLOR
+
+[-> Logic : execute("mark i/A0123456B d/2026-10-20 l/Tutorial 1")
+activate Logic
+Logic -> Parser : parseCommand(commandText)
+activate Parser
+create MarkParser
+Parser -> MarkParser : new MarkCommandParser()
+Parser -> MarkParser : parse(arguments)
+activate MarkParser
+note right of MarkParser
+Validate i/, d/, l/ and parse values with ParserUtil.
+Invalid input throws ParseException before execution.
+end note
+create Command
+MarkParser -> Command : new MarkCommand(studentId, date, group)
+MarkParser --> Parser : m
+deactivate MarkParser
+destroy MarkParser
+Parser --> Logic : m
+deactivate Parser
+Logic -> Command : isModifyingData()
+Command --> Logic : true
+note over Logic
+Continue only if startup loading succeeded.
+end note
+Logic -> Live : getAddressBook(), getUserPrefs(), getFilteredPersonListPredicate()
+Live --> Logic : records, preferences, filter
+create Pending
+Logic -> Pending : new ModelManager(records, preferences)
+Logic -> Pending : updateFilteredPersonList(filter::test)
+Logic -> Command : execute(pending)
+activate Command
+Command -> Pending : getAddressBook().getPersonList()
+Pending --> Command : complete student list
+note over Command, Student
+Find student by ID, including hidden students.
+If absent, throw CommandException without saving.
+end note
+Command -> Student : getLabels()
+Student --> Command : labels
+note over Command, Student
+Match current group label ignoring case.
+If absent, throw CommandException without saving.
+end note
+Command -> Student : getAttendance()
+Student --> Command : attendance
+note over Command, Student
+Reject an existing entry for the date and group.
+Copy the set and add AttendanceRecord(date, matchedGroup).
+Build updatedStudent retaining all other fields.
+end note
+Command -> Pending : setPerson(student, updatedStudent)
+Command --> Logic : result: "Marked student A0123456B present for Tutorial 1 on 2026-10-20."
+deactivate Command
+Logic -> Storage : saveAddressBook(pending.getAddressBook())
+activate Storage
+note right of Storage
+Write temporary JSON, then atomically replace the file.
+end note
+alt save succeeds
+Storage --> Logic : saved
+Logic -> Live : setAddressBook(pending.getAddressBook())
+Logic -> Live : updateFilteredPersonList(pending filter)
+[<-- Logic : result
+else save fails
+Storage --> Logic : IOException
+note over Live
+Live records and filter remain unchanged.
+The previous saved file is preserved.
+end note
+[<-- Logic : CommandException (save error)
+end
+deactivate Storage
+deactivate Logic
+@enduml

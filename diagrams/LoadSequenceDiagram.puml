@@ -1,0 +1,76 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+participant ":MainApp" as MainApp USER_COLOR
+
+box Storage STORAGE_COLOR_T1
+participant ":StorageManager" as StorageManager STORAGE_COLOR
+participant ":JsonAddressBookStorage" as JsonAddressBookStorage STORAGE_COLOR
+participant ":JsonSerializableAddressBook" as JsonSerializableAddressBook STORAGE_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant ":ModelManager" as ModelManager MODEL_COLOR
+end box
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+end box
+
+[-> MainApp : init()
+activate MainApp
+MainApp -> MainApp : initModelManager(storage, userPrefs)
+activate MainApp
+MainApp -> StorageManager : readAddressBook()
+activate StorageManager
+StorageManager -> JsonAddressBookStorage : readAddressBook()
+activate JsonAddressBookStorage
+
+alt data file loaded
+JsonAddressBookStorage -> JsonSerializableAddressBook : toModelType()
+activate JsonSerializableAddressBook
+note right of JsonSerializableAddressBook
+Convert records in file order.
+end note
+JsonSerializableAddressBook --> JsonAddressBookStorage : addressBook
+deactivate JsonSerializableAddressBook
+JsonAddressBookStorage --> StorageManager : Optional.of(addressBook)
+StorageManager --> MainApp : Optional.of(addressBook)
+MainApp -> MainApp : initialData = addressBook\nstartupMessage = "N students loaded."
+
+else no data file
+JsonAddressBookStorage --> StorageManager : Optional.empty()
+StorageManager --> MainApp : Optional.empty()
+MainApp -> MainApp : initialData = new AddressBook()\nstartupMessage = "No existing student data found. ..."
+
+else data file cannot be loaded
+note right of JsonAddressBookStorage
+The file is unreadable or not valid JSON,
+or toModelType() finds an invalid record
+or a duplicate Student ID.
+end note
+JsonAddressBookStorage --> StorageManager : DataLoadingException
+StorageManager --> MainApp : DataLoadingException
+MainApp -> MainApp : initialData = new AddressBook()\nisStudentDataAvailable = false\nstartupMessage = exception message
+note right of MainApp
+The data file is not modified.
+end note
+end
+deactivate JsonAddressBookStorage
+deactivate StorageManager
+
+create ModelManager
+MainApp -> ModelManager : new ModelManager(initialData, userPrefs)
+MainApp --> MainApp : model
+deactivate MainApp
+
+MainApp -> MainApp : initLogic(model, storage)
+activate MainApp
+create LogicManager
+MainApp -> LogicManager : new LogicManager(model, storage,\nisStudentDataAvailable, startupMessage)
+MainApp --> MainApp : logic
+deactivate MainApp
+[<-- MainApp
+deactivate MainApp
+@enduml

@@ -5,35 +5,36 @@ skinparam ArrowFontStyle plain
 Actor User as user USER_COLOR
 Participant ":UI" as ui UI_COLOR
 Participant ":Logic" as logic LOGIC_COLOR
-Participant ":Model" as model MODEL_COLOR
+Participant "live:Model" as model MODEL_COLOR
+Participant "pending:Model" as pending MODEL_COLOR
 Participant ":Storage" as storage STORAGE_COLOR
 
-user -[USER_COLOR]> ui : "delete 1"
+user -[USER_COLOR]> ui : "delete i/A0123456B"
 activate ui UI_COLOR
-
-ui -[UI_COLOR]> logic : execute("delete 1")
+ui -[UI_COLOR]> logic : execute("delete i/A0123456B")
 activate logic LOGIC_COLOR
-
-logic -[LOGIC_COLOR]> model : deletePerson(p)
-activate model MODEL_COLOR
-
-model -[MODEL_COLOR]-> logic
-deactivate model
-
-logic -[LOGIC_COLOR]> storage : saveAddressBook(addressBook)
+logic -[LOGIC_COLOR]> model : read current records, preferences, and filter
+model --[MODEL_COLOR]> logic : current state
+logic -[LOGIC_COLOR]> pending : copy current state
+logic -[LOGIC_COLOR]> pending : deletePerson(student with matching ID)
+pending --[MODEL_COLOR]> logic : proposed records
+logic -[LOGIC_COLOR]> storage : saveAddressBook(proposed records)
 activate storage STORAGE_COLOR
-
-storage -[STORAGE_COLOR]> storage : Save to file
-activate storage STORAGE_COLOR_T1
-storage --[STORAGE_COLOR]> storage
+storage -[STORAGE_COLOR]> storage : write temporary file and replace atomically
+alt save succeeds
+storage --[STORAGE_COLOR]> logic : saved
+logic -[LOGIC_COLOR]> model : publish proposed records and filter
+logic --[LOGIC_COLOR]> ui : deletion success
+ui --[UI_COLOR]> user : updated student list and feedback
+else save fails
+storage --[STORAGE_COLOR]> logic : IOException
+logic --[LOGIC_COLOR]> ui : CommandException
+ui --[UI_COLOR]> user : "Unable to save student data."
+note over model
+Live records and filter remain unchanged.
+end note
+end
 deactivate storage
-
-storage --[STORAGE_COLOR]> logic
-deactivate storage
-
-logic --[LOGIC_COLOR]> ui
 deactivate logic
-
-ui--[UI_COLOR]> user
 deactivate ui
 @enduml

@@ -13,6 +13,8 @@ Class HelpWindow
 Class ResultDisplay
 Class PersonListPanel
 Class PersonCard
+Class AttendanceListPanel
+Class AttendanceCard
 Class StatusBarFooter
 Class CommandBox
 }
@@ -37,6 +39,8 @@ MainWindow *-down-> "1" StatusBarFooter
 MainWindow --> "0..1" HelpWindow
 
 PersonListPanel -down-> "*" PersonCard
+MainWindow ..> AttendanceListPanel : <<create>>
+AttendanceListPanel -down-> "*" AttendanceCard
 
 MainWindow -left-|> UiPart
 
@@ -44,10 +48,14 @@ ResultDisplay --|> UiPart
 CommandBox --|> UiPart
 PersonListPanel --|> UiPart
 PersonCard --|> UiPart
+AttendanceListPanel --|> UiPart
+AttendanceCard --|> UiPart
 StatusBarFooter --|> UiPart
 HelpWindow --|> UiPart
 
 PersonCard ..> Model
+AttendanceListPanel ..> Model
+AttendanceCard ..> Model
 UiManager -right-> Logic
 MainWindow -left-> Logic
 

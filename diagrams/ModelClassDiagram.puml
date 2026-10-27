@@ -14,11 +14,14 @@ Class UserPrefs
 
 Class UniquePersonList
 Class Person
-Class Address
 Class Email
 Class Name
-Class Phone
-Class Tag
+Class Remark
+Class StudentId
+Class Label
+Class AttendanceRecord
+Class AttendanceReport
+Class "AttendanceReport.AttendanceEntry" as AttendanceEntry
 
 Class I #FFFFFF
 }
@@ -38,17 +41,23 @@ UserPrefs .up.|> ReadOnlyUserPrefs
 AddressBook *--> "1" UniquePersonList
 UniquePersonList --> "~* all" Person
 Person *--> Name
-Person *--> Phone
+Person *--> StudentId
 Person *--> Email
-Person *--> Address
-Person *--> "*" Tag
+Person *--> Remark
+Person *--> "*" Label
+Person *--> "*" AttendanceRecord
+AttendanceRecord --> "1" Label : group
+AttendanceReport --> "1" Label : group
+AttendanceReport *--> "*" AttendanceEntry : entries
+AttendanceEntry --> "1" Person : student
 
 Person -[hidden]up--> I
 UniquePersonList -[hidden]right-> I
 
-Name -[hidden]right-> Phone
-Phone -[hidden]right-> Address
-Address -[hidden]right-> Email
+Name -[hidden]right-> Remark
+StudentId -[hidden]right-> Name
+Remark -[hidden]right-> Label
+Label -[hidden]right-> Email
 
 ModelManager --> "~* filtered" Person
 @enduml

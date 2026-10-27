@@ -1,0 +1,26 @@
+@startuml
+start
+
+:User enters find l/LABEL_NAME;
+:AddressBookParser creates FindCommandParser;
+:FindCommandParser parses l/LABEL_NAME;
+
+if (Label is valid?) then (yes)
+    :FindCommandParser creates LabelMatchesPredicate;
+    :Create FindCommand;
+else (no)
+    :Show parse error;
+    stop
+endif
+
+:FindCommand applies label predicate;
+:Model updates filtered person list;
+
+if (Any matching students?) then (yes)
+    :Show number of matching students;
+else (no)
+    :Show 0 person(s) listed!;
+endif
+
+stop
+@enduml

@@ -7,11 +7,11 @@
       "headings": {
         "about-us": "About Us",
         "project-team": "Project team",
-        "john-doe": "John Doe",
-        "jane-doe": "Jane Doe",
-        "johnny-doe": "Johnny Doe",
-        "jean-doe": "Jean Doe",
-        "james-doe": "James Doe"
+        "samuel-lau": "Samuel Lau",
+        "ananya-kharbanda": "Ananya Kharbanda",
+        "bryan-lee-jun-you": "Bryan Lee Jun You",
+        "gou-guan-lin": "Gou Guan Lin",
+        "tristan-tay": "Tristan Tay"
       },
       "headingKeywords": {}
     },
@@ -40,7 +40,7 @@
       "src": "DeveloperGuide.md",
       "title": "Developer Guide",
       "headings": {
-        "ab-3-developer-guide": "AB-3 Developer Guide",
+        "teachassist-developer-guide": "TeachAssist Developer Guide",
         "acknowledgements": "Acknowledgements",
         "setting-up-getting-started": "Setting up, getting started",
         "design": "Design",
@@ -51,9 +51,17 @@
         "storage-component": "Storage component",
         "common-classes": "Common classes",
         "implementation": "Implementation",
-        "proposed-undo-redo-feature": "[Proposed] Undo/redo feature",
-        "proposed-data-archiving": "[Proposed] Data archiving",
+        "group-labels": "Group labels",
+        "edit-command": "Edit command",
+        "mark-and-unmark-attendance": "Mark and unmark attendance",
+        "adding-student-information": "Adding student information",
+        "find-command": "Find command",
+        "deleting-student-information": "Deleting student information",
+        "viewing-attendance": "Viewing attendance",
+        "loading-student-data-at-startup": "Loading student data at startup",
+        "undoing-data-changes": "Undoing data changes",
         "documentation-logging-testing-dev-ops": "Documentation, logging, testing, dev-ops",
+        "manual-testing": "Manual testing",
         "appendix-requirements": "Appendix: Requirements",
         "product-scope": "Product scope",
         "user-stories": "User stories",
@@ -61,9 +69,14 @@
         "non-functional-requirements": "Non-Functional Requirements",
         "glossary": "Glossary",
         "appendix-instructions-for-manual-testing": "Appendix: Instructions for manual testing",
-        "launch-and-shutdown": "Launch and shutdown",
-        "deleting-a-person": "Deleting a person",
-        "saving-data": "Saving data"
+        "setup-and-baseline": "Setup and baseline",
+        "adding-finding-and-listing-students": "Adding, finding, and listing students",
+        "editing-students-and-labels": "Editing students and labels",
+        "marking-viewing-and-unmarking-attendance": "Marking, viewing, and unmarking attendance",
+        "deleting-clearing-and-undoing-changes": "Deleting, clearing, and undoing changes",
+        "help-exit-and-restart-persistence": "Help, exit, and restart persistence",
+        "loading-and-saving-failures": "Loading and saving failures",
+        "performance-verification": "Performance verification"
       },
       "headingKeywords": {}
     },
@@ -99,7 +112,9 @@
       "headings": {
         "testing-guide": "Testing guide",
         "running-tests": "Running tests",
-        "types-of-tests": "Types of tests"
+        "types-of-tests": "Types of tests",
+        "manual-testing": "Manual testing",
+        "display-settings-and-window-usability": "Display settings and window usability"
       },
       "headingKeywords": {}
     },
@@ -107,20 +122,24 @@
       "src": "UserGuide.md",
       "title": "User Guide",
       "headings": {
-        "ab-3-user-guide": "AB-3 User Guide",
+        "teachassist-user-guide": "TeachAssist User Guide",
         "quick-start": "Quick start",
         "features": "Features",
         "viewing-help-help": "Viewing help: help",
-        "adding-a-person-add": "Adding a person: add",
-        "listing-all-persons-list": "Listing all persons: list",
-        "editing-a-person-edit": "Editing a person: edit",
-        "locating-persons-by-name-find": "Locating persons by name: find",
-        "deleting-a-person-delete": "Deleting a person: delete",
+        "adding-a-student-add": "Adding a student: add",
+        "listing-all-students-list": "Listing all students: list",
+        "editing-a-student-edit": "Editing a student: edit",
+        "finding-students-by-name-student-id-email-remark-or-label-find": "Finding students by name, student ID, email, remark, or label: find",
+        "deleting-a-student-delete": "Deleting a student: delete",
+        "recording-attendance-mark": "Recording attendance: mark",
+        "removing-attendance-unmark": "Removing attendance: unmark",
+        "viewing-attendance-attendance": "Viewing attendance: attendance",
         "clearing-all-entries-clear": "Clearing all entries: clear",
+        "undoing-the-latest-data-change-undo": "Undoing the latest data change: undo",
         "exiting-the-program-exit": "Exiting the program: exit",
+        "loading-the-data": "Loading the data",
         "saving-the-data": "Saving the data",
         "editing-the-data-file": "Editing the data file",
-        "archiving-data-files-coming-in-v2-0": "Archiving data files [coming in v2.0]",
         "faq": "FAQ",
         "known-issues": "Known issues",
         "command-summary": "Command summary"
@@ -129,17 +148,60 @@
     },
     {
       "src": "index.md",
-      "title": "",
+      "title": "Home",
       "headings": {
-        "addressbook-level-3": "AddressBook Level-3"
+        "teachassist": "TeachAssist",
+        "acknowledgements": "Acknowledgements"
       },
       "headingKeywords": {}
     },
     {
-      "src": "team/johndoe.md",
-      "title": "John Doe's Project Portfolio Page",
+      "src": "team/8ryanl33.md",
+      "title": "Bryan Lee Jun You's Project Portfolio Page",
       "headings": {
-        "project-addressbook-level-3": "Project: AddressBook Level 3"
+        "bryan-lee-jun-you": "Bryan Lee Jun You",
+        "project-teachassist": "Project: TeachAssist",
+        "selected-contributions": "Selected contributions"
+      },
+      "headingKeywords": {}
+    },
+    {
+      "src": "team/amberrrruby.md",
+      "title": "Gou Guan Lin's Project Portfolio Page",
+      "headings": {
+        "gou-guan-lin": "Gou Guan Lin",
+        "project-teachassist": "Project: TeachAssist",
+        "selected-contributions": "Selected contributions"
+      },
+      "headingKeywords": {}
+    },
+    {
+      "src": "team/ananyakharbanda.md",
+      "title": "Ananya Kharbanda's Project Portfolio Page",
+      "headings": {
+        "ananya-kharbanda": "Ananya Kharbanda",
+        "project-teachassist": "Project: TeachAssist",
+        "selected-contributions": "Selected contributions"
+      },
+      "headingKeywords": {}
+    },
+    {
+      "src": "team/darealtristan.md",
+      "title": "Tristan Tay's Project Portfolio Page",
+      "headings": {
+        "tristan-tay": "Tristan Tay",
+        "project-teachassist": "Project: TeachAssist",
+        "selected-contributions": "Selected contributions"
+      },
+      "headingKeywords": {}
+    },
+    {
+      "src": "team/sammeowwww.md",
+      "title": "Samuel Lau's Project Portfolio Page",
+      "headings": {
+        "samuel-lau": "Samuel Lau",
+        "project-teachassist": "Project: TeachAssist",
+        "selected-contributions": "Selected contributions"
       },
       "headingKeywords": {}
     }
