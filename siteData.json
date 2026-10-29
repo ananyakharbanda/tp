@@ -190,7 +190,12 @@
       "headings": {
         "ananya-kharbanda": "Ananya Kharbanda",
         "project-teachassist": "Project: TeachAssist",
-        "selected-contributions": "Selected contributions"
+        "contributions": "Contributions",
+        "features": "Features",
+        "ui-and-usability": "UI and usability",
+        "startup-storage-and-privacy": "Startup, storage, and privacy",
+        "testing-and-bug-reporting": "Testing and bug reporting",
+        "documentation-and-project-maintenance": "Documentation and project maintenance"
       },
       "headingKeywords": {}
     },
@@ -210,7 +215,10 @@
       "headings": {
         "samuel-lau": "Samuel Lau",
         "project-teachassist": "Project: TeachAssist",
-        "selected-contributions": "Selected contributions"
+        "selected-contributions": "Selected contributions",
+        "features-and-data-model": "Features and data model",
+        "reliability-and-code-quality": "Reliability and code quality",
+        "documentation": "Documentation"
       },
       "headingKeywords": {}
     }
