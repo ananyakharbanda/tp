@@ -76,7 +76,13 @@
         "deleting-clearing-and-undoing-changes": "Deleting, clearing, and undoing changes",
         "help-exit-and-restart-persistence": "Help, exit, and restart persistence",
         "loading-and-saving-failures": "Loading and saving failures",
-        "performance-verification": "Performance verification"
+        "performance-verification": "Performance verification",
+        "appendix-errors": "Appendix: Errors",
+        "general-command-errors": "General command errors",
+        "field-validation-errors": "Field validation errors",
+        "command-specific-errors": "Command-specific errors",
+        "loading-errors": "Loading errors",
+        "saving-errors": "Saving errors"
       },
       "headingKeywords": {}
     },
@@ -125,6 +131,8 @@
         "teachassist-user-guide": "TeachAssist User Guide",
         "quick-start": "Quick start",
         "features": "Features",
+        "whitespace-and-label-matching": "Whitespace and label matching",
+        "field-rules": "Field rules",
         "viewing-help-help": "Viewing help: help",
         "adding-a-student-add": "Adding a student: add",
         "listing-all-students-list": "Listing all students: list",
@@ -140,6 +148,7 @@
         "loading-the-data": "Loading the data",
         "saving-the-data": "Saving the data",
         "editing-the-data-file": "Editing the data file",
+        "troubleshooting": "Troubleshooting",
         "faq": "FAQ",
         "known-issues": "Known issues",
         "command-summary": "Command summary"
