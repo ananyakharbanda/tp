@@ -19,7 +19,7 @@ endif
 if (Any matching students?) then (yes)
     :Show number of matching students;
 else (no)
-    :Show 0 person(s) listed!;
+    :Show 0 students listed.;
 endif
 
 stop
