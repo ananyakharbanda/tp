@@ -1,26 +1,21 @@
 @startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+title Label search: observable decisions
 start
-
-:User enters find l/LABEL_NAME;
-:AddressBookParser creates FindCommandParser;
-:FindCommandParser parses l/LABEL_NAME;
-
-if (Label is valid?) then (yes)
-    :FindCommandParser creates LabelMatchesPredicate;
-    :Create FindCommand;
+:Receive a label-search request;
+if (Input is valid?) then (yes)
 else (no)
-    :Show parse error;
+    :Report input error\nKeep the current view;
     stop
 endif
-
-:FindCommand applies label predicate;
-:Model updates filtered person list;
-
-if (Any matching students?) then (yes)
-    :Show number of matching students;
+if (Student data loaded successfully\nor no data file existed?) then (yes)
 else (no)
-    :Show 0 students listed.;
+    :Ask the TA to fix the file and restart\nKeep the current view;
+    stop
 endif
-
+:Find students with the complete label\nIgnore case, preserve internal spacing;
+:Replace the current view with matching students\nReport the count, including zero;
 stop
 @enduml

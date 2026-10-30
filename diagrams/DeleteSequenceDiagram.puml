@@ -2,82 +2,19 @@
 !include style.puml
 skinparam ArrowFontStyle plain
 
-box Logic LOGIC_COLOR_T1
-participant ":LogicManager" as LogicManager LOGIC_COLOR
-participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
-participant ":DeleteCommandParser" as DeleteCommandParser LOGIC_COLOR
-participant ":ParserUtil" as ParserUtil LOGIC_COLOR
-participant "d:DeleteCommand" as DeleteCommand LOGIC_COLOR
-end box
-
-box Model MODEL_COLOR_T1
-participant "live:Model" as LiveModel MODEL_COLOR
-participant "pending:ModelManager" as PendingModel MODEL_COLOR
-end box
-participant ":Storage" as Storage STORAGE_COLOR
-
-[-> LogicManager : execute("delete i/A0123456B")
-activate LogicManager
-LogicManager -> AddressBookParser : parseCommand("delete i/A0123456B")
-activate AddressBookParser
-create DeleteCommandParser
-AddressBookParser -> DeleteCommandParser : new DeleteCommandParser()
-AddressBookParser -> DeleteCommandParser : parse(" i/A0123456B")
-activate DeleteCommandParser
-note right of DeleteCommandParser
-Validate exactly one non-empty i/.
-Reject unknown prefixes and invalid structure.
+title DeleteCommand: update a pending model
+participant "command:DeleteCommand" as Command LOGIC_COLOR
+participant "pending:ModelManager" as Model MODEL_COLOR
+[-> Command : execute(pending)
+activate Command
+Command -> Command : findStudent(pending)
+Command -> Model : getAddressBook().getPersonList()
+Model --> Command : all students
+note over Command
+Resolve the Student ID in the full list.
+If absent, throw CommandException.
 end note
-DeleteCommandParser -> ParserUtil : parseStudentId("A0123456B")
-activate ParserUtil
-ParserUtil --> DeleteCommandParser : studentId
-deactivate ParserUtil
-create DeleteCommand
-DeleteCommandParser -> DeleteCommand : new DeleteCommand(studentId)
-DeleteCommandParser --> AddressBookParser : d
-deactivate DeleteCommandParser
-DeleteCommandParser -[hidden]-> AddressBookParser
-destroy DeleteCommandParser
-AddressBookParser --> LogicManager : d
-deactivate AddressBookParser
-
-note over LogicManager
-Block modifying commands if startup loading failed.
-The following path assumes loading succeeded.
-end note
-LogicManager -> LiveModel : getAddressBook(), getUserPrefs(), getFilteredPersonListPredicate()
-LiveModel --> LogicManager : current records, preferences, and filter
-LogicManager -> PendingModel : new ModelManager(records, preferences); apply filter
-LogicManager -> DeleteCommand : execute(pending)
-activate DeleteCommand
-DeleteCommand -> PendingModel : getAddressBook().getPersonList()
-PendingModel --> DeleteCommand : complete student list
-note right of DeleteCommand
-Find the actual Person by normalised Student ID.
-If absent, throw CommandException without saving.
-end note
-DeleteCommand -> PendingModel : deletePerson(student)
-PendingModel --> DeleteCommand
-DeleteCommand --> LogicManager : result: "Deleted student A0123456B: Alex Yeoh."
-deactivate DeleteCommand
-
-LogicManager -> Storage : saveAddressBook(pending.getAddressBook())
-activate Storage
-note right of Storage
-Write temporary JSON, then atomically replace data file.
-end note
-alt save succeeds
-Storage --> LogicManager : saved
-LogicManager -> LiveModel : setAddressBook(pending.getAddressBook())
-LogicManager -> LiveModel : updateFilteredPersonList(pending filter)
-[<-- LogicManager : result
-else save fails
-Storage --> LogicManager : IOException
-note over LiveModel
-Existing records and filter remain unchanged.
-end note
-[<-- LogicManager : CommandException("Unable to save student data.")
-end
-deactivate Storage
-deactivate LogicManager
+Command -> Model : deletePerson(student)
+[<-- Command : result
+deactivate Command
 @enduml

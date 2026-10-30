@@ -2,48 +2,30 @@
 !include style.puml
 skinparam ArrowFontStyle plain
 
-box Logic LOGIC_COLOR_T1
+title LogicManager: restore the latest available state
 participant ":LogicManager" as Logic LOGIC_COLOR
-participant ":AddressBookParser" as Parser LOGIC_COLOR
-participant ":UndoCommandParser" as UndoParser LOGIC_COLOR
-end box
-actor User
-box Model MODEL_COLOR_T1
-participant "live:Model" as Live MODEL_COLOR
-end box
-participant ":Storage" as Storage STORAGE_COLOR
-
-User -> Logic : execute("undo")
+participant "live:ModelManager" as Model MODEL_COLOR
+participant ":StorageManager" as Storage STORAGE_COLOR
+[-> Logic : executeUndo()
 activate Logic
-Logic -> Parser : parseCommand(commandText)
-activate Parser
-Parser -> UndoParser : parse(arguments)
-activate UndoParser
-UndoParser --> Parser : UndoCommand
-deactivate UndoParser
-Parser --> Logic : UndoCommand
-deactivate Parser
-
-alt no retained snapshot
-    Logic --> User : CommandResult("Nothing to undo.")
-else retained snapshot exists
-    Logic -> Storage : saveAddressBook(latestSnapshot)
-    activate Storage
+alt undoHistory is empty
+    [<-- Logic : CommandResult(\n"Nothing to undo.")
+else a previous state is available
+    note over Logic : previous = undoHistory.getLast()
+    Logic -> Storage : saveAddressBook(previous)
     alt save succeeds
         Storage --> Logic : saved
-        deactivate Storage
-        Logic -> Live : setAddressBook(latestSnapshot)
-        Logic -> Live : updateFilteredPersonList(showAll)
-        Logic -> Logic : remove latest snapshot
-        Logic --> User : CommandResult("Undid last change.")
+        Logic -> Model : setAddressBook(previous)
+        Logic -> Model : updateFilteredPersonList(\nPREDICATE_SHOW_ALL_PERSONS)
+        note over Logic : undoHistory.removeLast()
+        [<-- Logic : CommandResult(\n"Undid last change.")
     else save fails
-        Storage --> Logic : IOException or DataStorageLocationException
-        deactivate Storage
-        note over Live
-        Live records and the displayed list are unchanged.
-        The retained snapshot is not removed.
+        Storage --> Logic : IOException
+        note over Logic, Model
+        Map the exception to the saving error.
+        Keep live records, view, and history unchanged.
         end note
-        Logic --> User : CommandException
+        [<-- Logic : CommandException
     end
 end
 deactivate Logic

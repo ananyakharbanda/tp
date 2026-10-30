@@ -1,20 +1,17 @@
 @startuml
 !include style.puml
-skinparam arrowThickness 1.1
-skinparam arrowColor MODEL_COLOR
+skinparam ArrowFontStyle plain
+
+title Alternative label ownership (not implemented)
 skinparam classBackgroundColor MODEL_COLOR
-
-AddressBook *-right-> "1" UniquePersonList
-AddressBook *-right-> "1" UniqueLabelList
-UniqueLabelList -[hidden]down- UniquePersonList
-
-UniqueLabelList -right-> "*" Label
-UniquePersonList -right-> Person
-
-Person -up-> "*" Label
-
-Person *--> Name
-Person *--> StudentId
-Person *--> Email
-Person *--> Remark
+class AddressBook
+class UniquePersonList
+class UniqueLabelList
+class Person
+class Label
+AddressBook *--> "1" UniquePersonList
+AddressBook *--> "1" UniqueLabelList
+UniquePersonList --> "0..*" Person
+UniqueLabelList --> "0..*" Label
+Person --> "0..*" Label
 @enduml

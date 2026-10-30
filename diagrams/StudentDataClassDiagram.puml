@@ -1,0 +1,25 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+title Student fields and persisted attendance
+skinparam classBackgroundColor MODEL_COLOR
+class Person
+class Name
+class StudentId
+class Email
+class Remark
+class Label
+class AttendanceRecord
+Person --> "1" Name
+Person --> "1" StudentId
+Person --> "1" Email
+Person --> "1" Remark
+Person --> "0..*" Label : current groups
+Person --> "0..*" AttendanceRecord : recorded presence
+AttendanceRecord --> "1" Label : group
+note bottom of AttendanceRecord
+Each record also holds one date.
+Date + group identifies attendance for a student.
+end note
+@enduml

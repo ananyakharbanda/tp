@@ -1,44 +1,20 @@
 @startuml
-actor User
-participant ":LogicManager" as LogicManager
-participant ":AddressBookParser" as AddressBookParser
-participant ":FindCommandParser" as FindCommandParser
-participant "f:FindCommand" as FindCommand
-participant ":Model" as Model
-participant "predicate:Predicate" as Predicate
+!include style.puml
+skinparam ArrowFontStyle plain
 
-User -> LogicManager : execute("find n/Alex")
-activate LogicManager
-
-LogicManager -> AddressBookParser : parseCommand("find n/Alex")
-activate AddressBookParser
-
-AddressBookParser -> FindCommandParser : parse(" n/Alex")
-activate FindCommandParser
-note right of FindCommandParser
-Validate exactly one non-empty
-n/, i/, e/, r/, or l/ parameter.
-Reject unknown or repeated prefixes.
+title FindCommand: apply a parsed search predicate
+participant "command:FindCommand" as Command LOGIC_COLOR
+participant "model:ModelManager" as Model MODEL_COLOR
+[-> Command : execute(model)
+activate Command
+Command -> Model : updateFilteredPersonList(predicate)
+note right of Model
+Replace the previous predicate.
+The filtered list evaluates it against
+all students in the address book.
 end note
-FindCommandParser --> AddressBookParser : f
-deactivate FindCommandParser
-
-AddressBookParser --> LogicManager : f
-deactivate AddressBookParser
-
-LogicManager -> FindCommand : execute(model)
-activate FindCommand
-
-FindCommand -> Model : updateFilteredPersonList(predicate)
-activate Model
-Model -> Predicate : test(person)
-Predicate --> Model : true/false
-Model --> FindCommand
-deactivate Model
-
-FindCommand --> LogicManager : CommandResult
-deactivate FindCommand
-
-LogicManager --> User : result message
-deactivate LogicManager
+Command -> Model : getFilteredPersonList()
+Model --> Command : matching students
+[<-- Command : CommandResult with match count
+deactivate Command
 @enduml

@@ -1,0 +1,21 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+title Derived attendance report
+skinparam classBackgroundColor MODEL_COLOR
+class AttendanceReport
+class "AttendanceReport.AttendanceEntry" as Entry {
+    isPresent: boolean
+}
+show Entry fields
+class Person
+class Label
+AttendanceReport *--> "0..*" Entry : entries in student order
+AttendanceReport --> "1" Label : group
+Entry --> "1" Person : student
+note bottom of AttendanceReport
+A report also holds the requested date.
+Reports are derived and are not persisted.
+end note
+@enduml

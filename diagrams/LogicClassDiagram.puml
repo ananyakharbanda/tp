@@ -1,47 +1,27 @@
 @startuml
 !include style.puml
-skinparam arrowThickness 1.1
-skinparam arrowColor LOGIC_COLOR_T4
+skinparam ArrowFontStyle plain
+
+title Logic classes and component interfaces
 skinparam classBackgroundColor LOGIC_COLOR
-
-package Logic as LogicPackage {
-
-package "Parser Classes" as ParserClasses{
-}
-Class XYZCommand
-Class CommandResult
-Class "{abstract}\nCommand" as Command
-
-
-Class "<<interface>>\nLogic" as Logic
-Class LogicManager
-}
-
-package Model {
-Class HiddenModel #FFFFFF
-}
-
-package Storage {
-}
-
-Class HiddenOutside #FFFFFF
-HiddenOutside ..> Logic
-
-LogicManager .right.|> Logic
-LogicManager -right->"1" ParserClasses
-ParserClasses ..> XYZCommand : <<create>>
-
-XYZCommand -up-|> Command
-LogicManager .left.> Command : <<call>>
-
-LogicManager --> Model
-LogicManager --> Storage
-Storage --[hidden] Model
-Command .[hidden]up.> Storage
-Command .right.> Model
-note right of XYZCommand: XYZCommand = AddCommand, \nFindCommand, EditCommand, etc
-
-Logic ..> CommandResult
-LogicManager .down.> CommandResult
-Command .up.> CommandResult : <<create>>
+interface Logic <<interface>>
+class LogicManager
+class AddressBookParser
+abstract class Command
+class CommandResult
+interface Model <<interface>> MODEL_COLOR
+interface Storage <<interface>> STORAGE_COLOR
+LogicManager ..|> Logic
+LogicManager --> "1" AddressBookParser
+LogicManager --> "1" Model
+LogicManager --> "1" Storage
+LogicManager ..> Command : executes
+AddressBookParser ..> Command : returns
+Command ..> Model : updates or queries
+Command ..> CommandResult : <<create>>
+Logic ..> CommandResult : returns
+note bottom of Command
+Concrete commands are omitted.
+Parsing is expanded in the next diagram.
+end note
 @enduml

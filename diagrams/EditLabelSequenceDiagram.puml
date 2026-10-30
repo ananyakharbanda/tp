@@ -2,81 +2,23 @@
 !include style.puml
 skinparam ArrowFontStyle plain
 
-box Logic LOGIC_COLOR_T1
-participant ":LogicManager" as Logic LOGIC_COLOR
-participant ":AddressBookParser" as Parser LOGIC_COLOR
-participant ":EditCommandParser" as EditParser LOGIC_COLOR
-participant ":ParserUtil" as ParserUtil LOGIC_COLOR
-participant "e:EditCommand" as Command LOGIC_COLOR
-end box
-box Model MODEL_COLOR_T1
-participant "live:Model" as Live MODEL_COLOR
-participant "pending:ModelManager" as Pending MODEL_COLOR
-end box
-participant ":Storage" as Storage STORAGE_COLOR
-
-[-> Logic : execute("edit i/A0123456B dl/Tutorial 1 l/Tutorial 2")
-activate Logic
-Logic -> Parser : parseCommand(commandText)
-activate Parser
-create EditParser
-Parser -> EditParser : new EditCommandParser()
-Parser -> EditParser : parse(arguments)
-activate EditParser
-note right of EditParser
-Check the command structure and collect label changes.
-Invalid input throws ParseException before execution.
-end note
-EditParser -> ParserUtil : parseStudentId(), parseLabel() for each label
-ParserUtil --> EditParser : validated values
-create Command
-EditParser -> Command : new EditCommand(studentId, descriptor)
-EditParser --> Parser : e
-deactivate EditParser
-destroy EditParser
-Parser --> Logic : e
-deactivate Parser
-
-Logic -> Command : isModifyingData()
-Command --> Logic : true
-note over Logic
-Block this edit if startup loading failed.
-end note
-Logic -> Live : getAddressBook(), getUserPrefs(), getFilteredPersonListPredicate()
-Live --> Logic : records, preferences, filter
-create Pending
-Logic -> Pending : new ModelManager(records, preferences)
-Logic -> Pending : updateFilteredPersonList(filter::test)
-Logic -> Command : execute(pending)
+title EditCommand: replace Tutorial 1 with Tutorial 2
+participant "command:EditCommand" as Command LOGIC_COLOR
+participant "pending:ModelManager" as Model MODEL_COLOR
+[-> Command : execute(pending)
 activate Command
-Command -> Pending : getAddressBook().getPersonList()
-Pending --> Command : complete student list
-note right of Command
-Find A0123456B even if hidden by the current filter.
-Copy the student's labels, remove Tutorial 1,
-then add Tutorial 2 using case-insensitive matching.
-Retain the other fields, including attendance.
-An invalid change throws CommandException before saving.
+Command -> Command : findStudent(pending)
+Command -> Model : getAddressBook().getPersonList()
+Model --> Command : all students
+Command -> Command : createEditedPerson(student, descriptor)
+note over Command
+Remove Tutorial 1, then add Tutorial 2.
+Retain Student ID, attendance,
+and all unspecified fields.
+Invalid changes throw CommandException.
 end note
-Command -> Pending : setPerson(original, edited)
-Command -> Pending : updateFilteredPersonList(showAll)
-Command --> Logic : success result
+Command -> Model : setPerson(student, editedStudent)
+Command -> Model : updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)
+[<-- Command : result
 deactivate Command
-
-Logic -> Storage : saveAddressBook(pending.getAddressBook())
-activate Storage
-alt save succeeds
-Storage --> Logic : saved
-Logic -> Live : setAddressBook(pending.getAddressBook())
-Logic -> Live : updateFilteredPersonList(pending filter)
-[<-- Logic : success result
-else save fails
-Storage --> Logic : IOException
-note over Live
-Live records and filter remain unchanged.
-end note
-[<-- Logic : CommandException (save error)
-end
-deactivate Storage
-deactivate Logic
 @enduml

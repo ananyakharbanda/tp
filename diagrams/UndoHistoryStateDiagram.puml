@@ -1,23 +1,20 @@
 @startuml
 !include style.puml
-title Bounded destructive undo history
+skinparam ArrowFontStyle plain
 
-state "Live records: C\nHistory (oldest to newest): A, B" as BeforeChange
-state "Live records: D\nHistory (oldest to newest): A, B, C" as AfterChange
-state "Live records: C\nHistory (oldest to newest): A, B" as AfterUndo
-state "Live records: E\nHistory (oldest to newest): A, B, C" as AfterNewChange
-
-BeforeChange --> AfterChange : successful normal change\nsave D, append C, publish D
-AfterChange --> AfterUndo : undo\nsave C, publish C, remove C
-AfterUndo --> AfterNewChange : successful normal change\nsave E, append C, publish E
-
-note bottom of AfterChange
-The newest snapshot is restored first.
-At the 100-snapshot limit, discard the oldest snapshot
-before appending a new predecessor.
+title Records and undo history after successful operations
+state "Records: C\nUndo history: A, B" as Before
+state "Records: D\nUndo history: A, B, C" as Changed
+state "Records: C\nUndo history: A, B" as Undone
+state "Records: E\nUndo history: A, B, C" as ChangedAgain
+Before --> Changed : change C to D
+Changed --> Undone : undo
+Undone --> ChangedAgain : change C to E
+note bottom of Changed
+History is ordered oldest to newest.
+Keep at most 100 previous states.
 end note
-
-note bottom of AfterUndo
-No forward state D is retained.
+note bottom of Undone
+There is no redo state for D.
 end note
 @enduml
