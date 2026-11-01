@@ -85,7 +85,7 @@ dependencies {
 shadowJar {
     // Intel and ARM Mac libraries have identical resource names and cannot share one fat JAR.
     archiveFileName = javaFxMacPlatform == 'mac-aarch64'
-            ? 'teach-assist-v1.5-mac-aarch64.jar' : 'teach-assist-v1.5.jar'
+            ? 'teach-assist-v1.6-mac-aarch64.jar' : 'teach-assist-v1.6.jar'
 }
 
 run {

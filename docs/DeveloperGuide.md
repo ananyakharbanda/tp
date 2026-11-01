@@ -196,6 +196,7 @@ An optional group label is assigned when creating a student with `add ... l/LABE
 `EditCommand` preserves labels unless label changes are requested, and `PersonCard` renders them in its `FlowPane`.
 Existing saved labels remain compatible, including records containing multiple labels.
 
+<!-- @@author sammeowwww -->
 ### Edit command
 
 Format: `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`
@@ -278,11 +279,13 @@ checks that other dates and groups remain, hidden students can be updated, remov
 removal, and marking followed by unmarking restores the original student.
 The command parser tests cover parameter validation, and `AddressBookParserTest` checks unmark routing.
 `LogicManagerTest` covers persistence and reload, failed saves, filter preservation, and startup failure protection.
-
+<!-- @@author  -->
 ### Adding student information
 
-Command format: `add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]`.
-One optional group label can be assigned during add; `Label` defines its validation rules.
+Command format: 
+````text
+add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME].
+````
 Accepted values are documented in the [UG field rules](UserGuide.md#field-rules); exact messages and validation order
 are in [Appendix: Errors](#appendix-errors).
 
@@ -359,10 +362,24 @@ The add sequence below shows only `AddCommand#execute` on the pending model, for
 Field parsing and the shared save transaction are outside its scope.
 
 <puml src="diagrams/AddSequenceDiagram.puml" alt="AddCommand checks identity and updates the pending model" />
+<!-- @@author sammeowwww -->
+#### Add command walkthrough
+
+1. Before the diagram begins, `AddCommandParser` validates the supplied values, creates a `Person`, and returns an
+   `AddCommand`. `LogicManager` checks that student data is available and prepares a pending model containing the
+   current records and filter.
+2. `AddCommand#execute` asks the pending model whether it already contains the student. Identity is based on the
+   normalised Student ID. If that ID exists, the command throws a `CommandException` before adding anything.
+3. For a new ID, the command adds the `Person` to the pending model, retrieves the complete student list for its
+   count, and returns a `CommandResult` with the student's ID, name, optional remark, and total count.
+4. After the diagram ends, `LogicManager` saves the pending records. Only after a successful save does it record
+   the previous state for `undo` and publish the pending model, as shown in the
+   [shared save sequence](#saving-before-publishing-changes). A save failure leaves the live records unchanged.
 
 If startup loading fails, `MainApp` keeps the original file and starts with an empty fallback model.
 `LogicManager` blocks modifying commands, `list`, `find`, and `attendance` until the file is fixed and the
 application is restarted. See [Blocking student-data commands after a failed load](#blocking-student-data-commands-after-a-failed-load).
+<!-- @@author  -->
 
 Successful adds display `Added student ID: NAME.`, followed by ` Remark: TEXT` when the remark is non-empty,
 and the total student count on the next line. The count uses the complete record list.

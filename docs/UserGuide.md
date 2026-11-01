@@ -22,7 +22,7 @@ TeachAssist is a **desktop application for managing student records, optimized f
 
 1. Copy the file to the folder you want to use as the _home folder_ for TeachAssist.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar teach-assist-v1.5.jar`.<br>
+1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar teach-assist-v1.6.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. With no saved data file, the student list starts empty.<br>
    ![Ui](images/Ui.png)
    The screenshot shows an earlier label display; the current version displays group labels in lowercase.
@@ -110,6 +110,7 @@ Shows the Help window with the User Guide address. Click **Copy URL**, then past
 
 **Example:** `help`
 
+<!-- @@author sammeowwww -->
 ### Adding a student: `add`
 
 Adds a student with identifying information and optional remarks and a group label.
@@ -127,6 +128,7 @@ Adds a student with identifying information and optional remarks and a group lab
 * `add n/Jamie Lim i/A0234567C e/jamie@example.com r/Quiz 1: 8/10 l/tutorial 1`
 
 A recognized prefix after `r/` starts another parameter: the second example stores `Quiz 1: 8/10` as the remark.
+<!-- @@author -->
 
 ### Listing all students: `list`
 
@@ -179,6 +181,7 @@ or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find
 
 The former `filter` command has been replaced by `find l/LABEL_NAME`.
 
+<!-- @@author sammeowwww -->
 ### Deleting a student: `delete`
 
 Deletes a student and their remarks, labels, and attendance records.
@@ -204,6 +207,8 @@ Records a student as present for a date and group.
 * Success uses the stored lowercase group name and refreshes an open attendance view.
 
 **Example:** `mark i/A0123456B d/2026-10-20 l/tutorial 1`
+
+<!-- @@author -->
 
 ### Removing attendance: `unmark`
 
