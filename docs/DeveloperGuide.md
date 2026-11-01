@@ -229,50 +229,40 @@ The accepted inputs, examples, and feedback are documented under
 [Recording attendance](UserGuide.md#recording-attendance-mark) and
 [Removing attendance](UserGuide.md#removing-attendance-unmark) in the User Guide.
 
-#### Parsing and validation
-
-`AddressBookParser` routes each command to `MarkCommandParser` or `UnmarkCommandParser`.
-Both tokenise `i/`, `d/`, and `l/`, accepting any parameter order and exactly one non-empty value for each.
-Their structure checks follow the same order: internal line breaks, unknown prefixes, preamble text, repeated
-prefixes, then missing or empty values. Repeated and missing/empty checks use `i/`, `d/`, `l/` order.
-The general command parser rejects multiline input before command-specific parsing.
-
-Both parsers reuse `ParserUtil#parseStudentId`, `ParserUtil#parseDate`, and `ParserUtil#parseLabel`, in that order.
-The date parser requires a valid calendar date in the strict `YYYY-MM-DD` format. The parsers then construct
-`MarkCommand` or `UnmarkCommand` with the validated values.
-
-#### Matching and updating records
-
-Both commands search `Model#getAddressBook().getPersonList()` by normalised Student ID, so a student hidden by
-the active filter can still be updated. A missing student throws `CommandException` before any change.
-
-* `MarkCommand` first finds a current group label using case-insensitive matching. It creates an
-  `AttendanceRecord(date, matchedGroup)` and rejects an existing entry for that date and group.
-  Otherwise, it adds the record to a copy of the student's attendance set.
-* `UnmarkCommand` searches the existing attendance set using `AttendanceRecord#equals`, which compares dates
-  exactly and group names case-insensitively using `Locale.ROOT`. A missing record throws `CommandException`.
-  Otherwise, it removes the matched record from a copy of the set. Current group membership is not required:
-  `EditCommand` retains attendance when labels change, and historical records must remain removable.
-  Success feedback uses the matched record's lowercase group name.
-
-Each command constructs a replacement `Person`, retaining every other field, and calls `Model#setPerson`.
-Other attendance entries and the active filter remain unchanged. `unmark` removes the specified attendance entry;
-like other successful data changes, it can later be reversed by `undo`.
-
-#### Saving and sequence diagrams
-
-Both commands return `true` from `Command#isModifyingData`. `LogicManager` blocks them after a startup loading
-failure, executes them on a pending model, saves that model, and only then publishes it to the live model.
-Parsing, command, or save failures preserve the live records, filter, and previous saved file.
-The existing attendance JSON representation is reused; no storage format change is needed.
-
-The following object sequences focus on command execution after parsing and the startup-data check. Each
-assumes an existing student and valid attendance state for that operation. They stop when the pending model has
-been updated; the shared [save-before-publish flow](#saving-before-publishing-changes) runs next.
+The diagrams show successful command execution on the pending model after parsing and the startup-data check.
+Each stops before saving; the shared [save-before-publish flow](#saving-before-publishing-changes) runs next.
 
 <puml src="diagrams/MarkSequenceDiagram.puml" alt="MarkCommand adds attendance to the pending model" />
 
 <puml src="diagrams/UnmarkSequenceDiagram.puml" alt="UnmarkCommand removes attendance from the pending model" />
+
+#### Walkthrough
+
+Each `Person` owns a set of `AttendanceRecord` values covering all tutorial groups for which that student was
+marked present. Each record contains a date and a group. The commands search only the target student's set for
+a record with the requested date and group; they do not search a separate attendance list for each tutorial.
+
+1. `AddressBookParser` routes the input to `MarkCommandParser` or `UnmarkCommandParser`. The parsers accept `i/`,
+   `d/`, and `l/` in any order, each exactly once and with a non-empty value. They reuse `ParserUtil` to validate
+   the Student ID, a real `YYYY-MM-DD` date, and the group label before creating the command.
+2. The command searches the complete student list by Student ID, including students hidden by the active filter.
+   A missing student causes a `CommandException` before any record is changed.
+3. The commands apply different attendance checks:
+   * **Mark:** Find a current group label, then check the student's attendance set for the same date and group.
+     Reject a matching record; otherwise, add the new `AttendanceRecord` to a copy of that set.
+   * **Unmark:** Find a record with the same date and group in the student's set, then remove it from a copy. Current
+     group membership is not required: `EditCommand` retains historical attendance after a label is removed.
+     Success feedback uses the matched record's lowercase group name.
+4. Each command builds a replacement `Person` with the updated attendance and unchanged other fields, then
+   replaces the student in the pending model. Other attendance entries and the active filter remain unchanged.
+5. `LogicManager` saves the pending model before publishing it to the live model and refreshing any open attendance
+   report. Parsing, command, or save failures leave the live records, filter, and saved file unchanged. A successful
+   change can later be reversed with `undo`. The existing attendance JSON format is reused.
+
+The general command parser rejects multiline input first. Command-specific structure checks then reject unknown
+prefixes, text before the first prefix, repeated prefixes, and missing or empty values in that order. Repeated and
+missing/empty checks follow `i/`, `d/`, `l/` order. See [Attendance parameter errors](#attendance-parameter-errors)
+for the resulting messages.
 
 #### Tests
 

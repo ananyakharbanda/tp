@@ -1,28 +1,31 @@
 @startuml
 !include style.puml
 skinparam ArrowFontStyle plain
+skinparam ArrowColor #C62828
+skinparam SequenceLifeLineBorderColor #C62828
+skinparam ArrowThickness 2
 
-title MarkCommand: add one attendance entry
-participant "command:MarkCommand" as Command LOGIC_COLOR
-participant "pending:ModelManager" as Model MODEL_COLOR
-participant "student:Person" as Student MODEL_COLOR
-[-> Command : execute(pending)
+title Mark a student's attendance
+participant "Mark command" as Command LOGIC_COLOR
+participant "Pending model" as Model MODEL_COLOR
+
+[-> Command : Mark student present
 activate Command
-Command -> Command : findStudent(pending)
-Command -> Model : getAddressBook().getPersonList()
-Model --> Command : all students
-Command -> Command : findStudentGroup(student)
-Command -> Student : getLabels()
-Student --> Command : current labels
-Command -> Student : getAttendance()
-Student --> Command : attendance records
-note over Command, Student
-Successful path: student and group exist;
-attendance for the date and group is not recorded.
-Copy attendance, add the record, and create
-updatedStudent with all other fields retained.
+
+Command -> Model : Read all students
+Model --> Command : Student list
+Command -> Command : Find student by ID
+Command -> Command : Confirm current group label
+Command -> Command : Read this student's attendance records
+Command -> Command : Check no record matches date and group
+Command -> Command : Add record to a copy of the attendance set
+note over Command
+A student stores their own attendance
+records across tutorial groups.
+Keep other details and existing records.
 end note
-Command -> Model : setPerson(student, updatedStudent)
-[<-- Command : result
+Command -> Model : Replace the student's record
+
+[<-- Command : Mark result
 deactivate Command
 @enduml
