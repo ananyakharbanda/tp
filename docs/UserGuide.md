@@ -209,7 +209,9 @@ Removes an existing attendance entry for a student, date, and group.
 **Format:** `unmark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`
 
 * Supply each parameter once, with a non-empty value. Matching follows the same rules as `mark`.
-* The student and attendance entry must exist. Current membership of the group is not required.
+* The student and matching attendance entry must exist. You can still `unmark` an entry after removing the student's
+  group label: removing the label hides the student from that group's report but retains past attendance until it is
+  unmarked.
 * Students can be hidden by the current search. Other records and the current search are preserved.
 * Success uses the attendance entry’s stored group spelling and refreshes an open attendance view.
 
