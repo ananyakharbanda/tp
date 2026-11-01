@@ -124,7 +124,7 @@ Adds a student with identifying information and optional remarks and a group lab
 **Examples:**
 
 * `add n/John Doe i/A0123456B e/john@example.com`
-* `add n/Jamie Lim i/A0234567C e/jamie@example.com r/Quiz 1: 8/10 l/Tutorial 1`
+* `add n/Jamie Lim i/A0234567C e/jamie@example.com r/Quiz 1: 8/10 l/tutorial 1`
 
 A recognized prefix after `r/` starts another parameter: the second example stores `Quiz 1: 8/10` as the remark.
 
@@ -155,7 +155,7 @@ Updates a student identified by Student ID, including one hidden by the current 
 
 **Examples:**
 
-* `edit i/A0123456B dl/Tutorial 1 l/Tutorial 2` replaces a label.
+* `edit i/A0123456B dl/tutorial 1 l/tutorial 2` replaces a label.
 * `edit i/A0123456B l/ r/` clears all labels and the remark.
 
 ### Finding students by name, student ID, email, remark, or label: `find`
@@ -174,7 +174,8 @@ or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find
 **Examples:**
 
 * `find n/tri sam` matches names containing `tri` or `sam`, such as Tristan and Samuel.
-* `find l/Tutorial 1` matches that complete label, ignoring case.
+* `find l/tutorial 1` matches that complete label. `find l/Tutorial 1` also works because matching ignores case;
+  the label remains stored and displayed as `tutorial 1`.
 
 The former `filter` command has been replaced by `find l/LABEL_NAME`.
 
@@ -202,7 +203,7 @@ Records a student as present for a date and group.
 * Students can be hidden by the current search. Other records and the current search are preserved.
 * Success uses the stored lowercase group name and refreshes an open attendance view.
 
-**Example:** `mark i/A0123456B d/2026-10-20 l/Tutorial 1`
+**Example:** `mark i/A0123456B d/2026-10-20 l/tutorial 1`
 
 ### Removing attendance: `unmark`
 
@@ -217,7 +218,7 @@ Removes an existing attendance entry for a student, date, and group.
 * Students can be hidden by the current search. Other records and the current search are preserved.
 * Success uses the attendance entry’s stored lowercase group name and refreshes an open attendance view.
 
-**Example:** `unmark i/A0123456B d/2026-10-20 l/Tutorial 1`
+**Example:** `unmark i/A0123456B d/2026-10-20 l/tutorial 1`
 
 ### Viewing attendance: `attendance`
 
@@ -238,8 +239,8 @@ Shows present and absent students for a group and date, with totals.
   A missing file or a successfully loaded empty file still permits an attendance report with zero totals.
 
 **Example:** 
-1. `mark i/A0234567C d/2026-10-20 l/Tutorial 1`
-2. `attendance d/2026-10-20 l/Tutorial 1`
+1. `mark i/A0234567C d/2026-10-20 l/tutorial 1`
+2. `attendance d/2026-10-20 l/tutorial 1`
 
 
 ### Clearing all entries: `clear`
@@ -330,15 +331,15 @@ For exact messages and validation order, see [Developer Guide — Appendix: Erro
 
 Action     | Format, Examples
 -----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**Add**    | `add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]` <br> e.g., `add n/James Ho i/A0123456B e/jamesho@example.com r/Needs help with recursion l/Discrete Math Tutorial`
-**Attendance** | `attendance d/YYYY-MM-DD l/GROUP`<br> e.g., `attendance d/2026-10-20 l/Tutorial 1`
+**Add**    | `add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]` <br> e.g., `add n/James Ho i/A0123456B e/jamesho@example.com r/Needs help with recursion l/discrete math tutorial`
+**Attendance** | `attendance d/YYYY-MM-DD l/GROUP`<br> e.g., `attendance d/2026-10-20 l/tutorial 1`
 **Clear**  | `clear`
 **Delete** | `delete i/STUDENT_ID`<br> e.g., `delete i/A0123456B`
-**Edit**   | `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`<br> e.g., `edit i/A0123456B dl/Tutorial 1 l/Tutorial 2`
+**Edit**   | `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`<br> e.g., `edit i/A0123456B dl/tutorial 1 l/tutorial 2`
 **Find**   | `find n/KEYWORD [MORE_KEYWORDS]` or `find i/KEYWORD [MORE_KEYWORDS]` or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find l/LABEL_NAME`<br> e.g., `find n/James Jake`
 **List**   | `list`
-**Mark**   | `mark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`<br> e.g., `mark i/A0123456B d/2026-10-20 l/Tutorial 1`
-**Unmark** | `unmark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`<br> e.g., `unmark i/A0123456B d/2026-10-20 l/Tutorial 1`
+**Mark**   | `mark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`<br> e.g., `mark i/A0123456B d/2026-10-20 l/tutorial 1`
+**Unmark** | `unmark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`<br> e.g., `unmark i/A0123456B d/2026-10-20 l/tutorial 1`
 **Undo**   | `undo`
 **Help**   | `help`
 **Exit**   | `exit`
