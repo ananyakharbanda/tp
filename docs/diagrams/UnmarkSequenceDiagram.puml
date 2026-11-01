@@ -3,29 +3,37 @@
 skinparam ArrowFontStyle plain
 skinparam ArrowColor #C62828
 skinparam SequenceLifeLineBorderColor #C62828
-skinparam ArrowThickness 2
-
-title Remove a student's attendance
-participant "Unmark command" as Command LOGIC_COLOR
-participant "Pending model" as Model MODEL_COLOR
-
-[-> Command : Remove attendance entry
+skinparam ArrowThickness 2title Remove a student's attendance
+box "Logic" #C8C8FA
+participant ":LogicManager" as Logic LOGIC_COLOR
+participant ":AddressBookParser" as Parser LOGIC_COLOR
+participant "unmark:UnmarkCommand" as Command LOGIC_COLOR
+end box
+box "Model" #F97181
+participant "pending:ModelManager" as Pending MODEL_COLOR
+end box
+[-> Logic : Remove attendance entry
+activate Logic
+Logic -> Parser : Parse command
+activate Parser
+Parser --> Logic : Unmark command
+deactivate Parser
+Logic -> Pending : Create pending copy
+Pending --> Logic : Pending model
+Logic -> Command : Execute on pending model
 activate Command
-
-Command -> Model : Read all students
-Model --> Command : Student list
+Command -> Pending : Read all students
+Pending --> Command : Student list
 Command -> Command : Find student by ID
-Command -> Command : Read this student's attendance records
-Command -> Command : Find record matching date and group
-Command -> Command : Remove it from a copy of the attendance set
+Command -> Command : Find matching date and group in student's records
 note over Command
-A student stores their own attendance
-records across tutorial groups.
+Attendance belongs to the student, across groups.
 Current group membership is not required.
-Keep other details and attendance records.
 end note
-Command -> Model : Replace the student's record
-
-[<-- Command : Unmark result
+Command -> Pending : Replace student with record removed
+Command --> Logic : Unmark result
 deactivate Command
+ref over Logic, Pending : Save before publishing (shared flow)
+[<-- Logic : Result
+deactivate Logic
 @enduml

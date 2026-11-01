@@ -3,26 +3,38 @@
 skinparam ArrowFontStyle plain
 skinparam ArrowColor #C62828
 skinparam SequenceLifeLineBorderColor #C62828
-skinparam ArrowThickness 2
-
-title Edit a student's group labels
-participant "Edit command" as Command LOGIC_COLOR
-participant "Pending model" as Model MODEL_COLOR
-
-[-> Command : Edit student's labels
+skinparam ArrowThickness 2title Edit a student's group labels
+box "Logic" #C8C8FA
+participant ":LogicManager" as Logic LOGIC_COLOR
+participant ":AddressBookParser" as Parser LOGIC_COLOR
+participant "edit:EditCommand" as Command LOGIC_COLOR
+end box
+box "Model" #F97181
+participant "pending:ModelManager" as Pending MODEL_COLOR
+end box
+[-> Logic : Replace tutorial 1 with tutorial 2
+activate Logic
+Logic -> Parser : Parse command
+activate Parser
+Parser --> Logic : Edit command
+deactivate Parser
+Logic -> Pending : Create pending copy
+Pending --> Logic : Pending model
+Logic -> Command : Execute on pending model
 activate Command
-
-Command -> Model : Read all students
-Model --> Command : Student records
+Command -> Pending : Read all students
+Pending --> Command : Student list
 Command -> Command : Find student by ID
-Command -> Command : Remove tutorial 1 and add tutorial 2
+Command -> Command : Remove tutorial 1; add tutorial 2
 note over Command
-Keep the Student ID, attendance,
-and fields not supplied in the command.
+Keep Student ID, attendance, and
+fields not supplied in the command.
 end note
-Command -> Model : Replace the student's record
-Command -> Model : Show the full student list
-
-[<-- Command : Edit result
+Command -> Pending : Replace student's record
+Command -> Pending : Show full student list
+Command --> Logic : Edit result
 deactivate Command
+ref over Logic, Pending : Save before publishing (shared flow)
+[<-- Logic : Result
+deactivate Logic
 @enduml
