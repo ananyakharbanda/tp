@@ -25,11 +25,22 @@ public class LabelTest {
     }
 
     @Test
-    public void constructor_validLabelName_preservesDisplayText() {
-        // EP: valid label with internal spaces
+    public void constructor_validLabelName_storesLowercaseText() {
+        // EP: valid mixed-case label with internal spaces
         Label label = new Label("Discrete Math Tutorial");
 
-        assertEquals("Discrete Math Tutorial", label.labelName);
+        assertEquals("discrete math tutorial", label.labelName);
+    }
+
+    @Test
+    public void constructor_caseVariations_storeEqualLabels() {
+        // EP: labels differing only in capitalization have the same stored identity
+        Label lowercase = new Label("tut1");
+        Label mixedCase = new Label("TuT1");
+
+        assertEquals(lowercase, mixedCase);
+        assertEquals(lowercase.hashCode(), mixedCase.hashCode());
+        assertEquals("tut1", mixedCase.labelName);
     }
 
     @Test
@@ -46,6 +57,7 @@ public class LabelTest {
 
         // EP: label exceeds the maximum length
         assertFalse(Label.isValidLabelName("a".repeat(Label.MAX_NAME_LENGTH + 1))); // BVA: one above maximum
+        assertFalse(Label.isValidLabelName("İ".repeat(31))); // BVA: 62 code points after lowercasing
 
         // EP: disallowed character or no letter or digit
         assertFalse(Label.isValidLabelName("Tutorial/1"));
@@ -59,6 +71,7 @@ public class LabelTest {
         assertTrue(Label.isValidLabelName("A")); // BVA: minimum valid length
         assertTrue(Label.isValidLabelName("a".repeat(Label.MAX_NAME_LENGTH - 1))); // BVA: one below maximum
         assertTrue(Label.isValidLabelName("a".repeat(Label.MAX_NAME_LENGTH))); // BVA: maximum length
+        assertTrue(Label.isValidLabelName("İ".repeat(30))); // BVA: 60 code points after lowercasing
 
         // EP: valid label with supported punctuation and spacing
         assertTrue(Label.isValidLabelName("Discrete Math Tutorial"));
@@ -70,16 +83,15 @@ public class LabelTest {
     }
 
     @Test
-    public void displayOrder_mixedCase_sortsIgnoringCaseThenByExactName() {
-        // EP: uppercase and lowercase names interleave alphabetically (#209)
-        // Boundary: names differing only by case keep a fixed relative order
+    public void displayOrder_mixedCase_sortsByLowercaseName() {
+        // EP: uppercase and lowercase names are normalized before alphabetical sorting
         List<String> sorted = Stream.of("beta", "Zeta", "alpha", "Beta", "Gamma")
                 .map(Label::new)
                 .sorted(Label.DISPLAY_ORDER)
                 .map(label -> label.labelName)
                 .toList();
 
-        assertEquals(List.of("alpha", "Beta", "beta", "Gamma", "Zeta"), sorted);
+        assertEquals(List.of("alpha", "beta", "beta", "gamma", "zeta"), sorted);
     }
 
     @Test

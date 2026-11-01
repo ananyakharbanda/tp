@@ -25,6 +25,7 @@ TeachAssist is a **desktop application for managing student records, optimized f
 1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar teach-assist-v1.5.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. With no saved data file, the student list starts empty.<br>
    ![Ui](images/Ui.png)
+   The screenshot shows an earlier label display; the current version displays group labels in lowercase.
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
@@ -72,18 +73,19 @@ this window will reject its next save to avoid overwriting the newer data. Resta
 Leading and trailing whitespace is ignored around commands and values. This includes Unicode space separators,
 such as non-breaking spaces, and Hangul fillers (`U+115F`, `U+1160`, `U+3164`, `U+FFA0`), which can also separate
 commands and parameters. Names convert these characters to ordinary spaces and collapse repeated spaces.
-Labels and remarks preserve their internal characters, including Unicode spaces and Hangul fillers.
+Labels and remarks preserve their internal spacing, including Unicode spaces and Hangul fillers.
 Zero-width spaces and byte order marks are not treated as whitespace.
 
-Label matching ignores case but requires the complete label with **exact internal spacing**, including Unicode
-spaces and Hangul fillers. `Tutorial 1` and `Tutorial  1` are different labels. An ordinary space, a non-breaking
-space, and a Hangul filler in the same position are also different. This applies to finding, editing, and attendance
+Labels are stored and displayed in lowercase. Matching ignores case but requires the complete label with
+**exact internal spacing**, including Unicode spaces and Hangul fillers. `Tutorial 1` and `Tutorial  1` are
+different labels. An ordinary space, a non-breaking space, and a Hangul filler in the same position are also
+different. This applies to finding, editing, and attendance
 groups. `I` matches `i`; dotless `ı` is a different character.
 
 ### Field rules
 
-These rules apply wherever a command accepts the field. Name, label, and remark limits count Unicode code points
-after whitespace handling.
+These rules apply wherever a command accepts the field. Name and remark limits count Unicode code points after
+whitespace handling; the label limit also applies after lowercasing.
 
 | Field | Rules |
 |-------|-------|
@@ -91,14 +93,14 @@ after whitespace handling.
 | Student ID | Exactly nine ASCII letters or digits, stored in uppercase. Matching ignores case. No internal spaces or punctuation. Each student needs a unique ID; names can be shared. |
 | Email | A supported `name@example.com` address, at most 254 characters, without spaces. The local part allows ASCII letters, digits, `.`, `_`, `+`, and `-`; the domain needs at least two dot-separated parts and a final part of 2–63 letters. Only the domain is lowercased. Mailbox existence is not checked. [Full constraints](DeveloperGuide.md#field-validation-errors). |
 | Remark | Optional, at most 4,000 characters. Internal spacing and capitalization are preserved; dates and grades are not checked. Text starting after a space or similar separator with ASCII letters immediately followed by `/` is read as a parameter prefix, even in remarks. |
-| Label / group | 1–60 characters, including a letter or digit. Allows Unicode letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Internal spacing and capitalization are preserved. |
+| Label / group | 1–60 characters after lowercasing, including a letter or digit. Allows Unicode letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Internal spacing is preserved; capitalization is converted to lowercase for storage and display. |
 | Date | A real calendar date in `YYYY-MM-DD` format, with zero-padded month and day, e.g., `2026-10-20`. |
 
 For example, `r/Discussed algebra/ today` is rejected with `Unknown parameter: algebra/.` because
 `algebra/` starts after a space. The same applies to `algebra/topic`; text after the slash does not change the rule.
 
 Student cards wrap long names, emails, remarks, and labels. Resize the window or scroll to read taller cards.
-Labels appear alphabetically, ignoring case; empty remarks are hidden.
+Labels appear alphabetically in lowercase; empty remarks are hidden.
 
 ### Viewing help: `help`
 
@@ -145,7 +147,7 @@ Updates a student identified by Student ID, including one hidden by the current 
 * Supply `i/` and at least one change. Student ID itself cannot be edited.
 * `i/`, `n/`, `e/`, and `r/` may each appear once. Names and emails cannot be empty; an empty `r/` clears the remark.
 * Each `l/` adds a label; each non-empty `dl/` removes one. Do not repeat the same label under the same prefix.
-* All removals happen before additions. Remove and add the same label to change its capitalization.
+* All removals happen before additions. Labels are stored in lowercase, so changing only capitalization has no effect.
 * An empty `l/` clears **all** labels and cannot be combined with any other label change.
 * Removing a missing label or adding a label still present rejects the entire edit.
 * Other fields and attendance records are preserved, including attendance for removed labels.
@@ -198,7 +200,7 @@ Records a student as present for a date and group.
 * Student ID and group matching ignore case; group spacing follows [label matching](#whitespace-and-label-matching).
 * Attendance for the same student, date, and group cannot be recorded twice.
 * Students can be hidden by the current search. Other records and the current search are preserved.
-* Success uses the stored group spelling and refreshes an open attendance view.
+* Success uses the stored lowercase group name and refreshes an open attendance view.
 
 **Example:** `mark i/A0123456B d/2026-10-20 l/Tutorial 1`
 
@@ -213,7 +215,7 @@ Removes an existing attendance entry for a student, date, and group.
   group label: removing the label hides the student from that group's report but retains past attendance until it is
   unmarked.
 * Students can be hidden by the current search. Other records and the current search are preserved.
-* Success uses the attendance entry’s stored group spelling and refreshes an open attendance view.
+* Success uses the attendance entry’s stored lowercase group name and refreshes an open attendance view.
 
 **Example:** `unmark i/A0123456B d/2026-10-20 l/Tutorial 1`
 

@@ -44,7 +44,7 @@ public class PersonCardTest {
 
             Label groupBadge = (Label) ((FlowPane) root.lookup("#labels")).getChildren().get(0);
             Label studentIdBadge = (Label) ((FlowPane) root.lookup("#studentIds")).getChildren().get(0);
-            assertEquals("Tutorial 1", groupBadge.getText());
+            assertEquals("tutorial 1", groupBadge.getText());
             assertEquals("Student ID: A1234567B", studentIdBadge.getText());
             assertTrue(groupBadge.getStyleClass().contains("group_label_badge"));
             assertTrue(studentIdBadge.getStyleClass().contains("student_id_badge"));
@@ -104,7 +104,7 @@ public class PersonCardTest {
                             "Wrapped label has insufficient height");
                 }
                 Label group = (Label) card.lookupAll("#labels .label").stream()
-                        .filter(node -> ((Label) node).getText().startsWith("W")).findFirst().orElseThrow();
+                        .filter(node -> ((Label) node).getText().startsWith("w")).findFirst().orElseThrow();
                 Label email = (Label) card.lookup("#email");
                 if (width <= 400) {
                     assertTrue(group.getHeight() > 2 * group.getFont().getSize(), "Group should wrap");

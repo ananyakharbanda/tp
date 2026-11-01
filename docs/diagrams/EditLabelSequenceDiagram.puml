@@ -15,7 +15,7 @@ activate Command
 Command -> Model : Read all students
 Model --> Command : Student records
 Command -> Command : Find student by ID
-Command -> Command : Remove Tutorial 1 and add Tutorial 2
+Command -> Command : Remove tutorial 1 and add tutorial 2
 note over Command
 Keep the Student ID, attendance,
 and fields not supplied in the command.

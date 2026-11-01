@@ -196,7 +196,7 @@ Existing saved labels remain compatible, including records containing multiple l
 
 Format: `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`
 
-The diagram shows a successful edit that replaces `Tutorial 1` with `Tutorial 2`. It focuses on the
+The diagram shows a successful edit that replaces `tutorial 1` with `tutorial 2`. It focuses on the
 edit command after parsing and the startup-data check have succeeded.
 
 <puml src="diagrams/EditLabelSequenceDiagram.puml" alt="EditCommand updates labels on the pending model" />
@@ -211,7 +211,8 @@ edit command after parsing and the startup-data check have succeeded.
    student list. `LogicManager` saves the pending model before publishing it to the live model, as described
    in the shared [save-before-publish flow](#saving-before-publishing-changes).
 
-Label matching is case-insensitive. Removing a missing label or adding one already present throws a
+Label names are lowercased when constructed, so matching remains case-insensitive. Removing a missing label or
+adding one already present throws a
 `CommandException`, leaving the record unchanged. An empty `l/` clears all labels and cannot be combined
 with another label change. An empty `r/` becomes an empty remark.
 
@@ -252,7 +253,7 @@ the active filter can still be updated. A missing student throws `CommandExcepti
   exactly and group names case-insensitively using `Locale.ROOT`. A missing record throws `CommandException`.
   Otherwise, it removes the matched record from a copy of the set. Current group membership is not required:
   `EditCommand` retains attendance when labels change, and historical records must remain removable.
-  Success feedback uses the matched record's stored group spelling.
+  Success feedback uses the matched record's lowercase group name.
 
 Each command constructs a replacement `Person`, retaining every other field, and calls `Model#setPerson`.
 Other attendance entries and the active filter remain unchanged. `unmark` removes the specified attendance entry;
@@ -304,12 +305,12 @@ are in [Appendix: Errors](#appendix-errors).
   of 63, and a final label of 2–63 letters. Only the domain is lowercased using `Locale.ROOT`.
 * `Remark` accepts at most 4,000 Unicode code points; command parsing trims only surrounding whitespace.
   Empty or omitted remarks become empty strings. `r/` can appear anywhere and does not consume later parameters.
-* `Label` accepts 1–60 Unicode code points and requires at least one letter or digit. It permits letters,
-  combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Empty labels
+* `Label` accepts 1–60 Unicode code points after lowercasing and requires at least one letter or digit. It permits
+  letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Empty labels
   are rejected, omitted labels become an empty label set, and `l/` can appear anywhere without consuming later parameters.
 
 For example, `add n/  Alex   Tan i/a0123456b e/Alex@EXAMPLE.COM l/Tutorial 1 r/Quiz: 8/10`
-creates a student with name `Alex Tan`, ID `A0123456B`, email `Alex@example.com`, label `Tutorial 1`,
+creates a student with name `Alex Tan`, ID `A0123456B`, email `Alex@example.com`, label `tutorial 1`,
 and remark `Quiz: 8/10`.
 An alphabetic token such as `x/value` is rejected even inside a remark; `8/10` and URLs remain literal text.
 A duplicate ID rejects the complete command without merging any details or remarks.
@@ -927,7 +928,7 @@ This is the label mode of `find`; there is no separate `filter` command.
 
 1. TA requests to mark a student present for a date and group, identifying the student by Student ID.
 2. TeachAssist records and saves the attendance without changing other student details or attendance entries.
-3. TeachAssist confirms the Student ID, stored group spelling, and date. If an attendance view is open, it
+3. TeachAssist confirms the Student ID, lowercase group name, and date. If an attendance view is open, it
    refreshes that view; otherwise the current student search remains applied.
 
    Use case ends.
@@ -977,7 +978,7 @@ report. Other successful commands return to the student list (or exit the app); 
 1. TA identifies an attendance entry by Student ID, date, and group and requests its removal.
 2. TeachAssist removes and saves that entry, even if the student no longer has the group label.
    Other attendance entries and student details are retained.
-3. TeachAssist confirms removal using the stored group spelling and refreshes an open attendance view.
+3. TeachAssist confirms removal using the lowercase group name and refreshes an open attendance view.
    If the student list is shown, its current search remains applied.
 
    Use case ends.
@@ -1143,9 +1144,9 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 |------|---------|-----------------|
 | 1 | `find n/Beth` | Only Beth appears. |
 | 2 | `edit i/a0123456b e/alex.new@example.com r/Revision complete` | Hidden student Alex is updated; both students appear. Feedback begins `Edited student: Alex Tan`; Alex's card shows the new remark. |
-| 3 | `edit i/A0123456B dl/Tutorial 1 l/Tutorial 2 l/Consultation` | Alex has Tutorial 2 and Consultation; Beth keeps Tutorial 1. |
-| 4 | `edit i/A0123456B n/Changed Name dl/Missing` | `Student A0123456B does not have label "Missing".`; Alex's name and labels are unchanged. |
-| 5 | `edit i/A0123456B l/Consultation` | `Student A0123456B already has label "Consultation".` |
+| 3 | `edit i/A0123456B dl/Tutorial 1 l/Tutorial 2 l/Consultation` | Alex has `tutorial 2` and `consultation`; Beth keeps `tutorial 1`. |
+| 4 | `edit i/A0123456B n/Changed Name dl/Missing` | `Student A0123456B does not have label "missing".`; Alex's name and labels are unchanged. |
+| 5 | `edit i/A0123456B l/Consultation` | `Student A0123456B already has label "consultation".` |
 | 6 | `edit i/A0123456B l/New l/new` | `Parameter l/ repeats label "new".`; neither label is added. |
 | 7 | `edit i/A0123456B` | `At least one field to edit must be provided.` |
 | 8 | `edit i/A0123456B l/ dl/Tutorial 2` | `An empty l/ cannot be combined with other label changes.` |
@@ -1158,7 +1159,7 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 | Step | Command | Expected result |
 |------|---------|-----------------|
 | 1 | `attendance d/2026-10-20 l/Tutorial 1` | Alex and Beth are Absent; totals are 0 present, 2 absent. |
-| 2 | `mark i/A0123456B d/2026-10-20 l/tutorial 1` | Feedback is `Marked student A0123456B present for Tutorial 1 on 2026-10-20.` Alex becomes Present; totals become 1 present, 1 absent. |
+| 2 | `mark i/A0123456B d/2026-10-20 l/tutorial 1` | Feedback is `Marked student A0123456B present for tutorial 1 on 2026-10-20.` Alex becomes Present; totals become 1 present, 1 absent. |
 | 3 | Repeat step 2 | Already-marked error; the attendance view and totals are unchanged. |
 | 4 | `unmark i/A0123456B d/2026-10-20 l/Tutorial 1` | Alex becomes Absent; totals become 0 present, 2 absent. |
 | 5 | Repeat step 4 | Not-marked error; the view remains unchanged. |
@@ -1385,11 +1386,11 @@ before the empty name or invalid values.
 | Invalid Student ID, name, email, remark, or label | The corresponding field constraint message in [Field validation errors](#field-validation-errors); empty `n/` and `e/` also produce these messages | Follow the UG field rules and limits. |
 | No field to change, e.g., `edit i/A0123456B` | `At least one field to edit must be provided.` | Supply at least one field or label change. |
 | Empty label removal | `Parameter dl/ cannot be empty.` | Supply the required non-empty value. |
-| Same label repeated under one prefix | `Parameter l/ repeats label "Tutorial 1".` (or `dl/`, using the repeated value's spelling) | Specify each label only once per prefix. |
+| Same label repeated under one prefix | `Parameter l/ repeats label "tutorial 1".` (or `dl/`, using the normalized value) | Specify each label only once per prefix. |
 | Empty `l/` combined with another label change | `An empty l/ cannot be combined with other label changes.` | Clear all labels separately from other label changes. |
 | Student does not exist | `Student with ID A0123456B is not in the records.` | Use `list` or `find` to check the Student ID. |
-| Removing a label the student does not have | `Student A0123456B does not have label "Tutorial 1".` | Check the student’s labels and use the matching group name. |
-| Adding a label still present after removals | `Student A0123456B already has label "Tutorial 1".` | Omit the existing label, or remove it before adding its replacement. |
+| Removing a label the student does not have | `Student A0123456B does not have label "tutorial 1".` | Check the student’s labels and use the matching group name. |
+| Adding a label still present after removals | `Student A0123456B already has label "tutorial 1".` | Omit the existing label, or remove it before adding its replacement. |
 
 Validation order: unknown prefixes, preamble, duplicate single-value prefixes, required/non-empty/valid
 Student ID, supplied name, email, remark, label changes, then whether any field was supplied. Label additions are parsed
@@ -1431,21 +1432,21 @@ ID, data availability, student existence, then saving. For example, `delete i/12
 | Condition | Message | Recovery |
 |-----------|---------|----------|
 | Student does not exist | `Student with ID A0123456B is not in the records.` | Use `list` or `find` to check the Student ID. |
-| Student does not have the group label | `Student A0123456B does not have group label "Tutorial 1".` | Check the student’s labels and use the matching group name. |
-| Attendance already exists | `Student A0123456B is already marked present for Tutorial 1 on 2026-10-20.` | Use `attendance` to check the existing entry; use `unmark` to remove it. |
+| Student does not have the group label | `Student A0123456B does not have group label "tutorial 1".` | Check the student’s labels and use the matching group name. |
+| Attendance already exists | `Student A0123456B is already marked present for tutorial 1 on 2026-10-20.` | Use `attendance` to check the existing entry; use `unmark` to remove it. |
 
 After parsing, data availability, student existence, current group membership, and existing attendance
-are checked in that order, then saving. Success feedback uses the stored group label’s spelling.
+are checked in that order, then saving. Success feedback uses the stored lowercase group name.
 
 #### Unmark errors
 
 | Condition | Message | Recovery |
 |-----------|---------|----------|
 | Student does not exist | `Student with ID A0123456B is not in the records.` | Use `list` or `find` to check the Student ID. |
-| No attendance entry for the date and group | `Student A0123456B is not marked present for Tutorial 1 on 2026-10-20.` | Check the date and stored group spelling, including internal spacing. |
+| No attendance entry for the date and group | `Student A0123456B is not marked present for tutorial 1 on 2026-10-20.` | Check the date and stored group name, including internal spacing. |
 
 After parsing, data availability, student existence, and matching attendance are checked, then saving.
-Current group membership is not required. Success feedback uses the attendance entry’s stored group spelling.
+Current group membership is not required. Success feedback uses the attendance entry’s lowercase group name.
 
 #### Attendance parameter errors
 
@@ -1509,13 +1510,14 @@ The root object contains a `persons` array. For example, this is a valid minimal
 
 Loading trims surrounding ASCII control whitespace, Unicode space separators, and the four supported Hangul fillers
 from text fields, labels, dates, and attendance groups before validation. Names also normalize these Unicode spaces and
-fillers to ASCII spaces and collapse repeated spaces. Internal remark, label, and attendance-group characters are
-preserved. Student IDs become uppercase; only email domains become lowercase. Limits apply after this normalization.
+fillers to ASCII spaces and collapse repeated spaces. Internal spacing and punctuation in remarks, labels, and
+attendance groups are preserved. Student IDs become uppercase; email domains, labels, and attendance groups become
+lowercase. Label and group length limits apply after lowercasing, which can expand some Unicode letters.
 Duplicate Student IDs, labels within a student, and attendance date/group pairs within a student are checked after
 normalization; label/group comparison ignores case but preserves internal spacing, Unicode spaces, and Hangul fillers.
 The normalized values are written on the next successful save.
 
-Attendance is stored as `attendance`: a list of `{"date": "2026-10-20", "group": "Tutorial 1"}` entries per student.
+Attendance is stored as `attendance`: a list of `{"date": "2026-10-20", "group": "tutorial 1"}` entries per student.
 Dates must be real calendar dates in `YYYY-MM-DD` format; group names follow label constraints.
 
 Successful startup reports `N students loaded.` (`1 student loaded.` for one student). A missing file reports

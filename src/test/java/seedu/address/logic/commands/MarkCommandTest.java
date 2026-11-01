@@ -44,7 +44,7 @@ public class MarkCommandTest {
         expected.setPerson(student, marked);
 
         assertCommandSuccess(new MarkCommand(student.getStudentId(), DATE, new Label("tutorial 1")), model,
-                CommandResult.updatingAttendance("Marked student A1234567B present for Tutorial 1 on 2026-10-20."),
+                CommandResult.updatingAttendance("Marked student A1234567B present for tutorial 1 on 2026-10-20."),
                 expected);
         assertEquals(List.of(BENSON), model.getFilteredPersonList());
     }
@@ -56,7 +56,7 @@ public class MarkCommandTest {
                 "Student with ID Z9999999Z is not in the records.");
         // EP: existing student without the requested current group label leaves data unchanged
         assertCommandFailure(new MarkCommand(ALICE.getStudentId(), DATE, GROUP), model,
-                "Student A1234567B does not have group label \"Tutorial 1\".");
+                "Student A1234567B does not have group label \"tutorial 1\".");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class MarkCommandTest {
         model.setPerson(ALICE, student);
 
         assertCommandFailure(new MarkCommand(student.getStudentId(), DATE, new Label("tutorial 1")), model,
-                "Student A1234567B is already marked present for Tutorial 1 on 2026-10-20.");
+                "Student A1234567B is already marked present for tutorial 1 on 2026-10-20.");
     }
 
     @Test
