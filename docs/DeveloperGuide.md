@@ -196,6 +196,7 @@ An optional group label is assigned when creating a student with `add ... l/LABE
 `EditCommand` preserves labels unless label changes are requested, and `PersonCard` renders them in its `FlowPane`.
 Existing saved labels remain compatible, including records containing multiple labels.
 
+<!-- @@author sammeowwww -->
 ### Edit command
 
 Format: `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`
@@ -278,7 +279,7 @@ checks that other dates and groups remain, hidden students can be updated, remov
 removal, and marking followed by unmarking restores the original student.
 The command parser tests cover parameter validation, and `AddressBookParserTest` checks unmark routing.
 `LogicManagerTest` covers persistence and reload, failed saves, filter preservation, and startup failure protection.
-
+<!-- @@author  -->
 ### Adding student information
 
 Command format: 
@@ -361,7 +362,7 @@ The add sequence below shows only `AddCommand#execute` on the pending model, for
 Field parsing and the shared save transaction are outside its scope.
 
 <puml src="diagrams/AddSequenceDiagram.puml" alt="AddCommand checks identity and updates the pending model" />
-
+<!-- @@author sammeowwww -->
 #### Add command walkthrough
 
 1. Before the diagram begins, `AddCommandParser` validates the supplied values, creates a `Person`, and returns an
@@ -378,6 +379,7 @@ Field parsing and the shared save transaction are outside its scope.
 If startup loading fails, `MainApp` keeps the original file and starts with an empty fallback model.
 `LogicManager` blocks modifying commands, `list`, `find`, and `attendance` until the file is fixed and the
 application is restarted. See [Blocking student-data commands after a failed load](#blocking-student-data-commands-after-a-failed-load).
+<!-- @@author  -->
 
 Successful adds display `Added student ID: NAME.`, followed by ` Remark: TEXT` when the remark is non-empty,
 and the total student count on the next line. The count uses the complete record list.
