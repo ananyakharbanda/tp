@@ -22,7 +22,7 @@ TeachAssist is a **desktop application for managing student records, optimized f
 
 1. Copy the file to the folder you want to use as the _home folder_ for TeachAssist.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar teach-assist-v1.5.jar`.<br>
+1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar teach-assist-v1.6.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. With no saved data file, the student list starts empty.<br>
    ![Ui](images/Ui.png)
    The screenshot shows an earlier label display; the current version displays group labels in lowercase.
