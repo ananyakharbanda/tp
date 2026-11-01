@@ -224,7 +224,10 @@ Shows present and absent students for a group and date, with totals.
 * Supply `d/` and `l/` once each, with non-empty values. Group matching follows [label matching](#whitespace-and-label-matching).
 * Lists students who **currently** have the label, in master-list order, including students hidden by `find`.
 * Students with an attendance entry are **Present**; others are **Absent**. Absences are not stored separately.
-* Students who have lost the label are excluded, but their attendance is kept. No members produces zero totals.
+* Removing a student's label removes them from that group's report. It does not delete earlier attendance records:
+  if the label is added back, the student's past **Present** status appears again for the same date.
+* If no student currently has the requested label, including a label never used before, the report is empty with
+  0 present and 0 absent.
 * The attendance view replaces the student list. Successful `mark`/`unmark` commands refresh it; other successful
   commands return to the student list. Failed commands leave it unchanged.
 * This command changes no data. It is blocked after a loading failure; fix or restore the data file and restart.
