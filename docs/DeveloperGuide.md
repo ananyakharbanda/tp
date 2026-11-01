@@ -196,24 +196,24 @@ Existing saved labels remain compatible, including records containing multiple l
 
 Format: `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`
 
-`EditCommandParser` checks command structure and parses the Student ID and requested field changes.
-It collects repeated `l/` and `dl/` values into the `EditPersonDescriptor`. An empty `l/` requests
-clearing all labels and is rejected if combined with another label change. An empty `r/` becomes
-an empty remark.
-
-`EditCommand` finds the student by Student ID in the complete student list, so a filtered view
-does not change the target. It builds a replacement `Person`, keeping fields that were not supplied.
-For labels, it copies the student's set, removes each `dl/` label, then adds each `l/` label.
-Matching is case-insensitive. Removing a missing label or adding one already present throws a
-`CommandException`, leaving the record unchanged. An empty `l/` produces an empty label set.
-The command then replaces the student through `Model#setPerson`; `LogicManager` saves the pending
-model before publishing it to the live model.
-
-The sequence diagram below focuses on `EditCommand#execute` after parsing and the startup-data check have
-succeeded. It shows a valid edit from `Tutorial 1` to `Tutorial 2` on the pending model. Persistence is handled
-by the shared [save-before-publish flow](#saving-before-publishing-changes).
+The diagram shows a successful edit that replaces `Tutorial 1` with `Tutorial 2`. It focuses on the
+edit command after parsing and the startup-data check have succeeded.
 
 <puml src="diagrams/EditLabelSequenceDiagram.puml" alt="EditCommand updates labels on the pending model" />
+
+1. `EditCommandParser` checks the command structure and parses the Student ID and requested changes.
+   It collects repeated `l/` and `dl/` values in an `EditPersonDescriptor`.
+2. `EditCommand` reads the complete student list and finds the target by Student ID. A filtered view
+   does not affect which student is edited.
+3. The command builds a replacement `Person`, retaining fields not supplied in the command, the Student ID,
+   and attendance. It copies the existing labels, removes each `dl/` label, then adds each `l/` label.
+4. Once the changes are valid, the command replaces the student in the pending model and shows the full
+   student list. `LogicManager` saves the pending model before publishing it to the live model, as described
+   in the shared [save-before-publish flow](#saving-before-publishing-changes).
+
+Label matching is case-insensitive. Removing a missing label or adding one already present throws a
+`CommandException`, leaving the record unchanged. An empty `l/` clears all labels and cannot be combined
+with another label change. An empty `r/` becomes an empty remark.
 
 ### Mark and unmark attendance
 
