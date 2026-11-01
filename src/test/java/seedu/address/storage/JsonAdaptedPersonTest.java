@@ -14,6 +14,7 @@ import static seedu.address.testutil.TypicalPersons.BENSON;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,24 @@ public class JsonAdaptedPersonTest {
     private static final String VALID_EMAIL = BENSON.getEmail().toString();
     private static final List<JsonAdaptedLabel> VALID_LABELS = List.of(
             new JsonAdaptedLabel("Discrete Math Tutorial"));
+
+    @Test
+    public void toModelType_legacyMixedCaseGroups_storesLowercase() throws Exception {
+        // EP: older JSON with mixed-case labels and attendance groups is normalized when loaded
+        JsonAdaptedPerson legacyPerson = new JsonAdaptedPerson(VALID_NAME, VALID_STUDENT_ID, VALID_EMAIL,
+                List.of(new JsonAdaptedLabel("TuT1")), "",
+                List.of(new JsonAdaptedAttendanceRecord("2026-10-20", "TUT1")));
+
+        Person loaded = legacyPerson.toModelType();
+        assertEquals(Set.of(new Label("tut1")), loaded.getLabels());
+        assertEquals(Set.of(new AttendanceRecord(LocalDate.parse("2026-10-20"), new Label("tut1"))),
+                loaded.getAttendance());
+
+        String savedJson = JsonUtil.toJsonString(new JsonAdaptedPerson(loaded));
+        assertTrue(savedJson.contains("\"tut1\""));
+        assertFalse(savedJson.contains("TuT1"));
+        assertFalse(savedJson.contains("TUT1"));
+    }
 
     @Test
     public void toModelType_paddedFields_returnsTrimmedPerson() throws Exception {

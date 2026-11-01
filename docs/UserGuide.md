@@ -25,6 +25,7 @@ TeachAssist is a **desktop application for managing student records, optimized f
 1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar teach-assist-v1.5.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. With no saved data file, the student list starts empty.<br>
    ![Ui](images/Ui.png)
+   The screenshot shows an earlier label display; the current version displays group labels in lowercase.
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
@@ -72,30 +73,34 @@ this window will reject its next save to avoid overwriting the newer data. Resta
 Leading and trailing whitespace is ignored around commands and values. This includes Unicode space separators,
 such as non-breaking spaces, and Hangul fillers (`U+115F`, `U+1160`, `U+3164`, `U+FFA0`), which can also separate
 commands and parameters. Names convert these characters to ordinary spaces and collapse repeated spaces.
-Labels and remarks preserve their internal characters, including Unicode spaces and Hangul fillers.
+Labels and remarks preserve their internal spacing, including Unicode spaces and Hangul fillers.
 Zero-width spaces and byte order marks are not treated as whitespace.
 
-Label matching ignores case but requires the complete label with **exact internal spacing**, including Unicode
-spaces and Hangul fillers. `Tutorial 1` and `Tutorial  1` are different labels. An ordinary space, a non-breaking
-space, and a Hangul filler in the same position are also different. This applies to finding, editing, and attendance
+Labels are stored and displayed in lowercase. Matching ignores case but requires the complete label with
+**exact internal spacing**, including Unicode spaces and Hangul fillers. `Tutorial 1` and `Tutorial  1` are
+different labels. An ordinary space, a non-breaking space, and a Hangul filler in the same position are also
+different. This applies to finding, editing, and attendance
 groups. `I` matches `i`; dotless `ı` is a different character.
 
 ### Field rules
 
-These rules apply wherever a command accepts the field. Name, label, and remark limits count Unicode code points
-after whitespace handling.
+These rules apply wherever a command accepts the field. Name and remark limits count Unicode code points after
+whitespace handling; the label limit also applies after lowercasing.
 
 | Field | Rules |
 |-------|-------|
 | Name | 1–100 characters, including a letter. Allows Unicode letters, combining marks, spaces, apostrophes (`'`, `’`), hyphens, and periods. Repeated spaces collapse; capitalization is preserved. |
 | Student ID | Exactly nine ASCII letters or digits, stored in uppercase. Matching ignores case. No internal spaces or punctuation. Each student needs a unique ID; names can be shared. |
 | Email | A supported `name@example.com` address, at most 254 characters, without spaces. The local part allows ASCII letters, digits, `.`, `_`, `+`, and `-`; the domain needs at least two dot-separated parts and a final part of 2–63 letters. Only the domain is lowercased. Mailbox existence is not checked. [Full constraints](DeveloperGuide.md#field-validation-errors). |
-| Remark | Optional, at most 4,000 characters. Internal spacing and capitalization are preserved; the meaning of dates, grades, and other text is not validated. |
-| Label / group | 1–60 characters, including a letter or digit. Allows Unicode letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Internal spacing and capitalization are preserved. |
+| Remark | Optional, at most 4,000 characters. Internal spacing and capitalization are preserved; dates and grades are not checked. Text starting after a space or similar separator with ASCII letters immediately followed by `/` is read as a parameter prefix, even in remarks. |
+| Label / group | 1–60 characters after lowercasing, including a letter or digit. Allows Unicode letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Internal spacing is preserved; capitalization is converted to lowercase for storage and display. |
 | Date | A real calendar date in `YYYY-MM-DD` format, with zero-padded month and day, e.g., `2026-10-20`. |
 
+For example, `r/Discussed algebra/ today` is rejected with `Unknown parameter: algebra/.` because
+`algebra/` starts after a space. The same applies to `algebra/topic`; text after the slash does not change the rule.
+
 Student cards wrap long names, emails, remarks, and labels. Resize the window or scroll to read taller cards.
-Labels appear alphabetically, ignoring case; empty remarks are hidden.
+Labels appear alphabetically in lowercase; empty remarks are hidden.
 
 ### Viewing help: `help`
 
@@ -119,7 +124,7 @@ Adds a student with identifying information and optional remarks and a group lab
 **Examples:**
 
 * `add n/John Doe i/A0123456B e/john@example.com`
-* `add n/Jamie Lim i/A0234567C e/jamie@example.com r/Quiz 1: 8/10 l/Tutorial 1`
+* `add n/Jamie Lim i/A0234567C e/jamie@example.com r/Quiz 1: 8/10 l/tutorial 1`
 
 A recognized prefix after `r/` starts another parameter: the second example stores `Quiz 1: 8/10` as the remark.
 
@@ -142,7 +147,7 @@ Updates a student identified by Student ID, including one hidden by the current 
 * Supply `i/` and at least one change. Student ID itself cannot be edited.
 * `i/`, `n/`, `e/`, and `r/` may each appear once. Names and emails cannot be empty; an empty `r/` clears the remark.
 * Each `l/` adds a label; each non-empty `dl/` removes one. Do not repeat the same label under the same prefix.
-* All removals happen before additions. Remove and add the same label to change its capitalization.
+* All removals happen before additions. Labels are stored in lowercase, so changing only capitalization has no effect.
 * An empty `l/` clears **all** labels and cannot be combined with any other label change.
 * Removing a missing label or adding a label still present rejects the entire edit.
 * Other fields and attendance records are preserved, including attendance for removed labels.
@@ -150,7 +155,7 @@ Updates a student identified by Student ID, including one hidden by the current 
 
 **Examples:**
 
-* `edit i/A0123456B dl/Tutorial 1 l/Tutorial 2` replaces a label.
+* `edit i/A0123456B dl/tutorial 1 l/tutorial 2` replaces a label.
 * `edit i/A0123456B l/ r/` clears all labels and the remark.
 
 ### Finding students by name, student ID, email, remark, or label: `find`
@@ -169,7 +174,8 @@ or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find
 **Examples:**
 
 * `find n/tri sam` matches names containing `tri` or `sam`, such as Tristan and Samuel.
-* `find l/Tutorial 1` matches that complete label, ignoring case.
+* `find l/tutorial 1` matches that complete label. `find l/Tutorial 1` also works because matching ignores case;
+  the label remains stored and displayed as `tutorial 1`.
 
 The former `filter` command has been replaced by `find l/LABEL_NAME`.
 
@@ -195,9 +201,9 @@ Records a student as present for a date and group.
 * Student ID and group matching ignore case; group spacing follows [label matching](#whitespace-and-label-matching).
 * Attendance for the same student, date, and group cannot be recorded twice.
 * Students can be hidden by the current search. Other records and the current search are preserved.
-* Success uses the stored group spelling and refreshes an open attendance view.
+* Success uses the stored lowercase group name and refreshes an open attendance view.
 
-**Example:** `mark i/A0123456B d/2026-10-20 l/Tutorial 1`
+**Example:** `mark i/A0123456B d/2026-10-20 l/tutorial 1`
 
 ### Removing attendance: `unmark`
 
@@ -206,11 +212,13 @@ Removes an existing attendance entry for a student, date, and group.
 **Format:** `unmark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`
 
 * Supply each parameter once, with a non-empty value. Matching follows the same rules as `mark`.
-* The student and attendance entry must exist. Current membership of the group is not required.
+* The student and matching attendance entry must exist. You can still `unmark` an entry after removing the student's
+  group label: removing the label hides the student from that group's report but retains past attendance until it is
+  unmarked.
 * Students can be hidden by the current search. Other records and the current search are preserved.
-* Success uses the attendance entry’s stored group spelling and refreshes an open attendance view.
+* Success uses the attendance entry’s stored lowercase group name and refreshes an open attendance view.
 
-**Example:** `unmark i/A0123456B d/2026-10-20 l/Tutorial 1`
+**Example:** `unmark i/A0123456B d/2026-10-20 l/tutorial 1`
 
 ### Viewing attendance: `attendance`
 
@@ -221,15 +229,18 @@ Shows present and absent students for a group and date, with totals.
 * Supply `d/` and `l/` once each, with non-empty values. Group matching follows [label matching](#whitespace-and-label-matching).
 * Lists students who **currently** have the label, in master-list order, including students hidden by `find`.
 * Students with an attendance entry are **Present**; others are **Absent**. Absences are not stored separately.
-* Students who have lost the label are excluded, but their attendance is kept. No members produces zero totals.
+* Removing a student's label removes them from that group's report. It does not delete earlier attendance records:
+  if the label is added back, the student's past **Present** status appears again for the same date.
+* If no student currently has the requested label, including a label never used before, the report is empty with
+  0 present and 0 absent.
 * The attendance view replaces the student list. Successful `mark`/`unmark` commands refresh it; other successful
   commands return to the student list. Failed commands leave it unchanged.
 * This command changes no data. It is blocked after a loading failure; fix or restore the data file and restart.
   A missing file or a successfully loaded empty file still permits an attendance report with zero totals.
 
 **Example:** 
-1. `mark i/A0234567C d/2026-10-20 l/Tutorial 1`
-2. `attendance d/2026-10-20 l/Tutorial 1`
+1. `mark i/A0234567C d/2026-10-20 l/tutorial 1`
+2. `attendance d/2026-10-20 l/tutorial 1`
 
 
 ### Clearing all entries: `clear`
@@ -320,15 +331,15 @@ For exact messages and validation order, see [Developer Guide — Appendix: Erro
 
 Action     | Format, Examples
 -----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**Add**    | `add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]` <br> e.g., `add n/James Ho i/A0123456B e/jamesho@example.com r/Needs help with recursion l/Discrete Math Tutorial`
-**Attendance** | `attendance d/YYYY-MM-DD l/GROUP`<br> e.g., `attendance d/2026-10-20 l/Tutorial 1`
+**Add**    | `add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]` <br> e.g., `add n/James Ho i/A0123456B e/jamesho@example.com r/Needs help with recursion l/discrete math tutorial`
+**Attendance** | `attendance d/YYYY-MM-DD l/GROUP`<br> e.g., `attendance d/2026-10-20 l/tutorial 1`
 **Clear**  | `clear`
 **Delete** | `delete i/STUDENT_ID`<br> e.g., `delete i/A0123456B`
-**Edit**   | `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`<br> e.g., `edit i/A0123456B dl/Tutorial 1 l/Tutorial 2`
+**Edit**   | `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`<br> e.g., `edit i/A0123456B dl/tutorial 1 l/tutorial 2`
 **Find**   | `find n/KEYWORD [MORE_KEYWORDS]` or `find i/KEYWORD [MORE_KEYWORDS]` or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find l/LABEL_NAME`<br> e.g., `find n/James Jake`
 **List**   | `list`
-**Mark**   | `mark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`<br> e.g., `mark i/A0123456B d/2026-10-20 l/Tutorial 1`
-**Unmark** | `unmark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`<br> e.g., `unmark i/A0123456B d/2026-10-20 l/Tutorial 1`
+**Mark**   | `mark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`<br> e.g., `mark i/A0123456B d/2026-10-20 l/tutorial 1`
+**Unmark** | `unmark i/STUDENT_ID d/YYYY-MM-DD l/GROUP`<br> e.g., `unmark i/A0123456B d/2026-10-20 l/tutorial 1`
 **Undo**   | `undo`
 **Help**   | `help`
 **Exit**   | `exit`

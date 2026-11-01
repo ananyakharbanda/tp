@@ -1,28 +1,39 @@
 @startuml
 !include style.puml
 skinparam ArrowFontStyle plain
-
-title MarkCommand: add one attendance entry
-participant "command:MarkCommand" as Command LOGIC_COLOR
-participant "pending:ModelManager" as Model MODEL_COLOR
-participant "student:Person" as Student MODEL_COLOR
-[-> Command : execute(pending)
+skinparam ArrowColor #C62828
+skinparam SequenceLifeLineBorderColor #C62828
+skinparam ArrowThickness 2title Mark a student's attendance
+box "Logic" #C8C8FA
+participant ":LogicManager" as Logic LOGIC_COLOR
+participant ":AddressBookParser" as Parser LOGIC_COLOR
+participant "mark:MarkCommand" as Command LOGIC_COLOR
+end box
+box "Model" #F97181
+participant "pending:ModelManager" as Pending MODEL_COLOR
+end box
+[-> Logic : Mark student present
+activate Logic
+Logic -> Parser : Parse command
+activate Parser
+Parser --> Logic : Mark command
+deactivate Parser
+Logic -> Pending : Create pending copy
+Pending --> Logic : Pending model
+Logic -> Command : Execute on pending model
 activate Command
-Command -> Command : findStudent(pending)
-Command -> Model : getAddressBook().getPersonList()
-Model --> Command : all students
-Command -> Command : findStudentGroup(student)
-Command -> Student : getLabels()
-Student --> Command : current labels
-Command -> Student : getAttendance()
-Student --> Command : attendance records
-note over Command, Student
-Successful path: student and group exist;
-attendance for the date and group is not recorded.
-Copy attendance, add the record, and create
-updatedStudent with all other fields retained.
+Command -> Pending : Read all students
+Pending --> Command : Student list
+Command -> Command : Find student and current group
+Command -> Command : Check student's records for date and group
+note over Command
+Each student stores attendance across groups.
+A matching record blocks a duplicate mark.
 end note
-Command -> Model : setPerson(student, updatedStudent)
-[<-- Command : result
+Command -> Pending : Replace student with added attendance
+Command --> Logic : Mark result
 deactivate Command
+ref over Logic, Pending : Save before publishing (shared flow)
+[<-- Logic : Result
+deactivate Logic
 @enduml

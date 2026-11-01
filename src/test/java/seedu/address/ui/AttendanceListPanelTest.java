@@ -52,7 +52,7 @@ public class AttendanceListPanelTest {
 
         Parent root = FxTestUtil.callAndWait(() -> layOut(new AttendanceListPanel(report).getRoot()));
 
-        assertEquals("Attendance: Tutorial 1 on 2026-10-20", ((Label) root.lookup("#title")).getText());
+        assertEquals("Attendance: tutorial 1 on 2026-10-20", ((Label) root.lookup("#title")).getText());
         assertEquals("Present: 1    Absent: 1", ((Label) root.lookup("#totals")).getText());
         assertEquals(report.getEntries(), ((ListView<?>) root.lookup("#attendanceListView")).getItems());
         assertEquals(1, root.lookupAll(".attendance_present").size());

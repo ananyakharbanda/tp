@@ -51,6 +51,6 @@ public class AttendanceRecordTest {
         AttendanceRecord record = new AttendanceRecord(DATE, new Label("Tutorial 1"));
         assertEquals(DATE, record.getDate());
         assertEquals(new Label("Tutorial 1"), record.getGroup());
-        assertEquals("2026-10-20: Tutorial 1", record.toString());
+        assertEquals("2026-10-20: tutorial 1", record.toString());
     }
 }

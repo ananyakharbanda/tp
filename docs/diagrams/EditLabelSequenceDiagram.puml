@@ -1,24 +1,40 @@
 @startuml
 !include style.puml
 skinparam ArrowFontStyle plain
-
-title EditCommand: replace Tutorial 1 with Tutorial 2
-participant "command:EditCommand" as Command LOGIC_COLOR
-participant "pending:ModelManager" as Model MODEL_COLOR
-[-> Command : execute(pending)
+skinparam ArrowColor #C62828
+skinparam SequenceLifeLineBorderColor #C62828
+skinparam ArrowThickness 2title Edit a student's group labels
+box "Logic" #C8C8FA
+participant ":LogicManager" as Logic LOGIC_COLOR
+participant ":AddressBookParser" as Parser LOGIC_COLOR
+participant "edit:EditCommand" as Command LOGIC_COLOR
+end box
+box "Model" #F97181
+participant "pending:ModelManager" as Pending MODEL_COLOR
+end box
+[-> Logic : Replace tutorial 1 with tutorial 2
+activate Logic
+Logic -> Parser : Parse command
+activate Parser
+Parser --> Logic : Edit command
+deactivate Parser
+Logic -> Pending : Create pending copy
+Pending --> Logic : Pending model
+Logic -> Command : Execute on pending model
 activate Command
-Command -> Command : findStudent(pending)
-Command -> Model : getAddressBook().getPersonList()
-Model --> Command : all students
-Command -> Command : createEditedPerson(student, descriptor)
+Command -> Pending : Read all students
+Pending --> Command : Student list
+Command -> Command : Find student by ID
+Command -> Command : Remove tutorial 1; add tutorial 2
 note over Command
-Remove Tutorial 1, then add Tutorial 2.
-Retain Student ID, attendance,
-and all unspecified fields.
-Invalid changes throw CommandException.
+Keep Student ID, attendance, and
+fields not supplied in the command.
 end note
-Command -> Model : setPerson(student, editedStudent)
-Command -> Model : updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)
-[<-- Command : result
+Command -> Pending : Replace student's record
+Command -> Pending : Show full student list
+Command --> Logic : Edit result
 deactivate Command
+ref over Logic, Pending : Save before publishing (shared flow)
+[<-- Logic : Result
+deactivate Logic
 @enduml
