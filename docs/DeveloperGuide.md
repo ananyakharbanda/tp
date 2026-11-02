@@ -289,9 +289,9 @@ The command parser tests cover parameter validation, and `AddressBookParserTest`
 `LogicManagerTest` covers persistence and reload, failed saves, filter preservation, and startup failure protection.
 ### Adding student information
 
-Command format: 
+Command format:
 ````text
-add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME].
+add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]
 ````
 Accepted values are documented in the [UG field rules](UserGuide.md#field-rules); exact messages and validation order
 are in [Appendix: Errors](#appendix-errors).
@@ -1361,8 +1361,8 @@ view, undo history, and the saved file. Shared errors below also apply to the co
 
 The general command parser runs before command-specific validation. Unicode space separators and Hangul fillers
 (`U+115F`, `U+1160`, `U+3164`, `U+FFA0`) count as spacing around commands and prefixes and are trimmed from value
-boundaries. Zero-width spaces and byte order marks are not normalized as whitespace. Internal label and remark
-characters are preserved; name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace-and-label-matching).
+boundaries. Zero-width spaces and byte order marks are not normalized as whitespace. Labels preserve internal spacing while letters are lowercased. Remarks preserve internal characters;
+name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace-and-label-matching).
 
 ### Field validation errors
 
