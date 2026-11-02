@@ -21,6 +21,10 @@
   student, label, and attendance features. The contributor gave explicit requirements, reviewed the generated changes
   against the intended behavior, and validated them with automated tests, Checkstyle, and manual testing before
   accepting them.
+* OpenAI Codex assisted @DaRealTristan with implementation code, test cases, sequence diagrams, and documentation for 
+  find and unmark features as well as bug fixes for storage. The contributor gave explicit requirements, 
+  reviewed the generated changes against the intended behavior, and validated them with automated tests, Checkstyle, 
+  and manual testing before accepting them.
 
 --------------------------------------------------------------------------------------------------------------------
 
