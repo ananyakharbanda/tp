@@ -17,6 +17,9 @@
 * Application libraries: [JavaFX](https://openjfx.io/) for the graphical interface and [Jackson](https://github.com/FasterXML/jackson) for JSON persistence.
 * Testing and build tools: [JUnit 5](https://junit.org/junit5/), [Gradle](https://gradle.org/), [Shadow](https://gradleup.com/shadow/), [Checkstyle](https://checkstyle.org/) and [JaCoCo](https://www.jacoco.org/jacoco/).
 * Documentation tools: [MarkBind](https://markbind.org/) for the website and [PlantUML](https://plantuml.com/) for UML diagrams.
+* Ananya Kharbanda used an AI coding assistant for implementation suggestions, regression tests, code review,
+  UML revisions, and documentation checks. Suggested changes were checked against the implementation and
+  validated using relevant automated tests, code-style checks, diagram rendering, and documentation builds.
 * OpenAI Codex assisted @sammeowwww with implementation code, test cases, sequence diagrams, and documentation for
   student, label, and attendance features. The contributor gave explicit requirements, reviewed the generated changes
   against the intended behavior, and validated them with automated tests, Checkstyle, and manual testing before
