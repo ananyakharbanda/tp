@@ -200,7 +200,6 @@ An optional group label is assigned when creating a student with `add ... l/LABE
 `EditCommand` preserves labels unless label changes are requested, and `PersonCard` renders them in its `FlowPane`.
 Existing saved labels remain compatible, including records containing multiple labels.
 
-<!-- @@author sammeowwww -->
 ### Edit command
 
 Format: `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`
@@ -248,6 +247,7 @@ error paths are omitted.
 
 <puml src="diagrams/UnmarkSequenceDiagram.puml" alt="UnmarkCommand removes attendance from the pending model" />
 
+<!-- @@author sammeowwww -->
 #### Walkthrough
 
 Each `Person` owns a set of `AttendanceRecord` values covering all tutorial groups for which that student was
@@ -275,6 +275,7 @@ The general command parser rejects multiline input first. Command-specific struc
 prefixes, text before the first prefix, repeated prefixes, and missing or empty values in that order. Repeated and
 missing/empty checks follow `i/`, `d/`, `l/` order. See [Attendance parameter errors](#attendance-parameter-errors)
 for the resulting messages.
+<!-- @@author -->
 
 #### Tests
 
@@ -283,7 +284,6 @@ checks that other dates and groups remain, hidden students can be updated, remov
 removal, and marking followed by unmarking restores the original student.
 The command parser tests cover parameter validation, and `AddressBookParserTest` checks unmark routing.
 `LogicManagerTest` covers persistence and reload, failed saves, filter preservation, and startup failure protection.
-<!-- @@author  -->
 ### Adding student information
 
 Command format: 
