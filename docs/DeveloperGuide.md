@@ -240,9 +240,9 @@ The diagram follows a successful edit that replaces `tutorial 1` with `tutorial 
 pending-model update. It expands Logic while keeping Model at a high level. The reference frame points to the
 shared [save-before-publish flow](#saving-before-publishing-changes); error paths are omitted.
 
-<!-- @@author ananyakharbanda -->
+
 <puml src="diagrams/EditLabelSequenceDiagram.puml" alt="EditCommand updates labels on the pending model" />
-<!-- @@author -->
+
 
 1. `EditCommandParser#parse` checks the command structure and parses the Student ID and requested changes.
    Its `parseLabelChanges` method collects repeated `l/` and `dl/` values in an `EditPersonDescriptor`.
@@ -279,11 +279,11 @@ They expand Logic while keeping Model at a high level. The pending copy retains 
 The reference frames point to the shared [save-before-publish flow](#saving-before-publishing-changes);
 error paths are omitted.
 
-<!-- @@author ananyakharbanda -->
+
 <puml src="diagrams/MarkSequenceDiagram.puml" alt="MarkCommand adds attendance to the pending model" />
 
 <puml src="diagrams/UnmarkSequenceDiagram.puml" alt="UnmarkCommand removes attendance from the pending model" />
-<!-- @@author -->
+
 
 <!-- @@author sammeowwww -->
 #### Walkthrough
@@ -321,14 +321,13 @@ for the resulting messages.
 <!-- @@author -->
 
 #### Tests
-
 `MarkCommandTest` and `UnmarkCommandTest` cover record updates and command errors. `UnmarkCommandTest` also
 checks that other dates and groups remain, hidden students can be updated, removed group labels do not block
 removal, and marking followed by unmarking restores the original student.
 The command parser tests cover parameter validation, and `AddressBookParserTest` checks unmark routing.
 `LogicManagerTest` covers persistence and reload, failed saves, filter preservation, and startup failure protection.
-### Adding student information
 
+### Adding student information
 Command format:
 ````text
 add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]
