@@ -5,13 +5,13 @@ skinparam ArrowFontStyle plain
 title Label search: observable decisions
 start
 :Receive a label-search request;
-if (Input is valid?) then (yes)
-else (no)
+if (Input is valid?) then ([yes])
+else ([no])
     :Report input error\nKeep the current view;
     stop
 endif
-if (Student data loaded successfully\nor no data file existed?) then (yes)
-else (no)
+if (Student data loaded successfully\nor no data file existed?) then ([yes])
+else ([no])
     :Ask the TA to fix the file and restart\nKeep the current view;
     stop
 endif
