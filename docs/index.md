@@ -11,7 +11,7 @@
 
 **TeachAssist helps Teaching Assistants manage student records, tutorial groups and follow-up notes.** It combines a keyboard-driven command-line interface with a graphical view of your students.
 
-Use TeachAssist to add, edit and remove student records; find students by name, student ID, email, remark or group label; record remarks and attendance; and organise students with group labels. Student records are saved between sessions.
+Use TeachAssist to add, edit and remove student records; find students by name, student ID, email, remark or group label; record remarks and attendance; and organise students with group labels. Undo up to 100 saved data changes during the current session. Student records are saved between sessions.
 
 * **Get started:** Follow the [User Guide's Quick Start](UserGuide.html#quick-start).
 * **Develop TeachAssist:** Read the [Developer Guide](DeveloperGuide.html).
