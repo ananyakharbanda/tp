@@ -37,8 +37,10 @@ public class MainApp extends Application {
             "No existing student data found. Starting with an empty student list.";
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
+    // @@author ananyakharbanda
     private static final Path USER_PREFS_FILE_PATH = AppPaths.getPreferencesFilePath();
     private static final Path ADDRESS_BOOK_FILE_PATH = AppPaths.getStudentDataFilePath();
+    // @@author
 
     protected Ui ui;
     protected Logic logic;

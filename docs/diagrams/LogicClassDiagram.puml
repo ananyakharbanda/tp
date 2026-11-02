@@ -1,5 +1,8 @@
 @startuml
 !include style.puml
+/'
+// @@author ananyakharbanda
+'/
 skinparam ArrowFontStyle plain
 
 title Logic classes and component interfaces
@@ -24,4 +27,7 @@ note bottom of Command
 Concrete commands are omitted.
 Parsing is expanded in the next diagram.
 end note
+/'
+// @@author
+'/
 @enduml

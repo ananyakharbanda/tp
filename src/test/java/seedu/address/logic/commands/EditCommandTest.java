@@ -103,9 +103,12 @@ public class EditCommandTest {
     @Test
     public void execute_remarkEdited_success() {
         // EP: remark edited
+        // @@author ananyakharbanda
         Person personToEdit = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person editedPerson = new PersonBuilder(personToEdit).withRemark(VALID_REMARK_BOB).build();
+        // @@author
         EditCommand editCommand = new EditCommand(ALICE.getStudentId(),
+                // @@author ananyakharbanda
                 new EditPersonDescriptorBuilder().withRemark(VALID_REMARK_BOB).build());
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
@@ -117,13 +120,17 @@ public class EditCommandTest {
 
     @Test
     public void execute_emptyRemark_clearsRemark() {
+        // @@author
         // EP: empty remark
         // BVA: zero remark characters
+        // @@author ananyakharbanda
         Person originalPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person personWithRemark = new PersonBuilder(originalPerson).withRemark(VALID_REMARK_BOB).build();
         model.setPerson(originalPerson, personWithRemark);
         Person editedPerson = new PersonBuilder(personWithRemark).withRemark("").build();
+        // @@author
         EditCommand editCommand = new EditCommand(ALICE.getStudentId(),
+                // @@author ananyakharbanda
                 new EditPersonDescriptorBuilder().withRemark("").build());
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
@@ -132,6 +139,7 @@ public class EditCommandTest {
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
+    // @@author
 
     @Test
     public void execute_addLabel_preservesExistingLabels() {

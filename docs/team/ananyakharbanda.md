@@ -3,6 +3,7 @@
   title: "Ananya Kharbanda's Project Portfolio Page"
 ---
 
+<!-- @@author ananyakharbanda -->
 # Ananya Kharbanda
 
 ## Project: TeachAssist
@@ -79,3 +80,4 @@ The review found no missing account alias. The retained remark-parsing contribut
 [issue #290](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/290). Shared code is attributed by verified contribution boundaries.
 
 [Team responsibilities](../AboutUs.md)
+<!-- @@author -->

@@ -89,8 +89,10 @@ public class LogsCenter {
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setLevel(Level.ALL);
             baseLogger.addHandler(fileHandler);
+        // @@author ananyakharbanda
         } catch (IOException | SecurityException e) {
             baseLogger.log(Level.WARNING, "Unable to write log files. Continuing with console logging.", e);
+            // @@author
         }
     }
 

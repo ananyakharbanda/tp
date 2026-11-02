@@ -134,9 +134,11 @@ public class MainWindow extends UiPart<Stage> {
      * Restores the window within the usable bounds of its screen, including on scaled displays.
      */
     private void setWindowDefaultSize(GuiSettings guiSettings) {
+        // @@author ananyakharbanda
         guiSettings = WindowPlacement.fitToScreen(guiSettings,
                 Screen.getScreens().stream().map(Screen::getVisualBounds).toList(),
                 Screen.getPrimary().getVisualBounds(), primaryStage.getMinWidth(), primaryStage.getMinHeight());
+        // @@author
         primaryStage.setHeight(guiSettings.getWindowHeight());
         primaryStage.setWidth(guiSettings.getWindowWidth());
         if (guiSettings.getWindowCoordinates() != null) {
@@ -196,7 +198,9 @@ public class MainWindow extends UiPart<Stage> {
     private CommandResult executeCommand(String commandText) throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
+            // @@author ananyakharbanda
             logger.info("Command completed successfully.");
+            // @@author
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
             showStudentOrAttendanceList(commandResult);
 
@@ -210,7 +214,9 @@ public class MainWindow extends UiPart<Stage> {
 
             return commandResult;
         } catch (CommandException | ParseException e) {
+            // @@author ananyakharbanda
             logger.info("Command failed: " + e.getClass().getSimpleName());
+            // @@author
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
         }

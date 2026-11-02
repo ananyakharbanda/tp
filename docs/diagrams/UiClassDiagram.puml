@@ -1,5 +1,8 @@
 @startuml
 !include style.puml
+/'
+// @@author ananyakharbanda
+'/
 skinparam ArrowFontStyle plain
 
 title UI classes: selected ownership and creation relationships
@@ -25,4 +28,7 @@ MainWindow *--> "1" StatusBarFooter
 MainWindow ..> AttendanceListPanel : <<create>>
 PersonListPanel ..> PersonCard : <<create>>
 AttendanceListPanel ..> AttendanceCard : <<create>>
+/'
+// @@author
+'/
 @enduml

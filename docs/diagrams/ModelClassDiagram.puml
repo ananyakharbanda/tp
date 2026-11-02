@@ -1,5 +1,8 @@
 @startuml
 !include style.puml
+/'
+// @@author ananyakharbanda
+'/
 skinparam ArrowFontStyle plain
 
 title Model ownership and read-only interfaces
@@ -17,9 +20,18 @@ AddressBook ..|> ReadOnlyAddressBook
 UserPrefs ..|> ReadOnlyUserPrefs
 ModelManager *--> "1" AddressBook
 ModelManager *--> "1" UserPrefs
+/'
+// @@author
+'/
 AddressBook *--> "1" UniquePersonList
+/'
+// @@author ananyakharbanda
+'/
 UniquePersonList --> "0..*" Person : all students
 ModelManager --> "0..*" Person : filtered view
 Model ..> ReadOnlyAddressBook : exposes
 Model ..> ReadOnlyUserPrefs : exposes
+/'
+// @@author
+'/
 @enduml

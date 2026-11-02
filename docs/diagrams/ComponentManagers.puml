@@ -1,5 +1,8 @@
 @startuml
 !include style.puml
+/'
+// @@author ananyakharbanda
+'/
 skinparam ArrowFontStyle plain
 
 title Implementations depend on component interfaces
@@ -13,6 +16,9 @@ class StorageManager
 LogicManager ..|> Logic
 ModelManager ..|> Model
 StorageManager ..|> Storage
+/'
+// @@author
+'/
 LogicManager --> Model
 LogicManager --> Storage
 @enduml

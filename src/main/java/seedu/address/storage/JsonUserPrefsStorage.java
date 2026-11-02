@@ -41,11 +41,13 @@ public class JsonUserPrefsStorage {
      * @throws DataLoadingException if the file format is not as expected.
      */
     public Optional<UserPrefs> readUserPrefs(Path prefsFilePath) throws DataLoadingException {
+        // @@author ananyakharbanda
         Optional<UserPrefs> prefs = JsonUtil.readJsonFile(prefsFilePath, UserPrefs.class);
         if (prefs.isPresent() && prefs.get().getGuiSettings() == null) {
             throw new DataLoadingException(new IllegalValueException("GUI settings must not be null."));
         }
         return prefs;
+        // @@author
     }
 
     /**

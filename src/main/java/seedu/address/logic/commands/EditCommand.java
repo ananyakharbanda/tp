@@ -90,14 +90,18 @@ public class EditCommand extends Command {
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
 
         if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
+            // @@author ananyakharbanda
             logger.warning("Edit rejected: duplicate student ID.");
+            // @@author
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
 
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         assert model.hasPerson(editedPerson);
+        // @@author ananyakharbanda
         logger.info("Edited student.");
+        // @@author
         return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)));
     }
 
@@ -112,7 +116,9 @@ public class EditCommand extends Command {
                 .filter(person -> person.getStudentId().equals(targetStudentId))
                 .findFirst()
                 .orElseThrow(() -> {
+                    // @@author ananyakharbanda
                     logger.warning("Edit rejected: student not found.");
+                    // @@author
                     return new CommandException(String.format(MESSAGE_STUDENT_NOT_FOUND, targetStudentId));
                 });
     }
@@ -171,7 +177,9 @@ public class EditCommand extends Command {
 
         for (Label labelToRemove : toRemove) {
             Label existingLabel = findMatchingLabel(labels, labelToRemove).orElseThrow(() -> {
+                // @@author ananyakharbanda
                 logger.warning("Edit rejected: label not assigned to student.");
+                // @@author
                 return new CommandException(String.format(MESSAGE_LABEL_NOT_FOUND,
                         studentId, labelToRemove.labelName));
             });
@@ -187,7 +195,9 @@ public class EditCommand extends Command {
 
         for (Label labelToAdd : toAdd) {
             if (findMatchingLabel(labels, labelToAdd).isPresent()) {
+                // @@author ananyakharbanda
                 logger.warning("Edit rejected: duplicate label.");
+                // @@author
                 throw new CommandException(String.format(MESSAGE_DUPLICATE_LABEL,
                         studentId, labelToAdd.labelName));
             }
@@ -297,16 +307,20 @@ public class EditCommand extends Command {
          * Sets the replacement remark, or null to leave the student's remark unchanged.
          * An empty {@code Remark} clears the existing remark.
          */
+        // @@author ananyakharbanda
         public void setRemark(Remark remark) {
             this.remark = remark;
         }
+        // @@author
 
         /**
          * Returns the replacement remark, if one was requested.
          */
+        // @@author ananyakharbanda
         public Optional<Remark> getRemark() {
             return Optional.ofNullable(remark);
         }
+        // @@author
 
         /**
          * Copies the labels to add so later changes to {@code labelsToAdd} do not affect this descriptor.

@@ -34,11 +34,13 @@ public class JsonAddressBookStorage {
             "Unable to load student data. The data file may be corrupted or invalid.";
 
     private static final Logger logger = LogsCenter.getLogger(JsonAddressBookStorage.class);
+    // @@author ananyakharbanda
     // Serialize access within this JVM, including across storage instances, before opening lock-file channels.
     private static final Object FILE_ACCESS_LOCK = new Object();
 
     private final Path filePath;
     private final Map<Path, byte[]> savedContents = new HashMap<>();
+    // @@author
 
     public JsonAddressBookStorage(Path filePath) {
         this.filePath = filePath;
@@ -66,6 +68,7 @@ public class JsonAddressBookStorage {
      */
     public Optional<ReadOnlyAddressBook> readAddressBook(Path filePath) throws DataLoadingException {
         requireNonNull(filePath);
+        // @@author ananyakharbanda
         synchronized (FILE_ACCESS_LOCK) {
             return readAndRememberAddressBook(filePath.toAbsolutePath().normalize());
         }
@@ -80,10 +83,12 @@ public class JsonAddressBookStorage {
         }
         if (contents == null) {
             savedContents.put(filePath, null);
+            // @@author
             return Optional.empty();
         }
 
         try {
+            // @@author ananyakharbanda
             // Parse the same bytes remembered for conflict detection, without reading the file a second time.
             JsonSerializableAddressBook jsonAddressBook = JsonUtil.fromJsonString(
                     new String(contents, StandardCharsets.UTF_8), JsonSerializableAddressBook.class);
@@ -93,20 +98,25 @@ public class JsonAddressBookStorage {
             ReadOnlyAddressBook addressBook = jsonAddressBook.toModelType();
             savedContents.put(filePath, contents);
             return Optional.of(addressBook);
+            // @@author
         } catch (DuplicateStudentIdException dsie) {
             logger.info("Duplicate student IDs found in " + filePath + ".");
             throw new DataLoadingException(dsie.getMessage(), dsie);
+        // @@author ananyakharbanda
         } catch (IllegalValueException | IOException e) {
             logger.info("Invalid student data found in " + filePath + ".");
             throw new DataLoadingException(MESSAGE_INVALID_FILE, e);
+            // @@author
         }
     }
 
     private byte[] readFileIfExists(Path filePath) throws IOException {
         try {
+            // @@author ananyakharbanda
             return Files.readAllBytes(filePath);
         } catch (NoSuchFileException e) {
             return null;
+            // @@author
         }
     }
 
@@ -137,13 +147,16 @@ public class JsonAddressBookStorage {
         requireNonNull(addressBook);
         requireNonNull(filePath);
 
+        // @@author ananyakharbanda
         synchronized (FILE_ACCESS_LOCK) {
             saveWithFileLock(addressBook, filePath.toAbsolutePath().normalize());
         }
     }
 
     private void saveWithFileLock(ReadOnlyAddressBook addressBook, Path targetFile) throws IOException {
+        // @@author
         createStorageFolder(targetFile.getParent());
+        // @@author ananyakharbanda
         Path lockFile = targetFile.resolveSibling(targetFile.getFileName() + ".lock");
         // Keep this file after releasing the lock: deleting it could let writers lock different file identities.
         try (FileChannel channel = FileChannel.open(lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
@@ -151,21 +164,26 @@ public class JsonAddressBookStorage {
             if (lock == null) {
                 throw new DataFileInUseException();
             }
+            // @@author
             Path temporaryFile = Files.createTempFile(targetFile.getParent(), "teachassist-", ".tmp");
             try {
                 JsonUtil.saveJsonFile(new JsonSerializableAddressBook(addressBook), temporaryFile);
+                // @@author ananyakharbanda
                 byte[] updatedContents = Files.readAllBytes(temporaryFile);
                 if (!Arrays.equals(savedContents.get(targetFile), readFileIfExists(targetFile))) {
                     throw new DataFileChangedException();
                 }
+                // @@author
                 replaceDataFile(temporaryFile, targetFile);
                 savedContents.put(targetFile, updatedContents);
             } finally {
                 removeTemporaryFile(temporaryFile);
             }
+        // @@author ananyakharbanda
         } catch (OverlappingFileLockException e) {
             throw new DataFileInUseException();
         }
+        // @@author
     }
 
     private void createStorageFolder(Path folder) throws DataStorageLocationException {
@@ -191,8 +209,10 @@ public class JsonAddressBookStorage {
         try {
             Files.deleteIfExists(temporaryFile);
         } catch (IOException e) {
+            // @@author ananyakharbanda
             logger.warning("Unable to remove temporary data file " + temporaryFile
                     + ": " + e.getClass().getSimpleName());
+            // @@author
         }
     }
 

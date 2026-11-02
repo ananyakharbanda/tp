@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
+// @@author ananyakharbanda
 public class FxTestUtilTest {
     @Test
     public void initialize_repeatedCalls_preservesRunningToolkit() throws Exception {
@@ -59,3 +60,4 @@ public class FxTestUtilTest {
         assertTrue(FxTestUtil.callAndWait(Platform::isFxApplicationThread));
     }
 }
+// @@author

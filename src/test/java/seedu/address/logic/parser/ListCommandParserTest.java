@@ -1,4 +1,5 @@
 package seedu.address.logic.parser;
+// @@author ananyakharbanda
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
@@ -14,18 +15,23 @@ public class ListCommandParserTest {
 
     @Test
     public void parse_noArguments_returnsListCommand() throws Exception {
+        // @@author
         // EP: empty and whitespace-only argument strings are accepted.
         // BVA: zero non-whitespace characters.
+        // @@author ananyakharbanda
         assertTrue(parser.parse("") instanceof ListCommand);
         assertTrue(parser.parse("   \t") instanceof ListCommand);
     }
 
     @Test
     public void parse_argumentsPresent_throwsParseException() {
+        // @@author
         // EP: positional and parameter-like arguments are rejected.
         // BVA: one non-whitespace character is already too many.
+        // @@author ananyakharbanda
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ListCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " 1", expectedMessage);
         assertParseFailure(parser, " n/Alex", expectedMessage);
     }
 }
+// @@author

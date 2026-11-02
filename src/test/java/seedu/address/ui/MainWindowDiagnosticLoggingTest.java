@@ -20,6 +20,7 @@ import seedu.address.storage.StorageManager;
 import seedu.address.testutil.DiagnosticLogCapture;
 import seedu.address.testutil.FxTestUtil;
 
+// @@author ananyakharbanda
 public class MainWindowDiagnosticLoggingTest {
     @TempDir
     public Path temporaryFolder;
@@ -69,3 +70,4 @@ public class MainWindowDiagnosticLoggingTest {
         }
     }
 }
+// @@author

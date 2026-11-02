@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+// @@author ananyakharbanda
 public class AppPathsTest {
     private static final String STUDENT_DATA = "Student records beside the JAR.";
     private static final String PREFERENCES = "Preferences beside the JAR.";
@@ -210,3 +211,4 @@ public class AppPathsTest {
         }
     }
 }
+// @@author

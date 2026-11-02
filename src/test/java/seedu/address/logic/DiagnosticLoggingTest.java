@@ -28,6 +28,7 @@ import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
 
+// @@author ananyakharbanda
 public class DiagnosticLoggingTest {
     private static final String NAME = "PrivateStudentName";
     private static final String STUDENT_ID = "A2345678C";
@@ -126,3 +127,4 @@ public class DiagnosticLoggingTest {
         }
     }
 }
+// @@author

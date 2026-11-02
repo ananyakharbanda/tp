@@ -6,7 +6,9 @@
 
 # TeachAssist User Guide
 
+<!-- @@author ananyakharbanda -->
 TeachAssist is a **desktop application for managing student records, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, TeachAssist can help you manage student information faster than traditional GUI applications.
+<!-- @@author -->
 
 <!-- * Table of Contents -->
 <page-nav-print />
@@ -18,12 +20,14 @@ TeachAssist is a **desktop application for managing student records, optimized f
 1. Ensure that Java `25` or later is installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
+   <!-- @@author ananyakharbanda -->
 1. Download the latest `.jar` file from [the TeachAssist releases page](https://github.com/AY2627S1-CS2103T-F12-1/tp/releases).
    For native Apple Silicon Java, choose the `-mac-aarch64.jar` variant when provided. For Windows, Linux,
    or Intel Java on macOS (including Intel Java under Rosetta), choose the standard JAR. Match the Mac variant
    to your installed Java architecture, not just your computer's processor.
 
 1. Copy the file to the folder you want to use as the _home folder_ for TeachAssist.
+   <!-- @@author -->
 
 1. Open a terminal and `cd` to the folder containing the JAR file. Run `java -jar teach-assist-v1.6.jar`
    for the standard v1.6 JAR, or `java -jar teach-assist-v1.6-mac-aarch64.jar` for the Apple Silicon variant.
@@ -46,10 +50,12 @@ TeachAssist is a **desktop application for managing student records, optimized f
 
 1. Refer to the [Features](#features) section below for details of each command.
 
+<!-- @@author ananyakharbanda -->
 TeachAssist fits its startup window within the available screen area, accounting for display scaling and the taskbar.
 If a previously used monitor is disconnected, the saved window position is adjusted to fit the primary screen.
 You can resize the window down to 450 × 400 logical pixels. At higher scaling, fewer student cards fit at once;
 scroll the student list to reach the remaining students.
+<!-- @@author -->
 
 **Warning:** Run only one instance of TeachAssist at a time. If another window or a text editor changes the data file,
 this window will reject its next save to avoid overwriting the newer data. Restart TeachAssist to load the latest data.

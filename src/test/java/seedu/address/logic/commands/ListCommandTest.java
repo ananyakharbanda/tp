@@ -46,6 +46,7 @@ public class ListCommandTest {
     public void execute_emptyAddressBook_showsNoStudentsFound() {
         // EP: empty address book has distinct feedback.
         // BVA: zero stored students.
+        // @@author ananyakharbanda
         Model emptyModel = new ModelManager(new AddressBook(), new UserPrefs());
         Model expectedEmptyModel = new ModelManager(new AddressBook(), new UserPrefs());
 
@@ -55,6 +56,7 @@ public class ListCommandTest {
                 ListCommand.MESSAGE_NO_STUDENTS_FOUND,
                 expectedEmptyModel);
     }
+    // @@author
 
     @Test
     public void execute_noVisibleMatchesButOneStoredStudent_showsStudent() {

@@ -1,5 +1,8 @@
 @startuml
 !include style.puml
+/'
+// @@author ananyakharbanda
+'/
 skinparam ArrowFontStyle plain
 
 title Component dependencies
@@ -22,4 +25,7 @@ note bottom of Commons
 Shared utilities used by the components.
 Utility dependencies are omitted.
 end note
+/'
+// @@author
+'/
 @enduml

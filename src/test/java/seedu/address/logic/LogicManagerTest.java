@@ -61,6 +61,7 @@ public class LogicManagerTest {
     private Logic logic;
     private StorageManager storage;
 
+    // @@author ananyakharbanda
     @Test
     public void execute_staleInstance_preservesNewerFileModelFilterAndHistory() throws Exception {
         AttendanceRecord record = new AttendanceRecord(LocalDate.parse("2026-10-20"), new Label("Tutorial 1"));
@@ -129,6 +130,7 @@ public class LogicManagerTest {
         assertEquals(new AddressBook(), model.getAddressBook());
         assertEquals(UndoCommand.MESSAGE_NOTHING_TO_UNDO, logic.execute("undo").getFeedbackToUser());
     }
+    // @@author
 
     @Test
     public void execute_unmark_persistsRemovalAndPreservesFilter() throws Exception {
@@ -559,16 +561,20 @@ public class LogicManagerTest {
     public void execute_addWithLabel_persistsAndFindsAfterReload() throws Exception {
         // EP: add a student with a label and reload
         model.addPerson(ALICE);
+        // @@author ananyakharbanda
         logic.execute("add n/Samuel i/A0101010A e/samuel@example.com l/Tutorial 1");
         Person expectedStudent = new PersonBuilder().withName("Samuel")
                 .withStudentId("A0101010A").withEmail("samuel@example.com").withLabels("Tutorial 1").build();
+        // @@author
         assertEquals(model.getAddressBook(), storage.readAddressBook().orElseThrow());
         model = new ModelManager(storage.readAddressBook().orElseThrow(), new UserPrefs());
         logic = new LogicManager(model, storage);
 
+        // @@author ananyakharbanda
         CommandResult result = logic.execute("find l/tutorial 1");
         assertEquals("1 student listed.", result.getFeedbackToUser());
         assertEquals(List.of(expectedStudent), model.getFilteredPersonList());
+        // @@author
     }
 
     @Test
@@ -628,9 +634,11 @@ public class LogicManagerTest {
 
         // EP: invalid query syntax is still reported before the loading-failure guard
         assertParseException("find p/Alice", "Unknown parameter: p/.");
+        // @@author ananyakharbanda
         assertParseException("attendance d/2026-02-30 l/Tutorial 1", ParserUtil.MESSAGE_INVALID_DATE);
 
         // EP: help and exit remain available without changing the corrupt file
+        // @@author
         logic.execute("help");
         logic.execute("exit");
         assertEquals("invalid student data", Files.readString(storage.getAddressBookFilePath()));
@@ -644,8 +652,10 @@ public class LogicManagerTest {
         String originalFile = Files.readString(storage.getAddressBookFilePath());
 
         assertEquals(ListCommand.MESSAGE_NO_STUDENTS_FOUND, logic.execute("list").getFeedbackToUser());
+        // @@author ananyakharbanda
         assertEquals(0, logic.execute("attendance d/2026-10-20 l/Tutorial 1")
                 .getAttendanceReport().orElseThrow().getEntries().size());
+        // @@author
         assertEquals(String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0),
                 logic.execute("find n/Alice").getFeedbackToUser());
         assertEquals(new AddressBook(), model.getAddressBook());
@@ -728,6 +738,7 @@ public class LogicManagerTest {
     }
 
     @Test
+    // @@author ananyakharbanda
     public void execute_removedLabelCommand_preservesRecordsAndSavedFile() throws Exception {
         model.addPerson(ALICE);
         model.updateFilteredPersonList(new NameContainsKeywordsPredicate(List.of("Nobody")));
@@ -739,6 +750,7 @@ public class LogicManagerTest {
         assertEquals(List.of(ALICE), model.getAddressBook().getPersonList());
         assertEquals(List.of(), model.getFilteredPersonList());
         assertEquals(originalFile, Files.readString(storage.getAddressBookFilePath()));
+        // @@author
     }
 
     @Test
@@ -759,8 +771,10 @@ public class LogicManagerTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.updateFilteredPersonList(person -> person.equals(samuel));
 
+        // @@author ananyakharbanda
         assertCommandSuccess("find l/Discrete Math Tutorial",
                 "1 student listed.", expectedModel);
+        // @@author
         assertEquals(List.of(samuel), model.getFilteredPersonList());
         assertEquals(originalAddressBook, model.getAddressBook());
     }
@@ -783,13 +797,16 @@ public class LogicManagerTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.updateFilteredPersonList(person -> person.equals(samuel));
 
+        // @@author ananyakharbanda
         assertCommandSuccess("find l/discrete math tutorial",
                 "1 student listed.", expectedModel);
+        // @@author
         assertEquals(List.of(samuel), model.getFilteredPersonList());
         assertEquals(originalAddressBook, model.getAddressBook());
     }
 
     @Test
+    // @@author ananyakharbanda
     public void execute_findUnicodeLabels_agreesWithStorageAndEdit() throws Exception {
         Person latinI = new PersonBuilder().withStudentId("A0101010A").withLabels("I").build();
         Person dotlessI = new PersonBuilder().withStudentId("A0101011A").withLabels("ı").build();
@@ -849,6 +866,7 @@ public class LogicManagerTest {
         assertEquals(List.of(alex, samuel), model.getAddressBook().getPersonList());
         assertEquals(originalFile, Files.readString(storage.getAddressBookFilePath()));
     }
+    // @@author
 
     @Test
     public void execute_findLabelNoMatches_clearsDisplayedList() throws Exception {
@@ -868,12 +886,15 @@ public class LogicManagerTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.updateFilteredPersonList(person -> false);
 
+        // @@author ananyakharbanda
         assertCommandSuccess("find l/NonExistent",
                 String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0), expectedModel);
+        // @@author
         assertEquals(List.of(), model.getFilteredPersonList());
         assertEquals(originalAddressBook, model.getAddressBook());
     }
 
+    // @@author ananyakharbanda
     @Test
     public void execute_findLabelAfterOtherSearches_searchesAllStudentsAndListRestoresAll() throws Exception {
         Person labelledAlice = new PersonBuilder(ALICE).withLabels("Tutorial 1", "Consultation").build();
@@ -914,6 +935,7 @@ public class LogicManagerTest {
             assertEquals(List.of(ALICE, BENSON), model.getAddressBook().getPersonList());
             assertEquals(originalFile, Files.readString(storage.getAddressBookFilePath()));
         }
+        // @@author
     }
 
     @Test

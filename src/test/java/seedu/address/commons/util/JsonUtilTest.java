@@ -23,6 +23,7 @@ public class JsonUtilTest {
 
     private static final Path SERIALIZATION_FILE = TestUtil.getFilePathInSandboxFolder("serialize.json");
 
+    // @@author ananyakharbanda
     @TempDir
     public Path temporaryFolder;
 
@@ -40,6 +41,7 @@ public class JsonUtilTest {
         assertTrue(JsonUtil.readJsonFile(temporaryFolder.resolve("missing.json"),
                 SerializableTestClass.class).isEmpty());
     }
+    // @@author
 
     @Test
     public void serializeObjectToJsonFile_noExceptionThrown() throws IOException {
@@ -66,9 +68,12 @@ public class JsonUtilTest {
     @Test
     public void fromJsonString_trailingContent_throwsIoException() {
         String json = SerializableTestClass.JSON_STRING_REPRESENTATION;
+        // @@author ananyakharbanda
         for (String suffix : List.of(" garbage", " {}", " []", " null", " true", " 42", " \"text\"",
                 " ]", " }", " {\"unfinished\":")) {
+            // @@author
             assertThrows(IOException.class, () -> JsonUtil.fromJsonString(json + suffix, SerializableTestClass.class));
+            // @@author ananyakharbanda
         }
     }
 
@@ -98,6 +103,7 @@ public class JsonUtilTest {
 
         assertEquals("Alex \"Tan\"", JsonUtil.fromJsonString(json, SerializableTestClass.class).getName());
     }
+    // @@author
 
     @Test
     public void fromJsonString_surroundingWhitespace_success() throws IOException {

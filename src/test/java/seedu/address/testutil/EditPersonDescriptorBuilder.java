@@ -53,8 +53,10 @@ public class EditPersonDescriptorBuilder {
     /**
      * Sets the {@code Remark} of the {@code EditPersonDescriptor} that we are building.
      */
+    // @@author ananyakharbanda
     public EditPersonDescriptorBuilder withRemark(String remark) {
         descriptor.setRemark(new Remark(remark));
+        // @@author
         return this;
     }
 

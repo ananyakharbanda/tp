@@ -74,13 +74,17 @@ public class AddCommand extends Command {
         assert toAdd != null : "Student to add must not be null";
 
         if (model.hasPerson(toAdd)) {
+            // @@author ananyakharbanda
             logger.warning("Add rejected: duplicate student ID.");
+            // @@author
             throw new CommandException(String.format(MESSAGE_DUPLICATE_PERSON, toAdd.getStudentId()));
         }
 
         model.addPerson(toAdd);
         assert model.hasPerson(toAdd) : "Model should contain the newly added student";
+        // @@author ananyakharbanda
         logger.info("Added student.");
+        // @@author
         return new CommandResult(formatSuccess(model.getAddressBook().getPersonList().size()));
     }
 

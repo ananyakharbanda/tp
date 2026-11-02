@@ -27,6 +27,7 @@ import seedu.address.storage.StorageManager;
 import seedu.address.testutil.DiagnosticLogCapture;
 import seedu.address.ui.UiManager;
 
+// @@author ananyakharbanda
 public class MainAppLifecycleTest {
     @TempDir
     public Path temporaryFolder;
@@ -159,3 +160,4 @@ public class MainAppLifecycleTest {
         }
     }
 }
+// @@author

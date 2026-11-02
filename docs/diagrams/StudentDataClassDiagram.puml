@@ -1,3 +1,4 @@
+// @@author ananyakharbanda
 @startuml
 !include style.puml
 skinparam ArrowFontStyle plain
@@ -23,3 +24,4 @@ Each record also holds one date.
 Date + group identifies attendance for a student.
 end note
 @enduml
+// @@author

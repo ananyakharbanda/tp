@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.label.Label;
 
+// @@author ananyakharbanda
 /**
  * Tests complete label names after Locale.ROOT lowercasing, consistently with editing and storage.
  */
@@ -46,3 +47,4 @@ public class LabelMatchesPredicate implements Predicate<Person> {
         return new ToStringBuilder(this).add("label", label).toString();
     }
 }
+// @@author

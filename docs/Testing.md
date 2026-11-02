@@ -42,15 +42,18 @@ This project has three types of tests:
 
 ## Manual testing
 
+<!-- @@author ananyakharbanda -->
 The Developer Guide's [manual testing appendix](DeveloperGuide.md#appendix-instructions-for-manual-testing)
 contains the test-data setup, command scenarios, expected results, persistence and failure checks, and
 [performance verification procedure](DeveloperGuide.md#performance-verification).
 Use the display scenarios below alongside that appendix for release testing.
+<!-- @@author -->
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## Display settings and window usability
 
+<!-- @@author ananyakharbanda -->
 `WindowPlacementTest` checks startup sizing against usable screen bounds, including a 1280 × 720 display at
 150% scaling with 60 physical pixels reserved for a taskbar (about 853 × 440 logical pixels).
 It also checks restored preferences from larger or disconnected displays, secondary monitors, and minimum sizing.
@@ -64,9 +67,11 @@ For release testing, use the following native display settings and leave the tas
 | 1280 × 720 | 150% | 853 × 480 |
 | 1920 × 1080 | 100% | 1920 × 1080 |
 | 1920 × 1080 | 150% | 1280 × 720 |
+<!-- @@author -->
 
 For each setting:
 
+   <!-- @@author ananyakharbanda -->
 1. Launch the application with fresh preferences. Check that the entire window, including its title bar and
    bottom status bar, fits inside the usable desktop.
 2. Add enough students to require scrolling. Confirm that the command box, command feedback, menu bar, and
@@ -82,3 +87,4 @@ For each setting:
 
 A rendered layout at the equivalent logical viewport is useful during development. Native release testing is
 still needed to check each operating system's window borders, taskbar, font rendering, and scaling behaviour.
+   <!-- @@author -->

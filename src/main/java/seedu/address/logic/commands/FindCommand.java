@@ -19,12 +19,16 @@ public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
+    // @@author ananyakharbanda
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds students by name, student ID, email, remark, "
             + "or group label (case-insensitive). Names, IDs, emails, and remarks support partial keyword matches; "
             + "labels must match the complete label name.\n"
+            // @@author
             + "Parameters: n/KEYWORD [MORE_KEYWORDS]... or i/KEYWORD [MORE_KEYWORDS]... "
+            // @@author ananyakharbanda
             + "or e/KEYWORD [MORE_KEYWORDS]... or r/KEYWORD [MORE_KEYWORDS]... or l/LABEL_NAME\n"
             + "Examples: " + COMMAND_WORD + " n/aiken dueet; " + COMMAND_WORD + " l/Tutorial 1";
+    // @@author
 
     private static final Logger logger = LogsCenter.getLogger(FindCommand.class);
 

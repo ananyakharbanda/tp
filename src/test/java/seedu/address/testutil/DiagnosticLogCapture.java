@@ -10,6 +10,7 @@ import java.util.logging.SimpleFormatter;
 
 import seedu.address.commons.core.LogsCenter;
 
+// @@author ananyakharbanda
 /**
  * Captures formatted application diagnostics, including exceptions, at every logging level.
  * Restores the original logging configuration when closed.
@@ -50,3 +51,4 @@ public class DiagnosticLogCapture implements AutoCloseable {
         logger.setLevel(previousLevel);
     }
 }
+// @@author
