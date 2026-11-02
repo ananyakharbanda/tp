@@ -11,29 +11,43 @@ participant "mark:MarkCommand" as Command LOGIC_COLOR
 end box
 box "Model" #F97181
 participant "pending:ModelManager" as Pending MODEL_COLOR
+participant "book:ReadOnlyAddressBook" as Book MODEL_COLOR
 end box
-[-> Logic : Mark student present
+[-> Logic : execute(input)
 activate Logic
-Logic -> Parser : Parse command
+Logic -> Parser : parseCommand(input)
 activate Parser
-Parser --> Logic : Mark command
+Parser --> Logic : command
 deactivate Parser
-Logic -> Pending : Create pending copy
-Pending --> Logic : Pending model
-Logic -> Command : Execute on pending model
-activate Command
-Command -> Pending : Read all students
-Pending --> Command : Student list
-Command -> Command : Find student and current group
-Command -> Command : Check student's records for date and group
-note over Command
-Each student stores attendance across groups.
-A matching record blocks a duplicate mark.
+note over Logic
+Capture records, preferences, and current filter.
 end note
-Command -> Pending : Replace student with added attendance
-Command --> Logic : Mark result
+create Pending
+Logic -> Pending : new ModelManager(records, preferences)
+Logic -> Pending : updateFilteredPersonList(filter)
+Logic -> Command : execute(pending)
+activate Command
+Command -> Command : findStudent(pending)
+activate Command
+Command -> Pending : getAddressBook()
+Pending --> Command : book
+Command -> Book : getPersonList()
+Book --> Command : students
+Command --> Command : student
 deactivate Command
-ref over Logic, Pending : Save before publishing (shared flow)
-[<-- Logic : Result
+note over Command
+Find the student and current group.
+Reject an existing attendance record for the date and group.
+Build an updated Person with the new record.
+(Internal validation and object construction omitted.)
+end note
+Command -> Pending : setPerson(student, updatedStudent)
+Command --> Logic : result
+deactivate Command
+note over Logic, Pending
+Save pending records before publishing to the live model.
+See the shared transaction diagram for these omitted calls.
+end note
+[<-- Logic : result
 deactivate Logic
 @enduml

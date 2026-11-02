@@ -206,7 +206,8 @@ Existing saved labels remain compatible, including records containing multiple l
 Format: `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`
 
 The diagram follows a successful edit that replaces `tutorial 1` with `tutorial 2`, from parsing through the
-pending-model update. It expands Logic while keeping Model at a high level. The reference frame points to the
+pending-model update. Arrows show selected method calls; notes summarise omitted validation and object
+construction. The pending model starts at its constructor call. Saving and publication are detailed in the
 shared [save-before-publish flow](#saving-before-publishing-changes); error paths are omitted.
 
 <puml src="diagrams/EditLabelSequenceDiagram.puml" alt="EditCommand updates labels on the pending model" />
@@ -240,9 +241,9 @@ The accepted inputs, examples, and feedback are documented under
 [Removing attendance](UserGuide.md#removing-attendance-unmark) in the User Guide.
 
 The diagrams follow successful `mark` and `unmark` commands from parsing through the pending-model update.
-They expand Logic while keeping Model at a high level. The pending copy retains the current student filter.
-The reference frames point to the shared [save-before-publish flow](#saving-before-publishing-changes);
-error paths are omitted.
+Arrows show selected method calls; notes summarise omitted validation and object construction. The pending
+model starts at its constructor call and retains the current student filter. Saving and publication are detailed
+in the shared [save-before-publish flow](#saving-before-publishing-changes); error paths are omitted.
 
 <puml src="diagrams/MarkSequenceDiagram.puml" alt="MarkCommand adds attendance to the pending model" />
 

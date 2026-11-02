@@ -11,30 +11,44 @@ participant "edit:EditCommand" as Command LOGIC_COLOR
 end box
 box "Model" #F97181
 participant "pending:ModelManager" as Pending MODEL_COLOR
+participant "book:ReadOnlyAddressBook" as Book MODEL_COLOR
 end box
-[-> Logic : Replace tutorial 1 with tutorial 2
+[-> Logic : execute(input)
 activate Logic
-Logic -> Parser : Parse command
+Logic -> Parser : parseCommand(input)
 activate Parser
-Parser --> Logic : Edit command
+Parser --> Logic : command
 deactivate Parser
-Logic -> Pending : Create pending copy
-Pending --> Logic : Pending model
-Logic -> Command : Execute on pending model
-activate Command
-Command -> Pending : Read all students
-Pending --> Command : Student list
-Command -> Command : Find student by ID
-Command -> Command : Remove tutorial 1; add tutorial 2
-note over Command
-Keep Student ID, attendance, and
-fields not supplied in the command.
+note over Logic
+Capture records, preferences, and current filter.
 end note
-Command -> Pending : Replace student's record
-Command -> Pending : Show full student list
-Command --> Logic : Edit result
+create Pending
+Logic -> Pending : new ModelManager(records, preferences)
+Logic -> Pending : updateFilteredPersonList(filter)
+Logic -> Command : execute(pending)
+activate Command
+Command -> Command : findStudent(pending)
+activate Command
+Command -> Pending : getAddressBook()
+Pending --> Command : book
+Command -> Book : getPersonList()
+Book --> Command : students
+Command --> Command : student
 deactivate Command
-ref over Logic, Pending : Save before publishing (shared flow)
-[<-- Logic : Result
+note over Command
+Select the student by ID. Build an edited Person,
+removing tutorial 1 and adding tutorial 2.
+Keep the Student ID, attendance, and unspecified fields.
+(Internal validation and object construction omitted.)
+end note
+Command -> Pending : setPerson(student, updatedStudent)
+Command -> Pending : updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)
+Command --> Logic : result
+deactivate Command
+note over Logic, Pending
+Save pending records before publishing to the live model.
+See the shared transaction diagram for these omitted calls.
+end note
+[<-- Logic : result
 deactivate Logic
 @enduml
