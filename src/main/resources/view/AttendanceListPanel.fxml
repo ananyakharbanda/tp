@@ -8,16 +8,20 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <VBox styleClass="attendance_header">
+    <!-- @@author ananyakharbanda -->
     <minHeight>
       <!-- Preserve the full wrapped heading before allocating the remaining height to the list. -->
       <Region fx:constant="USE_PREF_SIZE" />
     </minHeight>
+    <!-- @@author -->
     <padding>
       <Insets top="5" right="5" bottom="5" left="15" />
     </padding>
     <Label fx:id="title" styleClass="cell_big_label" wrapText="true" maxWidth="Infinity" />
     <Label fx:id="totals" styleClass="cell_small_label" />
   </VBox>
+  <!-- @@author ananyakharbanda -->
   <!-- Allow the list to fit the space left by the heading, including when its placeholder is shown. -->
   <ListView fx:id="attendanceListView" minHeight="0" VBox.vgrow="ALWAYS" />
+  <!-- @@author -->
 </VBox>

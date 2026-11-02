@@ -175,7 +175,9 @@ public class JsonAddressBookStorage {
                 }
                 // @@author
                 replaceDataFile(temporaryFile, targetFile);
+                // @@author ananyakharbanda
                 savedContents.put(targetFile, updatedContents);
+                // @@author
             } finally {
                 removeTemporaryFile(temporaryFile);
             }
