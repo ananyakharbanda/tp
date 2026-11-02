@@ -25,11 +25,12 @@ TeachAssist is intended for Teaching Assistants who:
 
 TeachAssist allows users to:
 
-* add and remove student records
+* add, edit and remove student records
 * view all students and their information
 * find students by name, student ID, email, remark, or tutorial-group label
 * record additional information as free-text remarks
 * assign tutorial-group labels to students
+* mark and unmark attendance, and view attendance by date and tutorial group
 * undo up to 100 saved data changes during the current session
 * save student records automatically between sessions
 
