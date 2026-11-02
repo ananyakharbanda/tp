@@ -50,7 +50,7 @@ For TeachAssist questions and bug reports, use the [project issue tracker](https
 [[portfolio](team/amberrrruby.md)]
 
 * Role: Developer
-* Responsibilities: Group labels and filtering
+* Responsibilities: Group labels, label and filter commands (both now deprecated), undo feature
 
 ### Tristan Tay
 

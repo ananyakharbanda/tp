@@ -3,9 +3,11 @@ package seedu.address.storage;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -85,8 +87,12 @@ public class JsonAddressBookStorage {
 
         try {
             // Parse the same bytes remembered for conflict detection, without reading the file a second time.
+            String json = StandardCharsets.UTF_8.newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(contents)).toString();
             JsonSerializableAddressBook jsonAddressBook = JsonUtil.fromJsonString(
-                    new String(contents, StandardCharsets.UTF_8), JsonSerializableAddressBook.class);
+                    json, JsonSerializableAddressBook.class);
             if (jsonAddressBook == null) {
                 throw new IllegalValueException("JSON document must not be null.");
             }

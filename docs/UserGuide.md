@@ -6,7 +6,9 @@
 
 # TeachAssist User Guide
 
+<!-- @@author ananyakharbanda -->
 TeachAssist is a **desktop application for managing student records, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, TeachAssist can help you manage student information faster than traditional GUI applications.
+<!-- @@author -->
 
 <!-- * Table of Contents -->
 <page-nav-print />
@@ -18,12 +20,14 @@ TeachAssist is a **desktop application for managing student records, optimized f
 1. Ensure that Java `25` or later is installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
+   <!-- @@author ananyakharbanda -->
 1. Download the latest `.jar` file from [the TeachAssist releases page](https://github.com/AY2627S1-CS2103T-F12-1/tp/releases).
    For native Apple Silicon Java, choose the `-mac-aarch64.jar` variant when provided. For Windows, Linux,
    or Intel Java on macOS (including Intel Java under Rosetta), choose the standard JAR. Match the Mac variant
    to your installed Java architecture, not just your computer's processor.
 
 1. Copy the file to the folder you want to use as the _home folder_ for TeachAssist.
+   <!-- @@author -->
 
 1. Open a terminal and `cd` to the folder containing the JAR file. Run `java -jar teach-assist-v1.6.jar`
    for the standard v1.6 JAR, or `java -jar teach-assist-v1.6-mac-aarch64.jar` for the Apple Silicon variant.
@@ -46,10 +50,12 @@ TeachAssist is a **desktop application for managing student records, optimized f
 
 1. Refer to the [Features](#features) section below for details of each command.
 
+<!-- @@author ananyakharbanda -->
 TeachAssist fits its startup window within the available screen area, accounting for display scaling and the taskbar.
 If a previously used monitor is disconnected, the saved window position is adjusted to fit the primary screen.
 You can resize the window down to 450 × 400 logical pixels. At higher scaling, fewer student cards fit at once;
 scroll the student list to reach the remaining students.
+<!-- @@author -->
 
 **Warning:** Run only one instance of TeachAssist at a time. If another window or a text editor changes the data file,
 this window will reject its next save to avoid overwriting the newer data. Restart TeachAssist to load the latest data.
@@ -88,7 +94,7 @@ groups. `I` matches `i`; dotless `ı` is a different character.
 
 ### Field rules
 
-These rules apply wherever a command accepts the field. Name and remark limits count Unicode code points after
+These rules apply wherever a command accepts the field, the only exception being `find` which can accept partial inputs for names, student IDs, emails, and remarks (label searches require a complete label). Name and remark limits count Unicode code points after
 whitespace handling. For labels, the lowercase `i` + combining dot produced from `İ` counts as one character,
 so converting an existing label to lowercase does not invalidate its length.
 
@@ -99,7 +105,7 @@ so converting an existing label to lowercase does not invalidate its length.
 | Email | A supported `name@example.com` address, at most 254 characters, without spaces. The local part allows ASCII letters, digits, `.`, `_`, `+`, and `-`; the domain needs at least two dot-separated parts and a final part of 2–63 letters. Only the domain is lowercased. Mailbox existence is not checked. [Full constraints](DeveloperGuide.md#field-validation-errors). |
 | Remark | Optional, at most 4,000 characters. Internal spacing and capitalization are preserved; dates and grades are not checked. Text starting after a space or similar separator with ASCII letters immediately followed by `/` is read as a parameter prefix, even in remarks. |
 | Label / group | 1–60 characters using the counting rule above, including a letter or digit. Allows Unicode letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Internal spacing is preserved; capitalization is converted to lowercase for storage and display. |
-| Date | A real calendar date in `YYYY-MM-DD` format, with zero-padded month and day, e.g., `2026-10-20`. |
+| Date | A real calendar date in `YYYY-MM-DD` format, with zero-padded month and day, e.g., `2026-01-20`. |
 
 For example, `r/Discussed algebra/ today` is rejected with `Unknown parameter: algebra/.` because
 `algebra/` starts after a space. The same applies to `algebra/topic`; text after the slash does not change the rule.
@@ -174,6 +180,8 @@ or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find
 
 * Supply exactly one non-empty search parameter. Matching ignores case.
 * Name, ID, email, and remark searches match **any** supplied keyword, including partial matches.
+* Keyword matching has Unicode limitations: some case variants (such as Greek sigma), character expansions
+  (such as `ß` versus `ss`), and visually identical characters with different Unicode encodings may not match.
 * Label searches match a complete label using [exact internal spacing](#whitespace-and-label-matching), including
   Unicode spaces and Hangul fillers. A multi-word label is one search value.
 * Reports the number of matches, including zero. Use `list` to restore all students; no records are changed.
@@ -304,6 +312,8 @@ view, undo history, and the previous saved file are preserved. Restore writable 
 ### Editing the data file
 
 Close TeachAssist and back up `data/addressbook.json` before editing it. Use valid field values and unique Student IDs.
+Save the file as UTF-8. Invalid UTF-8 or unpaired Unicode surrogate escapes, such as `\uD800` without a matching low
+surrogate, prevent loading. Valid pairs, including emoji, are supported. Rejected files are preserved unchanged.
 Invalid JSON or records prevent loading, including extra text or a second JSON value after the student-data object.
 See [Loading the data](#loading-the-data) for recovery, and the [DG data-file reference](DeveloperGuide.md#loading-errors)
 for JSON structure, normalization, optional fields, and duplicate rules.

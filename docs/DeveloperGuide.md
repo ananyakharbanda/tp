@@ -28,6 +28,9 @@
   find and unmark features as well as bug fixes for storage. The contributor gave explicit requirements, 
   reviewed the generated changes against the intended behavior, and validated them with automated tests, Checkstyle, 
   and manual testing before accepting them.
+* OpenAI Codex assisted @amberrrruby with implementing test cases, functional code, UML diagrams and documentation.
+  TDD is used throughout, and generated changes are verified to fit the intended behavior with implemented tests.
+  Diagrams and documentation are manually checked later.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -39,14 +42,18 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 ## **Design**
 
+<!-- @@author ananyakharbanda -->
 The diagrams use three distinct views. Component diagrams describe responsibilities and dependencies; class
 and sequence diagrams describe selected implementation relationships; activity diagrams describe decisions in a
 workflow. Each caption states the scope and any omitted steps. A message written as an action in a component
 sequence is conceptual, while messages in an object sequence use the implemented operations.
+<!-- @@author -->
 
 ### Architecture
 
+<!-- @@author ananyakharbanda -->
 <puml src="diagrams/ArchitectureDiagram.puml" alt="Dependencies between application components" />
+<!-- @@author -->
 
 The ***Architecture Diagram*** given above explains the high-level design of the App.
 
@@ -69,11 +76,13 @@ The bulk of the app's work is done by the following four components:
 
 **How the architecture components interact with each other**
 
+<!-- @@author ananyakharbanda -->
 The component sequence below follows a valid `delete i/A0123456B` request. It shows only the responsibilities of
 UI, Logic, Model, and Storage. Parsing, pending-model construction, and filesystem operations are expanded in
 the implementation section.
 
 <puml src="diagrams/ArchitectureSequenceDiagram.puml" alt="Deletion at component level" />
+<!-- @@author -->
 
 Each of the four main components (also shown in the diagram above),
 
@@ -82,22 +91,28 @@ Each of the four main components (also shown in the diagram above),
 
 For example, the `Logic` component defines its API in `Logic.java` and implements it in `LogicManager.java`. Other components interact with a component through its interface rather than its concrete class, preventing them from coupling to that component's implementation, as illustrated in the following partial class diagram.
 
+<!-- @@author ananyakharbanda -->
 <puml src="diagrams/ComponentManagers.puml" alt="Component implementations and interfaces" />
+<!-- @@author -->
 
 The sections below give more details of each component.
 
 ### UI component
 
+<!-- @@author ananyakharbanda -->
 The **API** of this component is specified in [`Ui.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/ui/Ui.java)
 
 The partial class diagram shows UI ownership and object creation. Common `UiPart` inheritance and dependencies
 outside the UI package are omitted from the drawing and described below.
+<!-- @@author -->
 
 <puml src="diagrams/UiClassDiagram.puml" alt="Structure of the UI Component"/>
 
 The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `PersonListPanel`, `AttendanceListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
 
+<!-- @@author ananyakharbanda -->
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/ui/MainWindow.java).
+<!-- @@author -->
 
 The `UI` component,
 
@@ -109,15 +124,19 @@ The `UI` component,
 
 ### Logic component
 
+<!-- @@author ananyakharbanda -->
 **API** : [`Logic.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/logic/Logic.java)
+<!-- @@author -->
 
 Here's a (partial) class diagram of the `Logic` component:
 
+<!-- @@author ananyakharbanda -->
 <puml src="diagrams/LogicClassDiagram.puml" alt="Logic classes and component interfaces" />
 
 The [add](#adding-student-information) and [delete](#deleting-student-information) diagrams show command execution
 on a pending model. The separate [save-before-publish diagram](#saving-before-publishing-changes) shows how
 `LogicManager` saves and publishes those changes.
+<!-- @@author -->
 
 
 How the `Logic` component works:
@@ -128,10 +147,12 @@ How the `Logic` component works:
    `LogicManager` saves the pending records before publishing them. Undo uses its separate restoration path.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
 
+<!-- @@author ananyakharbanda -->
 The parsing class diagram uses the implemented `AddCommandParser` as a representative. Other command parsers
 use the same `Parser` interface; their individual dependencies are omitted.
 
 <puml src="diagrams/ParserClasses.puml" alt="Parser classes illustrated by AddCommandParser" />
+<!-- @@author -->
 
 How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
@@ -140,12 +161,14 @@ How the parsing works:
 ### Model component
 **API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
+<!-- @@author ananyakharbanda -->
 The first class diagram shows model ownership and interfaces. Student fields are expanded in the second;
 attendance-report classes are shown under [Reporting attendance](#reporting-attendance).
 
 <puml src="diagrams/ModelClassDiagram.puml" alt="Model ownership and read-only interfaces" />
 
 <puml src="diagrams/StudentDataClassDiagram.puml" alt="Student fields and persisted attendance" />
+<!-- @@author -->
 
 
 The `Model` component,
@@ -163,7 +186,9 @@ The `Model` component,
 
 <box type="info" seamless>
 
+<!-- @@author ananyakharbanda -->
 **Alternative (not implemented):** The design below keeps a unique list of labels in `AddressBook`, and each `Person` references values from that list. This lets `AddressBook` maintain one value object per unique label instead of each `Person` holding its own objects.<br>
+<!-- @@author -->
 
 <puml src="diagrams/BetterModelClassDiagram.puml" alt="Unimplemented alternative with a shared label collection" />
 </box>
@@ -171,9 +196,11 @@ The `Model` component,
 
 ### Storage component
 
+<!-- @@author ananyakharbanda -->
 **API** : [`Storage.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/storage/Storage.java)
 
 <puml src="diagrams/StorageClassDiagram.puml" alt="Storage classes and JSON adapters" />
+<!-- @@author -->
 
 The `Storage` component,
 * can save both student data and user preference data in JSON format, and read them back into corresponding objects.
@@ -197,11 +224,13 @@ This section describes some noteworthy details on how certain features are imple
 
 ### Group labels
 
+<!-- @@author ananyakharbanda -->
 An optional group label is assigned when creating a student with `add ... l/LABEL_NAME`.
 `Label` validates the value, and `ParserUtil#parseLabel` trims command input before constructing it.
 `JsonAdaptedLabel` and `JsonAdaptedPerson` persist labels under each student's `labels` JSON field.
 `EditCommand` preserves labels unless label changes are requested, and `PersonCard` renders them in its `FlowPane`.
 Existing saved labels remain compatible, including records containing multiple labels.
+<!-- @@author -->
 
 ### Edit command
 
@@ -211,7 +240,9 @@ The diagram follows a successful edit that replaces `tutorial 1` with `tutorial 
 pending-model update. It expands Logic while keeping Model at a high level. The reference frame points to the
 shared [save-before-publish flow](#saving-before-publishing-changes); error paths are omitted.
 
+<!-- @@author ananyakharbanda -->
 <puml src="diagrams/EditLabelSequenceDiagram.puml" alt="EditCommand updates labels on the pending model" />
+<!-- @@author -->
 
 1. `EditCommandParser#parse` checks the command structure and parses the Student ID and requested changes.
    Its `parseLabelChanges` method collects repeated `l/` and `dl/` values in an `EditPersonDescriptor`.
@@ -248,9 +279,11 @@ They expand Logic while keeping Model at a high level. The pending copy retains 
 The reference frames point to the shared [save-before-publish flow](#saving-before-publishing-changes);
 error paths are omitted.
 
+<!-- @@author ananyakharbanda -->
 <puml src="diagrams/MarkSequenceDiagram.puml" alt="MarkCommand adds attendance to the pending model" />
 
 <puml src="diagrams/UnmarkSequenceDiagram.puml" alt="UnmarkCommand removes attendance from the pending model" />
+<!-- @@author -->
 
 <!-- @@author sammeowwww -->
 #### Walkthrough
@@ -332,6 +365,7 @@ A duplicate ID rejects the complete command without merging any details or remar
 
 #### Saving before publishing changes
 
+<!-- @@author ananyakharbanda -->
 `LogicManager` coordinates this transaction for `add`, `edit`, `delete`, `mark`, `unmark`, and `clear`.
 `undo` uses the separate restoration flow described in [Undoing data changes](#undoing-data-changes).
 
@@ -351,9 +385,11 @@ command-specific record updates are expanded in their own diagrams. Calls to ret
 filters are omitted to keep the transaction visible. `recordUndoSnapshot` retains at most 100 prior states.
 
 <puml src="diagrams/SaveSequenceDiagram.puml" alt="Execute on a pending model, save, then publish" />
+<!-- @@author -->
 
 **Storage conflict detection and replacement**
 
+<!-- @@author ananyakharbanda -->
 `JsonAddressBookStorage` normalises the absolute target path and serialises in-process file access with
 `FILE_ACCESS_LOCK`. During each save it creates the parent folder, opens the sibling `addressbook.json.lock`,
 and calls `FileChannel#tryLock`. An unavailable lock gives `DataFileInUseException`. The lock is released after
@@ -375,9 +411,12 @@ close TeachAssist before editing its data file. This protection applies to stude
 
 The add sequence below shows only `AddCommand#execute` on the pending model, for a student with a unique ID.
 Field parsing and the shared save transaction are outside its scope.
+<!-- @@author -->
 
 <puml src="diagrams/AddSequenceDiagram.puml" alt="AddCommand checks identity and updates the pending model" />
+
 <!-- @@author sammeowwww -->
+
 #### Add command walkthrough
 
 1. Before the diagram begins, `AddCommandParser` validates the supplied values, creates a `Person`, and returns an
@@ -409,6 +448,8 @@ feedback with/without remarks, JSON round trips, filtered-list handling, startup
 Replacement-failure tests simulate an error after the temporary file is written and check that the original file,
 records, and active filter remain unchanged. They also check temporary-file cleanup and failed first saves.
 
+<!-- @@author DaRealTristan -->
+
 ### Find command
 
 Command format: `find n/KEYWORD [MORE_KEYWORDS]...`, `find i/KEYWORD [MORE_KEYWORDS]...`,
@@ -419,6 +460,7 @@ See the [User Guide](UserGuide.md#finding-students-by-name-student-id-email-rema
 
 #### Validation and matching
 
+  <!-- @@author ananyakharbanda -->
 * `ArgumentTokenizer` recognises `n/`, `i/`, `e/`, `r/`, and `l/`.
 * `FindCommandParser` checks words before the first prefix, unknown prefixes, repeated prefixes, missing prefixes,
   multiple search-field types, empty values, and then label validity, in that order.
@@ -426,6 +468,10 @@ See the [User Guide](UserGuide.md#finding-students-by-name-student-id-email-rema
   `StudentIdContainsKeywordsPredicate`, `EmailContainsKeywordsPredicate`, and `RemarkContainsKeywordsPredicate`
   match any keyword using
   `StringUtil#containsIgnoreCase`, including partial matches.
+* Keyword matching lowercases the field and keyword separately with `Locale.ROOT` before substring comparison;
+  it does not perform full Unicode case folding or Unicode normalization, so context-sensitive case mappings
+  (such as Greek sigma), multi-character expansions (such as `ß` to `ss`), and canonically equivalent encodings
+  may not match.
 * `RemarkContainsKeywordsPredicate` searches `Person#getRemark().value` only. Empty remarks do not match
   non-empty keywords. Numeric slash text such as `8/10` is accepted under the existing prefix rules.
 * A label value is kept whole, validated by `ParserUtil#parseLabel`, and passed to `LabelMatchesPredicate`.
@@ -433,6 +479,7 @@ See the [User Guide](UserGuide.md#finding-students-by-name-student-id-email-rema
   values, using the same rule as `EditCommand` and `JsonAdaptedPerson`. Internal spaces are preserved.
   This also handles Unicode lowercase expansions, such as `İ` becoming `i` followed by a combining dot,
   while keeping `I` and the dotless `ı` distinct.
+  <!-- @@author -->
 
 For example, `find n/alex david` finds names containing either keyword, while `find l/Discrete Math Tutorial`
 finds students with that complete group label. `find l/Tutorial` does not match `Discrete Math Tutorial`.
@@ -446,6 +493,7 @@ AddressBookParser → FindCommandParser → FindCommand
 FindCommand → Model#updateFilteredPersonList
 ```
 
+<!-- @@author ananyakharbanda -->
 Every search replaces the active predicate and evaluates the complete student list; searches do not narrow the
 previous result set. `FindCommand` returns the standard `N students listed.` (or `1 student listed.` for one match) feedback. Zero matches clear the view.
 `list` restores all students. Invalid commands preserve the previous view.
@@ -454,10 +502,12 @@ previous result set. `FindCommand` returns the standard `N students listed.` (or
 loading failure, `LogicManager` blocks it until the data file is fixed and the app restarted. A missing data file
 or a successfully loaded empty file permits a search with zero results. Student records and the saved file are
 unchanged by a search.
+<!-- @@author -->
 
 Tests in `RemarkContainsKeywordsPredicateTest`, `FindCommandParserTest`, and `FindCommandTest` cover remark
 matching, invalid remark search inputs, result counts, and searching students hidden by a previous filter.
 
+<!-- @@author ananyakharbanda -->
 The first object sequence isolates `FindCommand#execute` after parsing and the startup-data check. All five
 search modes share this execution path; only the supplied predicate differs.
 
@@ -469,12 +519,15 @@ activity diagram separately shows user-visible validation and result decisions, 
 <puml src="diagrams/LabelFindSequenceDiagram.puml" alt="FindCommandParser constructs a label predicate and command" />
 
 <puml src="diagrams/LabelFindActivityDiagram.puml" alt="Label-search input, availability, and result decisions" />
+<!-- @@author -->
 
 #### Verification
 
+<!-- @@author ananyakharbanda -->
 Tests cover all five prefixes, malformed and repeated parameters, mixed search fields, multi-word and boundary-length
 labels, invalid labels, exact and case-insensitive matching, multiple student labels, empty and zero-result lists,
 searches after other searches, restoration with `list`, saved-data preservation, and rejection of the removed command.
+<!-- @@author -->
 
 ### Deleting student information
 
@@ -500,11 +553,13 @@ Deletion preserves the current filter and returns true from `Command#isModifying
 the change. If saving fails, the live record, filter, and previous saved file remain unchanged.
 If startup loading failed, deletion is blocked by the existing loading guard.
 
+<!-- @@author ananyakharbanda -->
 The sequence diagram isolates `DeleteCommand#execute` on a pending model after parsing and the startup-data
 check. It assumes the student exists. The shared [transaction](#saving-before-publishing-changes) handles saving
 and any failure before publishing the deletion.
 
 <puml src="diagrams/DeleteSequenceDiagram.puml" alt="DeleteCommand removes a student from the pending model" />
+<!-- @@author -->
 
 [PlantUML source](diagrams/DeleteSequenceDiagram.puml)
 
@@ -536,7 +591,9 @@ Only presence is stored. A student is absent when they have no record for the da
 
 #### Reporting attendance
 
+<!-- @@author ananyakharbanda -->
 <puml src="diagrams/AttendanceModelClassDiagram.puml" alt="Derived report entries reference current students" />
+<!-- @@author -->
 
 `AttendanceReport#of(students, date, group)` keeps the students whose current labels include the group, in the order
 given, and pairs each one with whether they have the matching record. It also gives the present and absent totals.
@@ -563,6 +620,7 @@ Because the rebuild happens after saving and publishing, the view only changes o
 command throws before this step, so the view stays as it was. A successful `undo` returns a plain result, so it closes
 the view; the restored records are shown in the student list.
 
+<!-- @@author ananyakharbanda -->
 The first object sequence shows `AttendanceCommand#execute` building a report from the full student list after
 parsing and the startup-data check. The second isolates `LogicManager#updateDisplayedAttendance`, which runs
 only after successful execution (and saving for a data change). UI rendering and command parsing are described
@@ -571,6 +629,7 @@ above rather than repeated in either diagram.
 <puml src="diagrams/AttendanceSequenceDiagram.puml" alt="Build an attendance report from the complete student list" />
 
 <puml src="diagrams/AttendanceRefreshSequenceDiagram.puml" alt="Select, refresh, or close the displayed attendance report" />
+<!-- @@author -->
 
 #### Design considerations
 
@@ -622,8 +681,10 @@ MainApp#initLogic → LogicManager
 
 1. `JsonAddressBookStorage#readAddressBook` returns `Optional.empty()` if the data file does not exist.
 2. For an existing file, `JsonAddressBookStorage` reads its bytes once with `Files.readAllBytes`, decodes them as
-   UTF-8, and parses them with `JsonUtil#fromJsonString`. Failure to read the bytes gives
-   `Unable to load student data.`; invalid JSON gives
+   UTF-8 using a decoder configured with `CodingErrorAction.REPORT`, and parses them with `JsonUtil#fromJsonString`.
+   `StrictStringDeserializer` rejects unpaired surrogates after JSON escapes are decoded; valid surrogate pairs
+   remain accepted. Failure to read the bytes gives `Unable to load student data.`; malformed UTF-8, unpaired
+   surrogates in string fields, or invalid JSON give
    `Unable to load student data. The data file may be corrupted or invalid.`
    Both are reported as `DataLoadingException`.
 3. `JsonSerializableAddressBook#toModelType` converts records in file order. A missing or invalid field throws
@@ -636,9 +697,11 @@ MainApp#initLogic → LogicManager
    the no-existing-data message, or the `DataLoadingException` message.
 5. `MainWindow#fillInnerParts` shows `Logic#getStartupMessage` in the result display when the window opens.
 
+<!-- @@author ananyakharbanda -->
 The object sequence below shows startup orchestration through the `Storage` interface. Its three outcomes are a
 successful load, a missing file, and a loading exception. Storage deserialisation is described above and omitted
 here; the diagram focuses on constructing the model and logic with the correct availability state.
+<!-- @@author -->
 
 <puml src="diagrams/LoadSequenceDiagram.puml" alt="Loading student data at startup" />
 
@@ -673,6 +736,9 @@ Saving is described in [Saving before publishing changes](#saving-before-publish
 IDs. It checks that modifying commands and student-data queries are blocked and the file is unchanged after a failed
 load. Missing files and successfully loaded empty files remain usable.
 `JsonAddressBookStorageTest` covers unreadable files, invalid JSON, invalid values, and duplicate Student IDs.
+It also checks rejection of malformed UTF-8 and unpaired surrogate escapes without changing the original file,
+acceptance of valid Unicode text and an explicitly encoded replacement character, and valid emoji surrogate pairs
+surviving a save and reload.
 
 ### Undoing data changes
 
@@ -697,14 +763,18 @@ Both successful outcomes close an open attendance report.
 Undo is destructive: restoring a snapshot discards the state being reversed, so there is no redo or forward branch.
 A later successful data change records the then-current state as a new predecessor.
 
+<!-- @@author ananyakharbanda -->
 The state diagram illustrates changes to records and undo history only; it omits persistence operations.
+<!-- @@author -->
 
 <puml src="diagrams/UndoHistoryStateDiagram.puml" alt="Bounded destructive undo history" />
 
+<!-- @@author ananyakharbanda -->
 The object sequence starts at `LogicManager#executeUndo`, after parsing and the startup-data check. It shows
 restoration and persistence, with UI updates handled after the method returns.
 
 <puml src="diagrams/UndoSequenceDiagram.puml" alt="Save the previous state before restoring it and consuming history" />
+<!-- @@author -->
 
 #### Design consideration
 
@@ -721,9 +791,11 @@ restoration and persistence, with UI updates handled after the method returns.
 
 ## **Documentation, logging, testing, dev-ops**
 
+<!-- @@author ananyakharbanda -->
 Manual scenarios and their expected results are maintained in
 [Appendix: Instructions for manual testing](#appendix-instructions-for-manual-testing).
 The following guides cover development workflows:
+<!-- @@author -->
 
 * [Documentation guide](Documentation.md)
 * [Testing guide](Testing.md)
@@ -820,12 +892,15 @@ TA refers to a teaching assistant. Story IDs are retained from the project notes
 
 #### Recovering from mistakes
 
+<!-- @@author ananyakharbanda -->
 | ID | Priority | As a/an ... | I want to ... | So that ... |
 |----|----------|--------|-------------|----------------|
 | US39 | `* *` | TA who made an accidental change | undo my latest saved data change | I can restore the previous student records |
+<!-- @@author -->
 
 ### Use cases
 
+<!-- @@author ananyakharbanda -->
 The **system** is TeachAssist and the **actor** is a Teaching Assistant (TA). These use cases describe the
 implemented application. The user stories above also include backlog ideas; they do not imply additional commands.
 Exact syntax and field constraints belong in the [User Guide](UserGuide.md#features).
@@ -844,9 +919,11 @@ Exact syntax and field constraints belong in the [User Guide](UserGuide.md#featu
 | `list` | [UC11: List all students](#uc11-list-all-students) |
 | `help` | [UC12: View help](#uc12-view-help) |
 | `exit` | [UC13: Exit TeachAssist](#uc13-exit-teachassist) |
+<!-- @@author -->
 
 **Common extensions**
 
+<!-- @@author ananyakharbanda -->
 These failure outcomes apply wherever their condition arises. Each ends the use case without applying the
 requested change. Rejected commands preserve the current records, view, and available undo history.
 
@@ -858,21 +935,26 @@ requested change. Rejected commands preserve the current records, view, and avai
 
 Successful viewing commands do not save student data. Successful data changes can be undone within the current
 session, subject to the history limit in UC10. A failed command never closes an open attendance view.
+<!-- @@author -->
 
 #### UC01: Add a student
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests to add a student with a name, Student ID, email, and optional remark and group label.
 2. TeachAssist adds and saves the student.
 3. TeachAssist shows all students and confirms the added student's details and total student count.
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. The Student ID is already in use, ignoring case.
   * 2a1. TeachAssist reports the duplicate ID without merging or changing either record.
+  <!-- @@author -->
 
   Use case ends.
 
@@ -880,36 +962,46 @@ session, subject to the history limit in UC10. A failed command never closes an 
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests a search of one field: name, Student ID, email, or remark, with one or more keywords.
 2. TeachAssist shows students whose selected field contains any keyword, ignoring case, and reports the count.
    The search covers all records and replaces the previous search or attendance view.
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. No students match.
   * 2a1. TeachAssist shows an empty student list and reports `0 students listed.`
+  <!-- @@author -->
 
   Use case ends.
 
+<!-- @@author ananyakharbanda -->
 Group-label searches use the complete-label matching rule in UC04, rather than partial keywords.
+<!-- @@author -->
 
 #### UC03: Edit a student
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA identifies a student by Student ID and requests changes to the name, email, remark, or group labels.
 2. TeachAssist saves the updated student, including when the student is hidden by a search. The Student ID,
    attendance records, and unspecified fields are retained. Label removals take effect before additions.
 3. TeachAssist shows all students and confirms the updated details.
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. No student has the supplied Student ID.
   * 2a1. TeachAssist reports that the student is not in the records.
+  <!-- @@author -->
 
   Use case ends.
 * 2b. A label to remove is absent, or a label to add is still present after removals.
@@ -917,43 +1009,55 @@ Group-label searches use the complete-label matching rule in UC04, rather than p
 
   Use case ends.
 
+<!-- @@author ananyakharbanda -->
 An empty remark clears it. An empty `l/` clears all labels and cannot accompany other label changes.
 Student IDs cannot be edited; changing an ID requires a separate deletion and addition.
+<!-- @@author -->
 
 #### UC04: Find students by group label
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests students with one complete group label.
 2. TeachAssist shows all matching students and the count, replacing the previous search or attendance view.
    Matching ignores case but requires exact internal spacing. A multi-word label is one search value.
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. No students have the label.
   * 2a1. TeachAssist shows an empty student list and reports `0 students listed.`
+  <!-- @@author -->
 
   Use case ends.
 
+<!-- @@author ananyakharbanda -->
 This is the label mode of `find`; there is no separate `filter` command.
+<!-- @@author -->
 
 #### UC05: Delete a student
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests deletion using a Student ID.
 2. TeachAssist removes and saves the student and all their remarks, labels, and attendance records,
    even when that student is hidden by a search.
 3. TeachAssist confirms the deletion and shows the student list with the previous search still applied.
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. No student has the supplied Student ID.
   * 2a1. TeachAssist reports that the student is not in the records.
+  <!-- @@author -->
 
   Use case ends.
 
@@ -970,8 +1074,10 @@ This is the label mode of `find`; there is no separate `filter` command.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. The student does not exist.
   * 2a1. TeachAssist reports the missing student.
+  <!-- @@author -->
 
   Use case ends.
 * 2b. The student does not currently have the requested group label.
@@ -987,10 +1093,12 @@ This is the label mode of `find`; there is no separate `filter` command.
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests attendance for a date and group.
 2. TeachAssist replaces the student list with all current members of that group in record order, including
    students hidden by a search. Students with an attendance entry are Present; the others are Absent.
    TeachAssist shows the present and absent totals.
+   <!-- @@author -->
 
    Use case ends.
 
@@ -1001,10 +1109,12 @@ This is the label mode of `find`; there is no separate `filter` command.
 
   Use case ends.
 
+<!-- @@author ananyakharbanda -->
 The report uses current group membership. Removing a label excludes that student from later reports, while their
 attendance records are retained. Successful `mark` and `unmark` commands refresh the open report for its original
 date and group, even if the command changed a different date or group. Another `attendance` command selects a new
 report. Other successful commands return to the student list (or exit the app); failed commands keep the report open.
+<!-- @@author -->
 
 #### UC08: Unmark attendance
 
@@ -1020,8 +1130,10 @@ report. Other successful commands return to the student list (or exit the app); 
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. The student does not exist.
   * 2a1. TeachAssist reports the missing student.
+  <!-- @@author -->
 
   Use case ends.
 * 2b. The student has no attendance entry for that date and group.
@@ -1033,57 +1145,73 @@ report. Other successful commands return to the student list (or exit the app); 
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests to clear the student records.
 2. TeachAssist removes and saves all students and their associated data, including records hidden by a search,
    without asking for confirmation.
 3. TeachAssist shows an empty student list and confirms the clear. The current student search remains applied.
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. There are already no students.
   * 2a1. TeachAssist saves the empty records without adding a new change to undo history.
+  <!-- @@author -->
 
   Use case resumes at step 3.
 
+<!-- @@author ananyakharbanda -->
 The clear can be reversed using UC10 while that change remains available in the current session.
+<!-- @@author -->
 
 #### UC10: Undo a data change
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests to undo the latest data change.
 2. TeachAssist restores and saves the records from before the latest successfully saved change.
 3. TeachAssist shows all students and reports `Undid last change.` An open attendance view closes.
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. No change is available to undo, including immediately after restarting.
   * 2a1. TeachAssist reports `Nothing to undo.` without saving or changing records. The existing student
     search is retained and an open attendance view closes.
+  <!-- @@author -->
 
   Use case ends.
 
+<!-- @@author ananyakharbanda -->
 Up to 100 changes are available in the current session. Commands that leave records unchanged do not add an undo
 step. There is no redo. Previous searches and window settings are not restored, and restarting clears undo history.
+<!-- @@author -->
 
 #### UC11: List all students
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests the complete student list.
 2. TeachAssist replaces any search or attendance view with all students in record order and reports
    `Listed all students.`
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. There are no students.
   * 2a1. TeachAssist shows the empty list and reports `No students found.`
+  <!-- @@author -->
 
   Use case ends.
 
@@ -1091,31 +1219,41 @@ step. There is no redo. Previous searches and window settings are not restored, 
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests help using `help`, the Help menu, or F1.
 2. TeachAssist opens the Help window with the User Guide address and a **Copy URL** button.
+   <!-- @@author -->
 
    Use case ends.
 
 **Extensions**
 
+  <!-- @@author ananyakharbanda -->
 * 2a. The Help window is already open or minimised.
   * 2a1. TeachAssist restores and brings that window to the front.
+  <!-- @@author -->
 
   Use case ends.
 
+<!-- @@author ananyakharbanda -->
 Help remains available after a loading failure. A successful `help` command also returns an open attendance view
 to the student list. Opening the Help window through the menu or F1 does not execute that command.
+<!-- @@author -->
 
 #### UC13: Exit TeachAssist
 
 **MSS**
 
+   <!-- @@author ananyakharbanda -->
 1. TA requests to exit using `exit` or closes the main window.
 2. TeachAssist closes. Student data from successful changes is already saved; it is loaded on the next launch.
+   <!-- @@author -->
 
    Use case ends.
 
+<!-- @@author ananyakharbanda -->
 Exit remains available after a loading failure. Undo history does not survive restarting.
+<!-- @@author -->
 
 ### Non-Functional Requirements
 
@@ -1139,24 +1277,29 @@ Exit remains available after a loading failure. Undo history does not survive re
 
 ### Setup and baseline
 
+<!-- @@author ananyakharbanda -->
 Use Java 25 and a release JAR copied into a separate, writable test folder. These scenarios deliberately delete and
 replace test records; use no real student data. Follow the [User Guide quick start](UserGuide.md#quick-start) to launch
 the JAR. With no `data/addressbook.json`, expect an empty list and
 `No existing student data found. Starting with an empty student list.`
 
 Before each scenario below, start a fresh application session with no data file in the test folder and enter:
+<!-- @@author -->
 
 ```text
 add n/Alex Tan i/A0123456B e/alex@example.com r/Needs help with recursion l/Tutorial 1
 add n/Beth Lim i/A0234567C e/beth@example.com l/Tutorial 1
 ```
 
+<!-- @@author ananyakharbanda -->
 Expect Alex and Beth to appear, with `1 student listed.` after the first add and `2 students listed.` after the second.
 Unless stated otherwise, run each scenario's steps in order. For rejected commands, verify that student details,
 the current view, and the contents of `data/addressbook.json` are unchanged.
+<!-- @@author -->
 
 ### Adding, finding, and listing students
 
+<!-- @@author ananyakharbanda -->
 | Step | Command | Expected result |
 |------|---------|-----------------|
 | 1 | `add n/Another Name i/a0123456b e/another@example.com` | `Student ID A0123456B already exists.`; two students remain. |
@@ -1172,6 +1315,7 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 | 11 | `list 3` | `Invalid command format!` followed by `Usage: list`; both students remain visible. |
 | 12 | `add n/ i/A0345678D e/valid@example.com` | The empty name is rejected; the two baseline students remain. |
 | 13 | `find n/Alex i/A0123456B` | The mixed search fields are rejected; both students remain visible. |
+<!-- @@author -->
 
 ### Editing students and labels
 
@@ -1210,6 +1354,7 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 
 ### Deleting, clearing, and undoing changes
 
+<!-- @@author ananyakharbanda -->
 | Step | Command | Expected result |
 |------|---------|-----------------|
 | 1 | `find n/Beth` | Only Beth appears. |
@@ -1223,9 +1368,11 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 | 9 | `clear`, then `undo` | Clearing the empty list succeeds without adding a snapshot; undo reports `Nothing to undo.` because step 8 exhausted the history. The list remains empty. |
 
 The automated tests in `LogicManagerTest` cover eviction at the 100-snapshot history limit and failed-save preservation.
+<!-- @@author -->
 
 ### Help, exit, and restart persistence
 
+   <!-- @@author ananyakharbanda -->
 1. With the baseline students, run `mark i/A0123456B d/2026-10-20 l/Tutorial 1`.
 2. Run `help`. Confirm that the help window shows the UG address and that **Copy URL** copies it.
    Minimise the Help window, then run `help` again; it should be restored. Repeat with F1, then close that window.
@@ -1234,9 +1381,11 @@ The automated tests in `LogicManagerTest` cover eviction at the 100-snapshot his
 5. Expect `2 students loaded.`. Verify both students' details, Alex's remark, and both labels.
 6. Run `attendance d/2026-10-20 l/Tutorial 1`. Expect Alex Present and Beth Absent.
 7. Run `undo`. Expect `Nothing to undo.` because history is not persisted; the attendance view closes.
+   <!-- @@author -->
 
 ### Loading and saving failures
 
+<!-- @@author ananyakharbanda -->
 Use separate copies of the baseline test folder for each case. Close the app before changing files, except for the
 cases explicitly requiring a running app: the data-folder obstruction, failed replacement, and stale-window save.
 
@@ -1254,14 +1403,17 @@ commands is unreliable because the lock is held only during saving. It should pr
 
 For the screen-size, scaling, and disconnected-monitor scenarios, follow
 [Display settings and window usability](Testing.md#display-settings-and-window-usability).
+<!-- @@author -->
 
 ### Performance verification
 
+<!-- @@author ananyakharbanda -->
 This procedure evaluates NFR 2; it does not record a passing result. Record the app version, OS, Java version, CPU,
 RAM, disk type, screen settings, dataset, timings, and any failures in the release test results.
 
 1. Copy the release JAR into a fresh test folder. With the app closed, run the Python 3 script below from that folder
    to create 1000 synthetic students. The script refuses to overwrite an existing data file.
+   <!-- @@author -->
 
    ```python
    import json
@@ -1518,9 +1670,14 @@ preserves the current student filter, and closes any attendance view. It does no
 | Condition | Message | Recovery |
 |-----------|---------|----------|
 | File cannot be read, e.g., permission denied | `Unable to load student data.` | Close the app, restore read access or a readable backup, and restart. |
-| Malformed JSON, extra root values/trailing garbage, `null` root, wrong structure, or invalid record | `Unable to load student data. The data file may be corrupted or invalid.` | Close the app, fix or restore the file, and restart. |
+| Malformed UTF-8, unpaired surrogates in string fields, malformed JSON, extra root values/trailing garbage, `null` root, wrong structure, or invalid record | `Unable to load student data. The data file may be corrupted or invalid.` | Close the app, fix or restore the file, and restart. |
 | Duplicate Student ID after normalization | `Unable to load student data: duplicate Student ID A0123456B detected.` | Give each student a unique ID, then restart. |
 | Valid modifying command, `list`, `find`, or `attendance` after startup loading failed | `Student data is unavailable because loading failed. Fix the data file and restart.` | Fix or restore the data file with the app closed, then restart. |
+
+The file must contain valid UTF-8. Malformed byte sequences are rejected rather than replaced with `U+FFFD`.
+After JSON escape decoding, string fields must not contain unpaired surrogates, such as `\uD800` on its own.
+Valid surrogate pairs, including emoji, are accepted. This string validation belongs to the shared `JsonUtil`;
+current preferences contain only numeric window settings and coordinates, so they are unaffected.
 
 The entire JSON document is deserialized before model validation. `JsonUtil#fromJsonString` uses a Jackson 2.7 parser
 and explicitly checks `nextToken()` after binding the root value; additional tokens or invalid trailing content fail
