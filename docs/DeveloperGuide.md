@@ -17,10 +17,17 @@
 * Application libraries: [JavaFX](https://openjfx.io/) for the graphical interface and [Jackson](https://github.com/FasterXML/jackson) for JSON persistence.
 * Testing and build tools: [JUnit 5](https://junit.org/junit5/), [Gradle](https://gradle.org/), [Shadow](https://gradleup.com/shadow/), [Checkstyle](https://checkstyle.org/) and [JaCoCo](https://www.jacoco.org/jacoco/).
 * Documentation tools: [MarkBind](https://markbind.org/) for the website and [PlantUML](https://plantuml.com/) for UML diagrams.
+* Ananya Kharbanda used an AI coding assistant for implementation suggestions, regression tests, code review,
+  UML revisions, and documentation checks. Suggested changes were checked against the implementation and
+  validated using relevant automated tests, code-style checks, diagram rendering, and documentation builds.
 * OpenAI Codex assisted @sammeowwww with implementation code, test cases, sequence diagrams, and documentation for
   student, label, and attendance features. The contributor gave explicit requirements, reviewed the generated changes
   against the intended behavior, and validated them with automated tests, Checkstyle, and manual testing before
   accepting them.
+* OpenAI Codex assisted @DaRealTristan with implementation code, test cases, sequence diagrams, and documentation for 
+  find and unmark features as well as bug fixes for storage. The contributor gave explicit requirements, 
+  reviewed the generated changes against the intended behavior, and validated them with automated tests, Checkstyle, 
+  and manual testing before accepting them.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -196,7 +203,6 @@ An optional group label is assigned when creating a student with `add ... l/LABE
 `EditCommand` preserves labels unless label changes are requested, and `PersonCard` renders them in its `FlowPane`.
 Existing saved labels remain compatible, including records containing multiple labels.
 
-<!-- @@author sammeowwww -->
 ### Edit command
 
 Format: `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`
@@ -244,6 +250,7 @@ error paths are omitted.
 
 <puml src="diagrams/UnmarkSequenceDiagram.puml" alt="UnmarkCommand removes attendance from the pending model" />
 
+<!-- @@author sammeowwww -->
 #### Walkthrough
 
 Each `Person` owns a set of `AttendanceRecord` values covering all tutorial groups for which that student was
@@ -271,6 +278,7 @@ The general command parser rejects multiline input first. Command-specific struc
 prefixes, text before the first prefix, repeated prefixes, and missing or empty values in that order. Repeated and
 missing/empty checks follow `i/`, `d/`, `l/` order. See [Attendance parameter errors](#attendance-parameter-errors)
 for the resulting messages.
+<!-- @@author -->
 
 #### Tests
 
@@ -279,12 +287,11 @@ checks that other dates and groups remain, hidden students can be updated, remov
 removal, and marking followed by unmarking restores the original student.
 The command parser tests cover parameter validation, and `AddressBookParserTest` checks unmark routing.
 `LogicManagerTest` covers persistence and reload, failed saves, filter preservation, and startup failure protection.
-<!-- @@author  -->
 ### Adding student information
 
-Command format: 
+Command format:
 ````text
-add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME].
+add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]
 ````
 Accepted values are documented in the [UG field rules](UserGuide.md#field-rules); exact messages and validation order
 are in [Appendix: Errors](#appendix-errors).
@@ -305,7 +312,8 @@ are in [Appendix: Errors](#appendix-errors).
   of 63, and a final label of 2–63 letters. Only the domain is lowercased using `Locale.ROOT`.
 * `Remark` accepts at most 4,000 Unicode code points; command parsing trims only surrounding whitespace.
   Empty or omitted remarks become empty strings. `r/` can appear anywhere and does not consume later parameters.
-* `Label` accepts 1–60 Unicode code points after lowercasing and requires at least one letter or digit. It permits
+* `Label` accepts 1–60 characters and requires at least one letter or digit. For length checking, lowercase
+  `i` plus combining dot counts as the single `İ` from which it can expand. It permits
   letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Empty labels
   are rejected, omitted labels become an empty label set, and `l/` can appear anywhere without consuming later parameters.
 
@@ -802,6 +810,12 @@ TA refers to a teaching assistant. Story IDs are retained from the project notes
 | US36 | `* *` | TA | view students who need my attention | I can prioritize whom to follow up with |
 | US37 | `* *` | TA | organize students using meaningful categories | I can retrieve groups of related students easily |
 | US38 | `* *` | experienced user | perform common operations efficiently | managing student information does not distract me from teaching |
+
+#### Recovering from mistakes
+
+| ID | Priority | As a/an ... | I want to ... | So that ... |
+|----|----------|--------|-------------|----------------|
+| US39 | `* *` | TA who made an accidental change | undo my latest saved data change | I can restore the previous student records |
 
 ### Use cases
 
@@ -1348,8 +1362,8 @@ view, undo history, and the saved file. Shared errors below also apply to the co
 
 The general command parser runs before command-specific validation. Unicode space separators and Hangul fillers
 (`U+115F`, `U+1160`, `U+3164`, `U+FFA0`) count as spacing around commands and prefixes and are trimmed from value
-boundaries. Zero-width spaces and byte order marks are not normalized as whitespace. Internal label and remark
-characters are preserved; name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace-and-label-matching).
+boundaries. Zero-width spaces and byte order marks are not normalized as whitespace. Labels preserve internal spacing while letters are lowercased. Remarks preserve internal characters;
+name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace-and-label-matching).
 
 ### Field validation errors
 
@@ -1526,7 +1540,8 @@ Loading trims surrounding ASCII control whitespace, Unicode space separators, an
 from text fields, labels, dates, and attendance groups before validation. Names also normalize these Unicode spaces and
 fillers to ASCII spaces and collapse repeated spaces. Internal spacing and punctuation in remarks, labels, and
 attendance groups are preserved. Student IDs become uppercase; email domains, labels, and attendance groups become
-lowercase. Label and group length limits apply after lowercasing, which can expand some Unicode letters.
+lowercase. Label and group length checks count the lowercase `i` plus combining-dot sequence as one character.
+This preserves labels accepted before lowercasing was introduced, including their saved lowercase forms.
 Duplicate Student IDs, labels within a student, and attendance date/group pairs within a student are checked after
 normalization; label/group comparison ignores case but preserves internal spacing, Unicode spaces, and Hangul fillers.
 The normalized values are written on the next successful save.

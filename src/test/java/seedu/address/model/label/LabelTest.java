@@ -57,7 +57,7 @@ public class LabelTest {
 
         // EP: label exceeds the maximum length
         assertFalse(Label.isValidLabelName("a".repeat(Label.MAX_NAME_LENGTH + 1))); // BVA: one above maximum
-        assertFalse(Label.isValidLabelName("İ".repeat(31))); // BVA: 62 code points after lowercasing
+        assertFalse(Label.isValidLabelName("İ".repeat(61))); // BVA: one above the legacy limit
 
         // EP: disallowed character or no letter or digit
         assertFalse(Label.isValidLabelName("Tutorial/1"));
@@ -71,7 +71,8 @@ public class LabelTest {
         assertTrue(Label.isValidLabelName("A")); // BVA: minimum valid length
         assertTrue(Label.isValidLabelName("a".repeat(Label.MAX_NAME_LENGTH - 1))); // BVA: one below maximum
         assertTrue(Label.isValidLabelName("a".repeat(Label.MAX_NAME_LENGTH))); // BVA: maximum length
-        assertTrue(Label.isValidLabelName("İ".repeat(30))); // BVA: 60 code points after lowercasing
+        assertTrue(Label.isValidLabelName("İ".repeat(60))); // BVA: maximum before lowercase expansion
+        assertTrue(Label.isValidLabelName("i\u0307".repeat(60))); // EP: persisted lowercase equivalent
 
         // EP: valid label with supported punctuation and spacing
         assertTrue(Label.isValidLabelName("Discrete Math Tutorial"));

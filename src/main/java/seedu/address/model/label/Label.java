@@ -39,9 +39,10 @@ public class Label {
     public static boolean isValidLabelName(String test) {
         requireNonNull(test);
         String lowercasedName = test.toLowerCase(Locale.ROOT);
+        String lengthCheckedName = lowercasedName.replace("i\u0307", "\u0130");
 
         if (lowercasedName.isBlank()
-                || lowercasedName.codePointCount(0, lowercasedName.length()) > MAX_NAME_LENGTH) {
+                || lengthCheckedName.codePointCount(0, lengthCheckedName.length()) > MAX_NAME_LENGTH) {
             return false;
         }
 

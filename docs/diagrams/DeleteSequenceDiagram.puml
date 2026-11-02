@@ -5,11 +5,14 @@ skinparam ArrowFontStyle plain
 title DeleteCommand: update a pending model
 participant "command:DeleteCommand" as Command LOGIC_COLOR
 participant "pending:ModelManager" as Model MODEL_COLOR
+participant "book:ReadOnlyAddressBook" as Book MODEL_COLOR
 [-> Command : execute(pending)
 activate Command
 Command -> Command : findStudent(pending)
-Command -> Model : getAddressBook().getPersonList()
-Model --> Command : all students
+Command -> Model : getAddressBook()
+Model --> Command : book
+Command -> Book : getPersonList()
+Book --> Command : all students
 note over Command
 Resolve the Student ID in the full list.
 If absent, throw CommandException.
