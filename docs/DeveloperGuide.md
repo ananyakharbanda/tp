@@ -407,7 +407,9 @@ Field parsing and the shared save transaction are outside its scope.
 <!-- @@author -->
 
 <puml src="diagrams/AddSequenceDiagram.puml" alt="AddCommand checks identity and updates the pending model" />
+
 <!-- @@author sammeowwww -->
+
 #### Add command walkthrough
 
 1. Before the diagram begins, `AddCommandParser` validates the supplied values, creates a `Person`, and returns an

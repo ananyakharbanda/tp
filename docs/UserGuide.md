@@ -94,7 +94,7 @@ groups. `I` matches `i`; dotless `ı` is a different character.
 
 ### Field rules
 
-These rules apply wherever a command accepts the field. Name and remark limits count Unicode code points after
+These rules apply wherever a command accepts the field, the only exception being `find` which can accept partial inputs for names, student IDs, emails, and remarks (label searches require a complete label). Name and remark limits count Unicode code points after
 whitespace handling. For labels, the lowercase `i` + combining dot produced from `İ` counts as one character,
 so converting an existing label to lowercase does not invalidate its length.
 
@@ -105,7 +105,7 @@ so converting an existing label to lowercase does not invalidate its length.
 | Email | A supported `name@example.com` address, at most 254 characters, without spaces. The local part allows ASCII letters, digits, `.`, `_`, `+`, and `-`; the domain needs at least two dot-separated parts and a final part of 2–63 letters. Only the domain is lowercased. Mailbox existence is not checked. [Full constraints](DeveloperGuide.md#field-validation-errors). |
 | Remark | Optional, at most 4,000 characters. Internal spacing and capitalization are preserved; dates and grades are not checked. Text starting after a space or similar separator with ASCII letters immediately followed by `/` is read as a parameter prefix, even in remarks. |
 | Label / group | 1–60 characters using the counting rule above, including a letter or digit. Allows Unicode letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Internal spacing is preserved; capitalization is converted to lowercase for storage and display. |
-| Date | A real calendar date in `YYYY-MM-DD` format, with zero-padded month and day, e.g., `2026-10-20`. |
+| Date | A real calendar date in `YYYY-MM-DD` format, with zero-padded month and day, e.g., `2026-01-20`. |
 
 For example, `r/Discussed algebra/ today` is rejected with `Unknown parameter: algebra/.` because
 `algebra/` starts after a space. The same applies to `algebra/topic`; text after the slash does not change the rule.
