@@ -43,7 +43,9 @@ public class EditCommand extends Command {
             + "Parameters: " + PREFIX_STUDENT_ID + "STUDENT_ID "
             + "[" + PREFIX_NAME + "NAME] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
+            // @@author ananyakharbanda
             + "[" + PREFIX_REMARK + "REMARK] "
+            // @@author
             + "[" + PREFIX_LABEL + "LABEL_NAME]... "
             + "[" + PREFIX_DELETE_LABEL + "LABEL_NAME]...\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_STUDENT_ID + "A0123456B "
@@ -145,7 +147,9 @@ public class EditCommand extends Command {
         Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
         StudentId updatedStudentId = personToEdit.getStudentId();
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
+        // @@author ananyakharbanda
         Remark updatedRemark = editPersonDescriptor.getRemark().orElse(personToEdit.getRemark());
+        // @@author
         Set<Label> updatedLabels = updateLabels(personToEdit, editPersonDescriptor);
 
         return new Person(updatedName, updatedStudentId, updatedEmail,
@@ -243,7 +247,9 @@ public class EditCommand extends Command {
     public static class EditPersonDescriptor {
         private Name name;
         private Email email;
+        // @@author ananyakharbanda
         private Remark remark;
+        // @@author
         private List<Label> labelsToAdd = new ArrayList<>();
         private List<Label> labelsToRemove = new ArrayList<>();
         private boolean isClearingLabels;
@@ -261,7 +267,9 @@ public class EditCommand extends Command {
         public EditPersonDescriptor(EditPersonDescriptor toCopy) {
             setName(toCopy.name);
             setEmail(toCopy.email);
+            // @@author ananyakharbanda
             setRemark(toCopy.remark);
+            // @@author
             setLabelsToAdd(toCopy.labelsToAdd);
             setLabelsToRemove(toCopy.labelsToRemove);
             setClearingLabels(toCopy.isClearingLabels);
@@ -377,7 +385,9 @@ public class EditCommand extends Command {
 
             return Objects.equals(name, otherEditPersonDescriptor.name)
                     && Objects.equals(email, otherEditPersonDescriptor.email)
+                    // @@author ananyakharbanda
                     && Objects.equals(remark, otherEditPersonDescriptor.remark)
+                    // @@author
                     && labelsToAdd.equals(otherEditPersonDescriptor.labelsToAdd)
                     && labelsToRemove.equals(otherEditPersonDescriptor.labelsToRemove)
                     && isClearingLabels == otherEditPersonDescriptor.isClearingLabels;
@@ -388,7 +398,9 @@ public class EditCommand extends Command {
             return new ToStringBuilder(this)
                     .add("name", name)
                     .add("email", email)
+                    // @@author ananyakharbanda
                     .add("remark", remark)
+                    // @@author
                     .add("labelsToAdd", labelsToAdd)
                     .add("labelsToRemove", labelsToRemove)
                     .add("isClearingLabels", isClearingLabels)

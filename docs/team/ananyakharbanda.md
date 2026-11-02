@@ -33,6 +33,7 @@ My work covers student listing and remark editing, UI improvements, application 
 
 ### Startup, storage, and privacy
 
+* Preserved existing Unicode labels when upgrading to lowercase label storage, with a regression test covering loading, saving, and reloading the data ([PR #294](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/294)).
 * Fixed startup crashes caused by null JSON data and file-logging failures ([issue #124](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/124), [issue #126](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/126), [PR #125](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/125), [PR #127](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/127)).
 * Kept application files beside the JAR and corrected packaged-path tests and coverage reporting ([issue #128](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/128), [PR #129](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/129)).
 * Rejected malformed student-data JSON, duplicate keys, and invalid field types ([issue #234](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/234), [PR #244](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/244)).
@@ -43,6 +44,7 @@ My work covers student listing and remark editing, UI improvements, application 
 
 ### Testing and bug reporting
 
+* Added the original remark-editing tests for clearing remarks, parameter order, unknown prefixes, and the remark-length boundary in [PR #66](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/66) ([original implementation](https://github.com/AY2627S1-CS2103T-F12-1/tp/commit/da5ac3850fbd69489c8d6d8b53b6e38c57206832)). Sam subsequently revised these tests for Student ID targeting and added further cases and comments; the current tests include both contributions.
 * Made JavaFX test initialization reliable and bounded so initialization failures or timeouts fail explicitly ([issue #239](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/239), [PR #251](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/251)).
 * Recorded the team's alpha-testing task split and completion of my assigned testing areas: adding and deleting students, marking and unmarking attendance, viewing attendance, and clearing records ([issue #190](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/190)).
 * Reported reproducible alpha bugs involving concurrent data overwrites, clipped student details, hidden attendance badges, truncated attendance headings, and pasted tab separators ([issue #213](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/213), [issue #214](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/214), [issue #215](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/215), [issue #216](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/216), [issue #217](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/217)).
@@ -52,6 +54,9 @@ The tab-separator report in issue #217 was resolved by Tristan's documentation c
 
 ### Documentation and project maintenance
 
+* Corrected UML diagram titles, method-call receivers, activity guards, architecture dependencies, and parser-label visibility ([PR #295](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/295), [PR #296](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/296), [PR #298](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/298), [PR #299](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/299), [PR #300](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/300)); removed obsolete UML sources ([PR #301](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/301)).
+* Corrected Developer Guide label syntax and the undo user story, and updated the README and homepage feature summaries ([PR #302](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/302), [PR #303](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/303), [PR #304](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/304)).
+* Refreshed the application screenshot, clarified Mac JAR launch instructions, and corrected the Help-window release notes ([PR #305](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/305), [PR #306](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/306), [PR #307](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/307)).
 * Updated the project README ([issue #35](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/35), [PR #37](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/37)).
 * Added the Student Listing sequence diagram and its PlantUML source ([issue #97](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/97), [PR #98](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/98)).
 * Cleaned up TeachAssist branding, website content, setup documentation, portfolio placeholders, and student-facing terminology ([issue #160](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/160), [issue #161](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/161), [PR #163](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/163)).
@@ -76,7 +81,8 @@ generated on 2 November 2026 at 11:41 SGT recognises my Git author name, `Ananya
 | Regression tests | My contributions remain visible in listing, label-search, application lifecycle, logging, JSON validation, and storage tests. |
 
 The review found no missing account alias. The retained remark-parsing contribution from
-[PR #66](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/66) needs the narrow attribution correction tracked in
+[PR #66](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/66) received a narrow attribution correction in
+[PR #309](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/309), resolving
 [issue #290](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/290). Shared code is attributed by verified contribution boundaries.
 
 [Team responsibilities](../AboutUs.md)
