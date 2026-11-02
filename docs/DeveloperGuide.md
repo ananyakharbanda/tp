@@ -424,9 +424,7 @@ See the [User Guide](UserGuide.md#finding-students-by-name-student-id-email-rema
 * Keyword matching lowercases the field and keyword separately with `Locale.ROOT` before substring comparison;
   it does not perform full Unicode case folding or Unicode normalization, so context-sensitive case mappings
   (such as Greek sigma), multi-character expansions (such as `ß` to `ss`), and canonically equivalent encodings
-  may not match. Given that the course is administered and taught in English, we felt that limiting guaranteed support
-  for case-insensitive matching to ASCII letters (A-Z, a-z) and other more common Unicode characters was a reasonable
-  choice, rather than attempting to capture every nuanced case-matching scenarios that different languages have.
+  may not match.
 * `RemarkContainsKeywordsPredicate` searches `Person#getRemark().value` only. Empty remarks do not match
   non-empty keywords. Numeric slash text such as `8/10` is accepted under the existing prefix rules.
 * A label value is kept whole, validated by `ParserUtil#parseLabel`, and passed to `LabelMatchesPredicate`.
