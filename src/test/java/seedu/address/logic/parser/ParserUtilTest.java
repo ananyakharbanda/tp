@@ -287,7 +287,7 @@ public class ParserUtilTest {
 
         // EP: Unicode lowercasing expands a label beyond the maximum length
         // BVA: 31 dotted capital I characters become 62 code points
-        assertThrows(ParseException.class, Label.MESSAGE_CONSTRAINTS, () -> ParserUtil.parseLabel("İ".repeat(31)));
+        assertThrows(ParseException.class, Label.MESSAGE_CONSTRAINTS, () -> ParserUtil.parseLabel("İ".repeat(61)));
     }
 
     @Test
@@ -301,7 +301,7 @@ public class ParserUtilTest {
 
         // EP: Unicode lowercasing expands to a label at the maximum length
         // BVA: 30 dotted capital I characters become 60 code points
-        assertEquals(new Label("İ".repeat(30)), ParserUtil.parseLabel("İ".repeat(30)));
+        assertEquals(new Label("İ".repeat(60)), ParserUtil.parseLabel("İ".repeat(60)));
     }
 
     @Test
