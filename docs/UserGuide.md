@@ -19,10 +19,15 @@ TeachAssist is a **desktop application for managing student records, optimized f
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
 1. Download the latest `.jar` file from [the TeachAssist releases page](https://github.com/AY2627S1-CS2103T-F12-1/tp/releases).
+   For native Apple Silicon Java, choose the `-mac-aarch64.jar` variant when provided. For Windows, Linux,
+   or Intel Java on macOS (including Intel Java under Rosetta), choose the standard JAR. Match the Mac variant
+   to your installed Java architecture, not just your computer's processor.
 
 1. Copy the file to the folder you want to use as the _home folder_ for TeachAssist.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar teach-assist-v1.6.jar`.<br>
+1. Open a terminal and `cd` to the folder containing the JAR file. Run `java -jar teach-assist-v1.6.jar`
+   for the standard v1.6 JAR, or `java -jar teach-assist-v1.6-mac-aarch64.jar` for the Apple Silicon variant.
+   If you downloaded a different version, use its actual filename.<br>
    A GUI similar to the one below should appear in a few seconds. With no saved data file, the student list starts empty.<br>
    ![Ui](images/Ui.png)
    The screenshot shows an earlier label display; the current version displays group labels in lowercase.

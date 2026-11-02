@@ -80,6 +80,13 @@ Any warnings or errors will be printed out to the console.
 Here are the steps to create a new release.
 
 1. Update `MainApp.VERSION` in [`MainApp.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/MainApp.java) and the release JAR filename in [`build.gradle`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/build.gradle). Keep the launch command in the User Guide consistent with that filename.
-1. Generate a fat JAR file using Gradle (i.e., `./gradlew shadowJar`).
+1. Generate the release JARs in `build/libs`, selecting the Mac Java architecture explicitly:
+   * `./gradlew shadowJar -PjavafxMacPlatform=mac` produces `teach-assist-v1.6.jar` for Windows, Linux,
+     and Intel Java on macOS (including Intel Java under Rosetta).
+   * `./gradlew shadowJar -PjavafxMacPlatform=mac-aarch64` produces `teach-assist-v1.6-mac-aarch64.jar`
+     for native Apple Silicon Java on macOS. This JAR also includes the Windows and Linux libraries.
+   Without the property, Gradle selects the Mac libraries from the build JVM's architecture; builds on other
+   operating systems default to `mac`. The two Mac native-library sets cannot share one JAR because their
+   resource names collide. Upload both named JARs when supporting both Mac Java architectures.
 1. Tag the repo with the version number. e.g. `v0.1`
 1. [Create a new release using GitHub](https://help.github.com/articles/creating-releases/). Upload the JAR file you created.
