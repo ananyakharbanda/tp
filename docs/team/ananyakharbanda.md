@@ -55,8 +55,27 @@ The tab-separator report in issue #217 was resolved by Tristan's documentation c
 * Added the Student Listing sequence diagram and its PlantUML source ([issue #97](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/97), [PR #98](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/98)).
 * Cleaned up TeachAssist branding, website content, setup documentation, portfolio placeholders, and student-facing terminology ([issue #160](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/160), [issue #161](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/161), [PR #163](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/163)).
 * Completed and corrected the User Guide, Developer Guide, testing guidance, and architecture diagrams ([issue #167](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/167), [PR #168](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/168)).
+* Rewrote the Developer Guide use cases to cover all implemented commands, shared failure handling, and recovery behaviour; simplified the UML explanations in [PR #266](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/266) ([implementation commit](https://github.com/AY2627S1-CS2103T-F12-1/tp/commit/e0949ad043024698e0b00636301fd338fe8ecedd)).
+* Authored four UML diagrams in that PR: [saving before publishing](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/docs/diagrams/SaveSequenceDiagram.puml), [attendance report refresh](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/docs/diagrams/AttendanceRefreshSequenceDiagram.puml), [student data classes](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/docs/diagrams/StudentDataClassDiagram.puml), and [attendance model classes](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/docs/diagrams/AttendanceModelClassDiagram.puml).
 * Aligned guide expectations with undo behaviour and startup loading failures ([issue #241](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/241), [PR #249](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/249)).
 * Updated the application screenshot and corrected the label-search activity diagram ([issue #253](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/253), [PR #254](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/254)).
 * Added my profile photo and updated my About Us entry and portfolio ([issue #10](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/10), [issue #26](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/26), [PR #19](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/19), [PR #30](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/30)).
+
+### Authorship verification
+
+The [course RepoSense report](https://nus-cs2103-ay2627-s1.github.io/tp-dashboard/?search=ananyakharbanda)
+generated on 2 November 2026 at 11:41 SGT recognises my Git author name, `Ananya Kharbanda`, under
+`ananyakharbanda`. This was checked against the report's commit and per-file attribution data and the repository history.
+
+| Area reviewed | Attribution evidence |
+|---------------|----------------------|
+| Student listing | The report credits my listing feedback and `ListCommandParser`, matching [the original implementation](https://github.com/AY2627S1-CS2103T-F12-1/tp/commit/b4304e7fb4e36ee61a2c1106e152633592478b85) and subsequent listing fixes. |
+| Label-search integration | My `FindCommandParser` integration and `LabelMatchesPredicate` changes remain credited, including [the integration commit](https://github.com/AY2627S1-CS2103T-F12-1/tp/commit/01ef08ba6c40b27b0a62e116bad30b1f390d732f). |
+| Reliability fixes | The report credits my work in `AppPaths`, startup handling, JSON validation, concurrent-write protection, and private diagnostic logging; the corresponding PRs are linked above. |
+| Regression tests | My contributions remain visible in listing, label-search, application lifecycle, logging, JSON validation, and storage tests. |
+
+The review found no missing account alias. The retained remark-parsing contribution from
+[PR #66](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/66) needs the narrow attribution correction tracked in
+[issue #290](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/290). Shared code is attributed by verified contribution boundaries.
 
 [Team responsibilities](../AboutUs.md)

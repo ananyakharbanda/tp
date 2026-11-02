@@ -14,7 +14,7 @@ public class MessagesTest {
         // EP: non-empty remark is shown after the labels (#208)
         Person person = new PersonBuilder().withLabels("Tutorial 1").withRemark("Needs help with recursion").build();
 
-        assertEquals("Amy Bee; Student ID: A0000000A; Email: amy@gmail.com; Labels: [Tutorial 1]; "
+        assertEquals("Amy Bee; Student ID: A0000000A; Email: amy@gmail.com; Labels: [tutorial 1]; "
                 + "Remark: Needs help with recursion", Messages.format(person));
     }
 
@@ -23,7 +23,7 @@ public class MessagesTest {
         // EP: labels are listed alphabetically ignoring case, not in set order (#209)
         Person person = new PersonBuilder().withLabels("Zeta", "alpha", "Lab B").build();
 
-        assertEquals("Amy Bee; Student ID: A0000000A; Email: amy@gmail.com; Labels: [alpha][Lab B][Zeta]",
+        assertEquals("Amy Bee; Student ID: A0000000A; Email: amy@gmail.com; Labels: [alpha][lab b][zeta]",
                 Messages.format(person));
     }
 
@@ -32,7 +32,7 @@ public class MessagesTest {
         // Boundary: an empty remark adds no remark section
         Person person = new PersonBuilder().withLabels("Tutorial 1").build();
 
-        assertEquals("Amy Bee; Student ID: A0000000A; Email: amy@gmail.com; Labels: [Tutorial 1]",
+        assertEquals("Amy Bee; Student ID: A0000000A; Email: amy@gmail.com; Labels: [tutorial 1]",
                 Messages.format(person));
     }
 }

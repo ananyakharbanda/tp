@@ -142,7 +142,7 @@ public class LogicManagerTest {
 
         CommandResult result = logic.execute("unmark i/a1234567b d/2026-10-20 l/tutorial 1");
 
-        assertEquals("Unmarked student A1234567B for Tutorial 1 on 2026-10-20.", result.getFeedbackToUser());
+        assertEquals("Unmarked student A1234567B for tutorial 1 on 2026-10-20.", result.getFeedbackToUser());
         Person expectedStudent = new PersonBuilder(student).withAttendance(retained).build();
         assertEquals(List.of(expectedStudent, BENSON), model.getAddressBook().getPersonList());
         assertEquals(model.getAddressBook(), storage.readAddressBook().orElseThrow());
@@ -318,7 +318,7 @@ public class LogicManagerTest {
 
         assertThrows(ParseException.class, ParserUtil.MESSAGE_INVALID_DATE, () ->
                 logic.execute("unmark i/A1234567B d/2026-02-30 l/Tutorial 1"));
-        String expectedMessage = "Student A1234567B is not marked present for Tutorial 1 on 2026-10-21.";
+        String expectedMessage = "Student A1234567B is not marked present for tutorial 1 on 2026-10-21.";
         assertThrows(CommandException.class, expectedMessage, () ->
                 logic.execute("unmark i/A1234567B d/2026-10-21 l/Tutorial 1"));
         assertEquals(originalFile, Files.readString(storage.getAddressBookFilePath()));
@@ -375,7 +375,7 @@ public class LogicManagerTest {
 
         CommandResult result = logic.execute("mark i/a1234567b d/2026-10-20 l/tutorial 1");
 
-        assertEquals("Marked student A1234567B present for Tutorial 1 on 2026-10-20.",
+        assertEquals("Marked student A1234567B present for tutorial 1 on 2026-10-20.",
                 result.getFeedbackToUser());
         AttendanceRecord record = new AttendanceRecord(LocalDate.parse("2026-10-20"), new Label("Tutorial 1"));
         Person expectedStudent = new PersonBuilder(student).withAttendance(record).build();
@@ -413,7 +413,7 @@ public class LogicManagerTest {
         assertEquals(1, afterOtherDate.getAbsentCount());
 
         assertCommandException("mark i/A1234567B d/2026-10-20 l/Tutorial 1",
-                "Student A1234567B is already marked present for Tutorial 1 on 2026-10-20.");
+                "Student A1234567B is already marked present for tutorial 1 on 2026-10-20.");
         assertEquals(2, logic.execute("mark i/B1234567C d/2026-10-20 l/Tutorial 1")
                 .getAttendanceReport().orElseThrow().getPresentCount());
 
@@ -447,11 +447,11 @@ public class LogicManagerTest {
         model = new ModelManager(storage.readAddressBook().orElseThrow(), new UserPrefs());
         logic = new LogicManager(model, storage);
 
-        assertEquals("Attendance for Tutorial 1 on 2026-10-20: 1 present, 1 absent.",
+        assertEquals("Attendance for tutorial 1 on 2026-10-20: 1 present, 1 absent.",
                 logic.execute("attendance d/2026-10-20 l/Tutorial 1").getFeedbackToUser());
-        assertEquals("Attendance for Tutorial 2 on 2026-10-20: 1 present, 0 absent.",
+        assertEquals("Attendance for tutorial 2 on 2026-10-20: 1 present, 0 absent.",
                 logic.execute("attendance d/2026-10-20 l/Tutorial 2").getFeedbackToUser());
-        assertEquals("Attendance for Tutorial 3 on 2026-10-20: 0 present, 0 absent.",
+        assertEquals("Attendance for tutorial 3 on 2026-10-20: 0 present, 0 absent.",
                 logic.execute("attendance d/2026-10-20 l/Tutorial 3").getFeedbackToUser());
     }
 
@@ -465,7 +465,7 @@ public class LogicManagerTest {
 
         assertParseException("mark i/A1234567B d/2026-02-30 l/Tutorial 1", ParserUtil.MESSAGE_INVALID_DATE);
         assertCommandException("mark i/A1234567B d/2026-10-20 l/Tutorial 2",
-                "Student A1234567B does not have group label \"Tutorial 2\".");
+                "Student A1234567B does not have group label \"tutorial 2\".");
         assertEquals(originalFile, Files.readString(storage.getAddressBookFilePath()));
         assertEquals(List.of(student), model.getAddressBook().getPersonList());
     }

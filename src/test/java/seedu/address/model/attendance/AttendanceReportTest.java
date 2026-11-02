@@ -110,7 +110,10 @@ public class AttendanceReportTest {
         assertEquals(report.hashCode(), AttendanceReport.of(List.of(member), DATE, GROUP).hashCode());
         assertFalse(report.equals(AttendanceReport.of(List.of(member), DATE.plusDays(1), GROUP)));
         assertFalse(report.equals(AttendanceReport.of(List.of(), DATE, GROUP)));
-        assertFalse(report.equals(AttendanceReport.of(List.of(member), DATE, new Label("TUTORIAL 1"))));
+        // EP: case variants normalize to the same report group
+        AttendanceReport differentCase = AttendanceReport.of(List.of(member), DATE, new Label("TUTORIAL 1"));
+        assertTrue(report.equals(differentCase));
+        assertEquals(report.hashCode(), differentCase.hashCode());
         assertFalse(report.equals(null));
         assertFalse(report.equals(GROUP));
     }

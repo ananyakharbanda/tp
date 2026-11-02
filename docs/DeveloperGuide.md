@@ -17,6 +17,17 @@
 * Application libraries: [JavaFX](https://openjfx.io/) for the graphical interface and [Jackson](https://github.com/FasterXML/jackson) for JSON persistence.
 * Testing and build tools: [JUnit 5](https://junit.org/junit5/), [Gradle](https://gradle.org/), [Shadow](https://gradleup.com/shadow/), [Checkstyle](https://checkstyle.org/) and [JaCoCo](https://www.jacoco.org/jacoco/).
 * Documentation tools: [MarkBind](https://markbind.org/) for the website and [PlantUML](https://plantuml.com/) for UML diagrams.
+* Ananya Kharbanda used an AI coding assistant for implementation suggestions, regression tests, code review,
+  UML revisions, and documentation checks. Suggested changes were checked against the implementation and
+  validated using relevant automated tests, code-style checks, diagram rendering, and documentation builds.
+* OpenAI Codex assisted @sammeowwww with implementation code, test cases, sequence diagrams, and documentation for
+  student, label, and attendance features. The contributor gave explicit requirements, reviewed the generated changes
+  against the intended behavior, and validated them with automated tests, Checkstyle, and manual testing before
+  accepting them.
+* OpenAI Codex assisted @DaRealTristan with implementation code, test cases, sequence diagrams, and documentation for 
+  find and unmark features as well as bug fixes for storage. The contributor gave explicit requirements, 
+  reviewed the generated changes against the intended behavior, and validated them with automated tests, Checkstyle, 
+  and manual testing before accepting them.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -28,9 +39,14 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 ## **Design**
 
+The diagrams use three distinct views. Component diagrams describe responsibilities and dependencies; class
+and sequence diagrams describe selected implementation relationships; activity diagrams describe decisions in a
+workflow. Each caption states the scope and any omitted steps. A message written as an action in a component
+sequence is conceptual, while messages in an object sequence use the implemented operations.
+
 ### Architecture
 
-<puml src="diagrams/ArchitectureDiagram.puml" width="280" />
+<puml src="diagrams/ArchitectureDiagram.puml" alt="Dependencies between application components" />
 
 The ***Architecture Diagram*** given above explains the high-level design of the App.
 
@@ -53,9 +69,11 @@ The bulk of the app's work is done by the following four components:
 
 **How the architecture components interact with each other**
 
-The *Sequence Diagram* below shows the components interacting for `delete i/A0123456B`.
+The component sequence below follows a valid `delete i/A0123456B` request. It shows only the responsibilities of
+UI, Logic, Model, and Storage. Parsing, pending-model construction, and filesystem operations are expanded in
+the implementation section.
 
-<puml src="diagrams/ArchitectureSequenceDiagram.puml" width="574" />
+<puml src="diagrams/ArchitectureSequenceDiagram.puml" alt="Deletion at component level" />
 
 Each of the four main components (also shown in the diagram above),
 
@@ -64,13 +82,16 @@ Each of the four main components (also shown in the diagram above),
 
 For example, the `Logic` component defines its API in `Logic.java` and implements it in `LogicManager.java`. Other components interact with a component through its interface rather than its concrete class, preventing them from coupling to that component's implementation, as illustrated in the following partial class diagram.
 
-<puml src="diagrams/ComponentManagers.puml" width="300" />
+<puml src="diagrams/ComponentManagers.puml" alt="Component implementations and interfaces" />
 
 The sections below give more details of each component.
 
 ### UI component
 
 The **API** of this component is specified in [`Ui.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/ui/Ui.java)
+
+The partial class diagram shows UI ownership and object creation. Common `UiPart` inheritance and dependencies
+outside the UI package are omitted from the drawing and described below.
 
 <puml src="diagrams/UiClassDiagram.puml" alt="Structure of the UI Component"/>
 
@@ -92,23 +113,25 @@ The `UI` component,
 
 Here's a (partial) class diagram of the `Logic` component:
 
-<puml src="diagrams/LogicClassDiagram.puml" width="550"/>
+<puml src="diagrams/LogicClassDiagram.puml" alt="Logic classes and component interfaces" />
 
-The [add](#adding-student-information) and [delete](#deleting-student-information) sequence diagrams below
-show how parsed commands change a temporary model before the live model is updated.
+The [add](#adding-student-information) and [delete](#deleting-student-information) diagrams show command execution
+on a pending model. The separate [save-before-publish diagram](#saving-before-publishing-changes) shows how
+`LogicManager` saves and publishes those changes.
 
 
 How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, the command is passed to an `AddressBookParser` object, which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a student).<br>
-   Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
+1. A read-only command queries or filters the live model. A modifying command runs on a pending model;
+   `LogicManager` saves the pending records before publishing them. Undo uses its separate restoration path.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
 
-Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
+The parsing class diagram uses the implemented `AddCommandParser` as a representative. Other command parsers
+use the same `Parser` interface; their individual dependencies are omitted.
 
-<puml src="diagrams/ParserClasses.puml" width="600"/>
+<puml src="diagrams/ParserClasses.puml" alt="Parser classes illustrated by AddCommandParser" />
 
 How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
@@ -117,7 +140,12 @@ How the parsing works:
 ### Model component
 **API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
-<puml src="diagrams/ModelClassDiagram.puml" width="450" />
+The first class diagram shows model ownership and interfaces. Student fields are expanded in the second;
+attendance-report classes are shown under [Reporting attendance](#reporting-attendance).
+
+<puml src="diagrams/ModelClassDiagram.puml" alt="Model ownership and read-only interfaces" />
+
+<puml src="diagrams/StudentDataClassDiagram.puml" alt="Student fields and persisted attendance" />
 
 
 The `Model` component,
@@ -135,9 +163,9 @@ The `Model` component,
 
 <box type="info" seamless>
 
-**Note:** The alternative, arguably more object-oriented, design below keeps a unique list of labels in `AddressBook`, and each `Person` references values from that list. This lets `AddressBook` maintain one value object per unique label instead of each `Person` holding its own objects.<br>
+**Alternative (not implemented):** The design below keeps a unique list of labels in `AddressBook`, and each `Person` references values from that list. This lets `AddressBook` maintain one value object per unique label instead of each `Person` holding its own objects.<br>
 
-<puml src="diagrams/BetterModelClassDiagram.puml" width="450" />
+<puml src="diagrams/BetterModelClassDiagram.puml" alt="Unimplemented alternative with a shared label collection" />
 </box>
 
 
@@ -145,7 +173,7 @@ The `Model` component,
 
 **API** : [`Storage.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/storage/Storage.java)
 
-<puml src="diagrams/StorageClassDiagram.puml" width="550" />
+<puml src="diagrams/StorageClassDiagram.puml" alt="Storage classes and JSON adapters" />
 
 The `Storage` component,
 * can save both student data and user preference data in JSON format, and read them back into corresponding objects.
@@ -179,23 +207,26 @@ Existing saved labels remain compatible, including records containing multiple l
 
 Format: `edit i/STUDENT_ID [n/NAME] [e/EMAIL] [r/REMARK] [l/LABEL_NAME]... [dl/LABEL_NAME]...`
 
-`EditCommandParser` checks command structure and parses the Student ID and requested field changes.
-It collects repeated `l/` and `dl/` values into the `EditPersonDescriptor`. An empty `l/` requests
-clearing all labels and is rejected if combined with another label change. An empty `r/` becomes
-an empty remark.
+The diagram follows a successful edit that replaces `tutorial 1` with `tutorial 2`, from parsing through the
+pending-model update. It expands Logic while keeping Model at a high level. The reference frame points to the
+shared [save-before-publish flow](#saving-before-publishing-changes); error paths are omitted.
 
-`EditCommand` finds the student by Student ID in the complete student list, so a filtered view
-does not change the target. It builds a replacement `Person`, keeping fields that were not supplied.
-For labels, it copies the student's set, removes each `dl/` label, then adds each `l/` label.
-Matching is case-insensitive. Removing a missing label or adding one already present throws a
-`CommandException`, leaving the record unchanged. An empty `l/` produces an empty label set.
-The command then replaces the student through `Model#setPerson`; `LogicManager` saves the pending
-model before publishing it to the live model.
+<puml src="diagrams/EditLabelSequenceDiagram.puml" alt="EditCommand updates labels on the pending model" />
 
-The sequence diagram below shows an edit that removes one label and adds another. It also shows that
-a save failure leaves the live student data unchanged.
+1. `EditCommandParser` checks the command structure and parses the Student ID and requested changes.
+   It collects repeated `l/` and `dl/` values in an `EditPersonDescriptor`.
+2. `EditCommand` reads the complete student list and finds the target by Student ID. A filtered view
+   does not affect which student is edited.
+3. The command builds a replacement `Person`, retaining fields not supplied in the command, the Student ID,
+   and attendance. It copies the existing labels, removes each `dl/` label, then adds each `l/` label.
+4. Once the changes are valid, the command replaces the student in the pending model and shows the full
+   student list. `LogicManager` saves the pending model before publishing it to the live model, as described
+   in the shared [save-before-publish flow](#saving-before-publishing-changes).
 
-<puml src="diagrams/EditLabelSequenceDiagram.puml" alt="Editing student labels and saving before publishing" />
+Label names are lowercased when constructed, so matching remains case-insensitive. Removing a missing label or
+adding one already present throws a
+`CommandException`, leaving the record unchanged. An empty `l/` clears all labels and cannot be combined
+with another label change. An empty `r/` becomes an empty remark.
 
 ### Mark and unmark attendance
 
@@ -210,49 +241,44 @@ The accepted inputs, examples, and feedback are documented under
 [Recording attendance](UserGuide.md#recording-attendance-mark) and
 [Removing attendance](UserGuide.md#removing-attendance-unmark) in the User Guide.
 
-#### Parsing and validation
+The diagrams follow successful `mark` and `unmark` commands from parsing through the pending-model update.
+They expand Logic while keeping Model at a high level. The pending copy retains the current student filter.
+The reference frames point to the shared [save-before-publish flow](#saving-before-publishing-changes);
+error paths are omitted.
 
-`AddressBookParser` routes each command to `MarkCommandParser` or `UnmarkCommandParser`.
-Both tokenise `i/`, `d/`, and `l/`, accepting any parameter order and exactly one non-empty value for each.
-Their structure checks follow the same order: internal line breaks, unknown prefixes, preamble text, repeated
-prefixes, then missing or empty values. Repeated and missing/empty checks use `i/`, `d/`, `l/` order.
-The general command parser rejects multiline input before command-specific parsing.
+<puml src="diagrams/MarkSequenceDiagram.puml" alt="MarkCommand adds attendance to the pending model" />
 
-Both parsers reuse `ParserUtil#parseStudentId`, `ParserUtil#parseDate`, and `ParserUtil#parseLabel`, in that order.
-The date parser requires a valid calendar date in the strict `YYYY-MM-DD` format. The parsers then construct
-`MarkCommand` or `UnmarkCommand` with the validated values.
+<puml src="diagrams/UnmarkSequenceDiagram.puml" alt="UnmarkCommand removes attendance from the pending model" />
 
-#### Matching and updating records
+<!-- @@author sammeowwww -->
+#### Walkthrough
 
-Both commands search `Model#getAddressBook().getPersonList()` by normalised Student ID, so a student hidden by
-the active filter can still be updated. A missing student throws `CommandException` before any change.
+Each `Person` owns a set of `AttendanceRecord` values covering all tutorial groups for which that student was
+marked present. Each record contains a date and a group. The commands search only the target student's set for
+a record with the requested date and group; they do not search a separate attendance list for each tutorial.
 
-* `MarkCommand` first finds a current group label using case-insensitive matching. It creates an
-  `AttendanceRecord(date, matchedGroup)` and rejects an existing entry for that date and group.
-  Otherwise, it adds the record to a copy of the student's attendance set.
-* `UnmarkCommand` searches the existing attendance set using `AttendanceRecord#equals`, which compares dates
-  exactly and group names case-insensitively using `Locale.ROOT`. A missing record throws `CommandException`.
-  Otherwise, it removes the matched record from a copy of the set. Current group membership is not required:
-  `EditCommand` retains attendance when labels change, and historical records must remain removable.
-  Success feedback uses the matched record's stored group spelling.
+1. `AddressBookParser` routes the input to `MarkCommandParser` or `UnmarkCommandParser`. The parsers accept `i/`,
+   `d/`, and `l/` in any order, each exactly once and with a non-empty value. They reuse `ParserUtil` to validate
+   the Student ID, a real `YYYY-MM-DD` date, and the group label before creating the command.
+2. The command searches the complete student list by Student ID, including students hidden by the active filter.
+   A missing student causes a `CommandException` before any record is changed.
+3. The commands apply different attendance checks:
+   * **Mark:** Find a current group label, then check the student's attendance set for the same date and group.
+     Reject a matching record; otherwise, add the new `AttendanceRecord` to a copy of that set.
+   * **Unmark:** Find a record with the same date and group in the student's set, then remove it from a copy. Current
+     group membership is not required: `EditCommand` retains historical attendance after a label is removed.
+     Success feedback uses the matched record's lowercase group name.
+4. Each command builds a replacement `Person` with the updated attendance and unchanged other fields, then
+   replaces the student in the pending model. Other attendance entries and the active filter remain unchanged.
+5. `LogicManager` saves the pending model before publishing it to the live model and refreshing any open attendance
+   report. Parsing, command, or save failures leave the live records, filter, and saved file unchanged. A successful
+   change can later be reversed with `undo`. The existing attendance JSON format is reused.
 
-Each command constructs a replacement `Person`, retaining every other field, and calls `Model#setPerson`.
-Other attendance entries and the active filter remain unchanged. `unmark` removes the specified attendance entry;
-like other successful data changes, it can later be reversed by `undo`.
-
-#### Saving and sequence diagrams
-
-Both commands return `true` from `Command#isModifyingData`. `LogicManager` blocks them after a startup loading
-failure, executes them on a pending model, saves that model, and only then publishes it to the live model.
-Parsing, command, or save failures preserve the live records, filter, and previous saved file.
-The existing attendance JSON representation is reused; no storage format change is needed.
-
-The following diagrams show valid commands with an existing student and attendance state appropriate to the
-operation, including the save-before-publish path and save-failure protection.
-
-<puml src="diagrams/MarkSequenceDiagram.puml" alt="Parsing, recording, and saving student attendance" />
-
-<puml src="diagrams/UnmarkSequenceDiagram.puml" alt="Parsing, removing, and saving student attendance" />
+The general command parser rejects multiline input first. Command-specific structure checks then reject unknown
+prefixes, text before the first prefix, repeated prefixes, and missing or empty values in that order. Repeated and
+missing/empty checks follow `i/`, `d/`, `l/` order. See [Attendance parameter errors](#attendance-parameter-errors)
+for the resulting messages.
+<!-- @@author -->
 
 #### Tests
 
@@ -261,11 +287,12 @@ checks that other dates and groups remain, hidden students can be updated, remov
 removal, and marking followed by unmarking restores the original student.
 The command parser tests cover parameter validation, and `AddressBookParserTest` checks unmark routing.
 `LogicManagerTest` covers persistence and reload, failed saves, filter preservation, and startup failure protection.
-
 ### Adding student information
 
-Command format: `add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]`.
-One optional group label can be assigned during add; `Label` defines its validation rules.
+Command format:
+````text
+add n/NAME i/STUDENT_ID e/EMAIL [r/REMARK] [l/LABEL_NAME]
+````
 Accepted values are documented in the [UG field rules](UserGuide.md#field-rules); exact messages and validation order
 are in [Appendix: Errors](#appendix-errors).
 
@@ -285,56 +312,82 @@ are in [Appendix: Errors](#appendix-errors).
   of 63, and a final label of 2–63 letters. Only the domain is lowercased using `Locale.ROOT`.
 * `Remark` accepts at most 4,000 Unicode code points; command parsing trims only surrounding whitespace.
   Empty or omitted remarks become empty strings. `r/` can appear anywhere and does not consume later parameters.
-* `Label` accepts 1–60 Unicode code points and requires at least one letter or digit. It permits letters,
-  combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Empty labels
+* `Label` accepts 1–60 characters and requires at least one letter or digit. For length checking, lowercase
+  `i` plus combining dot counts as the single `İ` from which it can expand. It permits
+  letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Empty labels
   are rejected, omitted labels become an empty label set, and `l/` can appear anywhere without consuming later parameters.
 
 For example, `add n/  Alex   Tan i/a0123456b e/Alex@EXAMPLE.COM l/Tutorial 1 r/Quiz: 8/10`
-creates a student with name `Alex Tan`, ID `A0123456B`, email `Alex@example.com`, label `Tutorial 1`,
+creates a student with name `Alex Tan`, ID `A0123456B`, email `Alex@example.com`, label `tutorial 1`,
 and remark `Quiz: 8/10`.
 An alphabetic token such as `x/value` is rejected even inside a remark; `8/10` and URLs remain literal text.
 A duplicate ID rejects the complete command without merging any details or remarks.
 
 #### Saving before publishing changes
 
-The execution path is:
+`LogicManager` coordinates this transaction for `add`, `edit`, `delete`, `mark`, `unmark`, and `clear`.
+`undo` uses the separate restoration flow described in [Undoing data changes](#undoing-data-changes).
 
-```text
-AddressBookParser → AddCommandParser → AddCommand
-LogicManager → temporary ModelManager → JsonAddressBookStorage → live ModelManager
-```
+1. Parse the input into a `Command`, then check startup data availability. `Command#isModifyingData` identifies
+   data-changing commands; future modifying commands must override it too.
+2. Copy the live address book for undo, and create a pending `ModelManager` with the current records, preferences,
+   and filter. Execute the command on this pending model. A command error stops the transaction before saving.
+3. Pass the pending address book to `Storage#saveAddressBook`. The storage implementation locks the data file's
+   sidecar, checks for external changes, and atomically replaces the file as described below.
+4. After a successful save, retain the previous address book for undo if the records changed, then publish the
+   pending records and filter. Only then return success and refresh or close an open attendance report.
+   A save failure leaves the live records, view, and undo history unchanged. The attempted save does not replace
+   the destination file, including newer contents written by another window.
 
-1. `Command#isModifyingData` identifies commands that alter student records. `add`, `edit`, `delete`, `mark`, `unmark`, `clear`,
-   and `undo` return true. Future modifying commands must override this method too. `undo` uses the separate snapshot
-   transaction described in [Undoing data changes](#undoing-data-changes).
-2. `LogicManager` copies the live records and current filter into a temporary `ModelManager`, then executes the command
-   against that copy. Copying the filter preserves the active view if saving fails; `edit` identifies its target by
-   Student ID from the full record list rather than by displayed index.
-3. `JsonAddressBookStorage` writes the proposed records to a temporary file in the destination directory.
-   `Files.move` with `ATOMIC_MOVE` and `REPLACE_EXISTING` replaces the old file only after writing completes.
-   There is no fallback overwrite when atomic replacement is unsupported. Temporary files are removed after failure.
-4. After saving succeeds, `LogicManager` publishes the proposed records and filter to the live model, then returns
-   the success feedback. If saving fails, it returns `Unable to save student data.`; live records and the active filter
-   are unchanged, and the previous data file remains intact.
+The object sequence below starts after parsing and the startup-data check. It shows the shared transaction;
+command-specific record updates are expanded in their own diagrams. Calls to retrieve records, preferences, and
+filters are omitted to keep the transaction visible. `recordUndoSnapshot` retains at most 100 prior states.
 
-The sequence diagram shows an add with an optional remark and label. It also shows that a failed save leaves the
-live model unchanged. Invalid parameters or a duplicate Student ID stop execution before saving.
+<puml src="diagrams/SaveSequenceDiagram.puml" alt="Execute on a pending model, save, then publish" />
 
-![Add a student and save before updating the live model](images/AddSequenceDiagram.svg)
+**Storage conflict detection and replacement**
 
-[PlantUML source](diagrams/AddSequenceDiagram.puml)
+`JsonAddressBookStorage` normalises the absolute target path and serialises in-process file access with
+`FILE_ACCESS_LOCK`. During each save it creates the parent folder, opens the sibling `addressbook.json.lock`,
+and calls `FileChannel#tryLock`. An unavailable lock gives `DataFileInUseException`. The lock is released after
+saving, but the sidecar file remains so concurrent writers continue locking the same file identity.
 
-For example, adding a student while viewing a filtered list restores the complete list only after saving succeeds.
-If replacement fails, the filtered list remains as it was and the new student is not added.
-Read-only commands such as `find`, `list`, `help`, and `exit` execute on the live model without saving student data.
+While holding the lock, storage writes a complete temporary JSON file beside the destination and reads its bytes.
+It compares the destination's current bytes with the bytes remembered from its last successful read or save.
+A difference, including a file created or removed by another writer, gives `DataFileChangedException`.
+Otherwise, `Files.move` with `ATOMIC_MOVE` and `REPLACE_EXISTING` replaces the destination and the new bytes are
+remembered. There is no fallback overwrite when atomic replacement is unsupported. Temporary-file cleanup is
+attempted after success or failure; a cleanup failure is logged.
 
-#### Startup and feedback
+The lock coordinates TeachAssist writers. External editors do not participate in that lock, so users should still
+close TeachAssist before editing its data file. This protection applies to student data, not `preferences.json`.
 
-`MainApp` starts empty when the data file is missing. If loading fails, it creates an empty model and configures
-`LogicManager` to block modifying commands, `list`, `find`, and `attendance` until the file is fixed and the application
-is restarted.
-The error is `Student data is unavailable because loading failed. Fix the data file and restart.`
-This prevents an empty model from overwriting unreadable or invalid records. `help` and `exit` remain available.
+`LogicManager#saveStudentData` maps these exceptions to the distinct messages and recovery actions in
+[Saving errors](#saving-errors). A changed file requires restarting to load current data; a busy writer can be retried.
+`JsonAddressBookStorageConcurrencyTest` covers stale writers and lock contention.
+
+The add sequence below shows only `AddCommand#execute` on the pending model, for a student with a unique ID.
+Field parsing and the shared save transaction are outside its scope.
+
+<puml src="diagrams/AddSequenceDiagram.puml" alt="AddCommand checks identity and updates the pending model" />
+<!-- @@author sammeowwww -->
+#### Add command walkthrough
+
+1. Before the diagram begins, `AddCommandParser` validates the supplied values, creates a `Person`, and returns an
+   `AddCommand`. `LogicManager` checks that student data is available and prepares a pending model containing the
+   current records and filter.
+2. `AddCommand#execute` asks the pending model whether it already contains the student. Identity is based on the
+   normalised Student ID. If that ID exists, the command throws a `CommandException` before adding anything.
+3. For a new ID, the command adds the `Person` to the pending model, retrieves the complete student list for its
+   count, and returns a `CommandResult` with the student's ID, name, optional remark, and total count.
+4. After the diagram ends, `LogicManager` saves the pending records. Only after a successful save does it record
+   the previous state for `undo` and publish the pending model, as shown in the
+   [shared save sequence](#saving-before-publishing-changes). A save failure leaves the live records unchanged.
+
+If startup loading fails, `MainApp` keeps the original file and starts with an empty fallback model.
+`LogicManager` blocks modifying commands, `list`, `find`, and `attendance` until the file is fixed and the
+application is restarted. See [Blocking student-data commands after a failed load](#blocking-student-data-commands-after-a-failed-load).
+<!-- @@author  -->
 
 Successful adds display `Added student ID: NAME.`, followed by ` Remark: TEXT` when the remark is non-empty,
 and the total student count on the next line. The count uses the complete record list.
@@ -390,21 +443,25 @@ Every search replaces the active predicate and evaluates the complete student li
 previous result set. `FindCommand` returns the standard `N students listed.` (or `1 student listed.` for one match) feedback. Zero matches clear the view.
 `list` restores all students. Invalid commands preserve the previous view.
 
-`FindCommand` remains read-only. `LogicManager` executes it without saving, including when startup data loading
-failed. Student records and the saved JSON file remain unchanged.
+`FindCommand` remains read-only and executes without saving when student data is available. After a startup
+loading failure, `LogicManager` blocks it until the data file is fixed and the app restarted. A missing data file
+or a successfully loaded empty file permits a search with zero results. Student records and the saved file are
+unchanged by a search.
 
 Tests in `RemarkContainsKeywordsPredicateTest`, `FindCommandParserTest`, and `FindCommandTest` cover remark
 matching, invalid remark search inputs, result counts, and searching students hidden by a previous filter.
 
-The name-search sequence is shown below; remark and label searches use their corresponding predicates.
+The first object sequence isolates `FindCommand#execute` after parsing and the startup-data check. All five
+search modes share this execution path; only the supplied predicate differs.
 
-<puml src="diagrams/FindCommandSequenceDiagram.puml" alt="Interactions for a name search" />
+<puml src="diagrams/FindCommandSequenceDiagram.puml" alt="FindCommand applies a predicate and reports the result count" />
 
-The following diagrams show label searching through the integrated command:
+The label-parser sequence shows construction of the predicate and command after structure validation. The
+activity diagram separately shows user-visible validation and result decisions, without implementation classes:
 
-<puml src="diagrams/LabelFindSequenceDiagram.puml" alt="Interactions for finding students by label" />
+<puml src="diagrams/LabelFindSequenceDiagram.puml" alt="FindCommandParser constructs a label predicate and command" />
 
-<puml src="diagrams/LabelFindActivityDiagram.puml" alt="Validation and results for a label search" />
+<puml src="diagrams/LabelFindActivityDiagram.puml" alt="Label-search input, availability, and result decisions" />
 
 #### Verification
 
@@ -436,16 +493,13 @@ Deletion preserves the current filter and returns true from `Command#isModifying
 the change. If saving fails, the live record, filter, and previous saved file remain unchanged.
 If startup loading failed, deletion is blocked by the existing loading guard.
 
-The sequence diagram shows deletion by Student ID, including the save-failure path.
+The sequence diagram isolates `DeleteCommand#execute` on a pending model after parsing and the startup-data
+check. It assumes the student exists. The shared [transaction](#saving-before-publishing-changes) handles saving
+and any failure before publishing the deletion.
 
-![Delete by Student ID and save before updating the live model](images/DeleteSequenceDiagram.svg)
+<puml src="diagrams/DeleteSequenceDiagram.puml" alt="DeleteCommand removes a student from the pending model" />
 
 [PlantUML source](diagrams/DeleteSequenceDiagram.puml)
-
-<box type="info" seamless>
-
-**Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, the lifeline continues till the end of the diagram.
-</box>
 
 Tests cover normalised IDs, visible/hidden students, an empty displayed list, nonexistent IDs, malformed parameters,
 whole-record removal from persisted JSON, filter preservation, and save failures.
@@ -475,6 +529,8 @@ Only presence is stored. A student is absent when they have no record for the da
 
 #### Reporting attendance
 
+<puml src="diagrams/AttendanceModelClassDiagram.puml" alt="Derived report entries reference current students" />
+
 `AttendanceReport#of(students, date, group)` keeps the students whose current labels include the group, in the order
 given, and pairs each one with whether they have the matching record. It also gives the present and absent totals.
 Membership comes from current labels, so a student who lost the label is left out even if their records remain.
@@ -500,10 +556,14 @@ Because the rebuild happens after saving and publishing, the view only changes o
 command throws before this step, so the view stays as it was. A successful `undo` returns a plain result, so it closes
 the view; the restored records are shown in the student list.
 
-The sequence diagram below shows `attendance` opening the view, followed by a `mark` that refreshes it. The `alt` block
-shows the save-success and save-failure paths.
+The first object sequence shows `AttendanceCommand#execute` building a report from the full student list after
+parsing and the startup-data check. The second isolates `LogicManager#updateDisplayedAttendance`, which runs
+only after successful execution (and saving for a data change). UI rendering and command parsing are described
+above rather than repeated in either diagram.
 
-<puml src="diagrams/AttendanceSequenceDiagram.puml" alt="Showing attendance and refreshing it after mark" />
+<puml src="diagrams/AttendanceSequenceDiagram.puml" alt="Build an attendance report from the complete student list" />
+
+<puml src="diagrams/AttendanceRefreshSequenceDiagram.puml" alt="Select, refresh, or close the displayed attendance report" />
 
 #### Design considerations
 
@@ -554,23 +614,24 @@ MainApp#initLogic → LogicManager
 ```
 
 1. `JsonAddressBookStorage#readAddressBook` returns `Optional.empty()` if the data file does not exist.
-2. If the file exists, `JsonUtil#readJsonFile` reads it. Failures are reported as `DataLoadingException` with one of
-   two messages, chosen by the cause:
-   * an `IOException` other than a JSON error, such as missing read permission, gives `Unable to load student data.`
-   * a `JsonProcessingException`, such as malformed JSON, gives
-     `Unable to load student data. The data file may be corrupted or invalid.`
+2. For an existing file, `JsonAddressBookStorage` reads its bytes once with `Files.readAllBytes`, decodes them as
+   UTF-8, and parses them with `JsonUtil#fromJsonString`. Failure to read the bytes gives
+   `Unable to load student data.`; invalid JSON gives
+   `Unable to load student data. The data file may be corrupted or invalid.`
+   Both are reported as `DataLoadingException`.
 3. `JsonSerializableAddressBook#toModelType` converts records in file order. A missing or invalid field throws
    `IllegalValueException`, which is reported with the corrupted or invalid message. A repeated Student ID throws
    `DuplicateStudentIdException`, a subclass of `IllegalValueException`. `JsonAddressBookStorage` catches it first so
    that its specific message, `Unable to load student data: duplicate Student ID A0123456B detected.`, is kept.
-   Student IDs are compared after normalisation to uppercase.
+   Student IDs are compared after normalisation to uppercase. Only after conversion succeeds does storage remember
+   the same bytes for conflict detection on future saves. A missing file is remembered as absent.
 4. `MainApp` records the outcome as the startup message: `N students loaded.` (`1 student loaded.` for one record),
    the no-existing-data message, or the `DataLoadingException` message.
 5. `MainWindow#fillInnerParts` shows `Logic#getStartupMessage` in the result display when the window opens.
 
-The sequence diagram below shows the loading path. The `alt` block shows the three outcomes of reading the data file:
-a successful load, a missing file, and a `DataLoadingException`. Model and logic creation continue the same way after
-each outcome.
+The object sequence below shows startup orchestration through the `Storage` interface. Its three outcomes are a
+successful load, a missing file, and a loading exception. Storage deserialisation is described above and omitted
+here; the diagram focuses on constructing the model and logic with the correct availability state.
 
 <puml src="diagrams/LoadSequenceDiagram.puml" alt="Loading student data at startup" />
 
@@ -621,17 +682,22 @@ Thus parsing, validation, execution, or save failures leave the live records and
 
 For `undo`, `LogicManager` examines the newest snapshot without removing it. It saves that snapshot before replacing
 the live address book, resets the displayed list with `Model.PREDICATE_SHOW_ALL_PERSONS`, and then removes the
-snapshot. (The displayed list is reset to default, as it could be stale after an undo, for example with a filter applied.
-The current design also does not support the notion of saving a "filter", implying "updating the filter" being
-out-of-scope, hence the decision to reset the displayed list.) If saving fails, live records, the displayed list,
-the saved file, and history remain unchanged. If no snapshot exists, it returns `Nothing to undo.` without saving.
+snapshot. Showing all students makes the restored records visible; filters are not part of undo history.
+If saving fails, live records, the displayed list, the saved file, and history remain unchanged.
+If no snapshot exists, it returns `Nothing to undo.` without saving and preserves the student filter.
+Both successful outcomes close an open attendance report.
 
 Undo is destructive: restoring a snapshot discards the state being reversed, so there is no redo or forward branch.
 A later successful data change records the then-current state as a new predecessor.
 
+The state diagram illustrates changes to records and undo history only; it omits persistence operations.
+
 <puml src="diagrams/UndoHistoryStateDiagram.puml" alt="Bounded destructive undo history" />
 
-<puml src="diagrams/UndoSequenceDiagram.puml" alt="Undo parsing and transactional restoration" />
+The object sequence starts at `LogicManager#executeUndo`, after parsing and the startup-data check. It shows
+restoration and persistence, with UI updates handled after the method returns.
+
+<puml src="diagrams/UndoSequenceDiagram.puml" alt="Save the previous state before restoring it and consuming history" />
 
 #### Design consideration
 
@@ -648,86 +714,9 @@ A later successful data change records the then-current state as a new predecess
 
 ## **Documentation, logging, testing, dev-ops**
 
-### Manual testing
-
-Run the application with a fresh data file before starting the cases below. Enter commands in the command box and
-check both the feedback area and the student list after each command. The cases use these two sample students:
-
-```text
-add n/Alex Tan i/A0123456B e/alex@example.com r/Needs help with recursion l/Tutorial 1
-add n/Betsy Lim i/A0234567C e/betsy@example.com l/Tutorial 2
-```
-
-#### Help, add, and list
-
-1. Enter `help`. Confirm that the Help window opens, shows the User Guide URL, and that **Copy URL** copies it.
-   Enter `help extra` and confirm that the invalid command format message and help usage are shown.
-2. Enter the first sample `add` command. Confirm that Alex Tan appears with the supplied ID, email, remark, and
-   `Tutorial 1` label. Enter the same command again and confirm that it is rejected as a duplicate Student ID.
-3. Enter the second sample `add` command. Confirm that Betsy Lim appears with the supplied ID, email, and
-   `Tutorial 2` label. Enter `add n/ i/A0345678D e/valid@example.com` and confirm that the empty name is reported.
-4. Enter `list`. Confirm that both students are shown. Enter `list extra` and confirm that the command reports its
-   usage without changing the displayed list.
-
-#### Edit and find
-
-1. Enter `edit i/A0123456B e/alextan@example.com l/Consultation`. Confirm that Alex Tan's email changes and that
-   both labels are shown. Enter `edit i/A0123456B dl/Consultation l/Tutorial 3` and confirm that `Consultation` is
-   removed while `Tutorial 1` and `Tutorial 3` remain.
-2. Enter `edit i/A0123456B l/ r/`. Confirm that all of Alex Tan's labels and the remark are cleared. Enter
-   `edit i/A0123456B dl/Absent` and confirm that the command is rejected because the label does not exist.
-3. Restore Alex Tan's `Tutorial 1` label with `edit i/A0123456B l/Tutorial 1`.
-4. Enter `find n/alex`. Confirm that only Alex Tan is displayed and that the result count is one. Enter `find
-   l/tutorial 1` and confirm that the same student is found despite the different capitalization.
-5. Enter `find r/recursion` and confirm that no students are listed because Alex Tan's remark was cleared. Enter
-   `find n/alex i/A0123456B` and confirm that mixed search fields are rejected without changing the current list.
-6. Enter `list` to restore the complete list.
-
-#### Mark and unmark attendance
-
-1. Enter `mark i/A0123456B d/2026-10-20 l/tutorial 1`. Confirm the success feedback identifies Alex Tan,
-   `Tutorial 1`, and the date. Repeat the command and confirm that duplicate attendance is rejected.
-2. Enter `mark i/A0123456B d/2026-02-30 l/Tutorial 1`. Confirm that the invalid date is rejected. Enter
-   `mark i/A0123456B d/2026-10-21 l/Tutorial 2` and confirm that a group label Alex Tan does not have is rejected.
-3. Enter `unmark i/a0123456b d/2026-10-20 l/tutorial 1`. Confirm the attendance entry is removed, including when
-   the Student ID and label capitalization differs. Repeat the command and confirm that it reports the attendance
-   is not marked.
-4. Enter the first `mark` command again to prepare the later undo case.
-
-#### Viewing attendance
-
-1. Enter `edit i/A0234567C l/Tutorial 1` so that both sample students are current members of `Tutorial 1`. Enter
-   `attendance d/2026-10-20 l/tutorial 1`. Confirm that the attendance view replaces the student list, shows Alex
-   Tan as **Present** and Betsy Lim as **Absent**, and reports one present and one absent student.
-2. Enter `find n/betsy`, then enter `attendance d/2026-10-20 l/Tutorial 1` again. Confirm that the attendance view
-   still shows both Tutorial 1 members even though the preceding find result showed only Betsy Lim.
-3. While the attendance view is open, enter `mark i/A0234567C d/2026-10-20 l/Tutorial 1`. Confirm that the view
-   refreshes immediately and reports two present students. Enter the corresponding `unmark` command and confirm
-   that it refreshes to one present and one absent student.
-4. Enter `attendance d/2026-10-20 l/No Such Group`. Confirm that an empty attendance view with zero totals is
-   shown. Enter `attendance d/2026-02-30 l/Tutorial 1` and confirm that the invalid date is rejected while the
-   empty attendance view remains open and unchanged.
-5. Enter `list`. Confirm that the student list returns. Enter `attendance d/2026-10-20 i/A0123456B` and confirm
-   that the unsupported `i/` parameter is rejected.
-
-#### Delete, clear, and undo
-
-1. Enter `find n/betsy`, then `delete i/A0123456B`. Confirm that Alex Tan is deleted even though the active search
-   does not show that student. Enter `list` and confirm that only Betsy Lim remains. Enter `delete i/A0123456B`
-   again and confirm that the Student ID is not in the records.
-2. Enter the first sample `add` command again, then enter `clear`. Confirm that the student list is empty.
-3. Enter `undo`. Confirm that the two students are restored and that the displayed list is reset to show all
-   students. Enter `undo` again and confirm that the state before the most recent successful data-changing command
-   is restored.
-4. Continue entering `undo` until the feedback is `Nothing to undo.`. Confirm that one further `undo` leaves the
-   records unchanged. Enter `undo extra` and confirm that the usage message is shown.
-
-#### Exit and persistence
-
-1. Enter the first sample `add` command, then use `list` to confirm that there is at least one student. Enter
-   `exit` and confirm that the application closes.
-2. Relaunch the application and confirm that the saved student data is loaded. Enter `undo` and confirm that it
-   reports `Nothing to undo.`, because undo history is not retained across restarts.
+Manual scenarios and their expected results are maintained in
+[Appendix: Instructions for manual testing](#appendix-instructions-for-manual-testing).
+The following guides cover development workflows:
 
 * [Documentation guide](Documentation.md)
 * [Testing guide](Testing.md)
@@ -822,259 +811,304 @@ TA refers to a teaching assistant. Story IDs are retained from the project notes
 | US37 | `* *` | TA | organize students using meaningful categories | I can retrieve groups of related students easily |
 | US38 | `* *` | experienced user | perform common operations efficiently | managing student information does not distract me from teaching |
 
+#### Recovering from mistakes
+
+| ID | Priority | As a/an ... | I want to ... | So that ... |
+|----|----------|--------|-------------|----------------|
+| US39 | `* *` | TA who made an accidental change | undo my latest saved data change | I can restore the previous student records |
+
 ### Use cases
 
-(For all use cases below, the **System** is the `TeachAssist` and the **Actor** is the `Teaching Assistant`, unless specified otherwise)
+The **system** is TeachAssist and the **actor** is a Teaching Assistant (TA). These use cases describe the
+implemented application. The user stories above also include backlog ideas; they do not imply additional commands.
+Exact syntax and field constraints belong in the [User Guide](UserGuide.md#features).
 
-Use case: UC01 - Add a Student
-MSS:
-1. TA enters command to add a student with name, student ID, email, and optional remarks and group label.
-2. TeachAssist validates the student details and checks for duplicate student IDs.
-3. TeachAssist saves the student record to the data file.
-4. TeachAssist displays a confirmation message and updates the student list.
+| Implemented command | Use case |
+|---------------------|----------|
+| `add` | [UC01: Add a student](#uc01-add-a-student) |
+| `find` | [UC02: Search student details](#uc02-search-student-details), [UC04: Find students by group label](#uc04-find-students-by-group-label) |
+| `edit` | [UC03: Edit a student](#uc03-edit-a-student) |
+| `delete` | [UC05: Delete a student](#uc05-delete-a-student) |
+| `mark` | [UC06: Mark attendance](#uc06-mark-attendance) |
+| `attendance` | [UC07: View group attendance](#uc07-view-group-attendance) |
+| `unmark` | [UC08: Unmark attendance](#uc08-unmark-attendance) |
+| `clear` | [UC09: Clear all students](#uc09-clear-all-students) |
+| `undo` | [UC10: Undo a data change](#uc10-undo-a-data-change) |
+| `list` | [UC11: List all students](#uc11-list-all-students) |
+| `help` | [UC12: View help](#uc12-view-help) |
+| `exit` | [UC13: Exit TeachAssist](#uc13-exit-teachassist) |
+
+**Common extensions**
+
+These failure outcomes apply wherever their condition arises. Each ends the use case without applying the
+requested change. Rejected commands preserve the current records, view, and available undo history.
+
+| Condition | Applies to | Observable outcome |
+|-----------|------------|--------------------|
+| The input is malformed or contains invalid, missing, empty, repeated, or unsupported parameters | All commands, according to their accepted syntax | TeachAssist reports the input error. Commands that take no arguments reject extra text. |
+| Startup student-data loading failed | UC01–UC11, after input validation | TeachAssist reports that student data is unavailable and asks the TA to fix the file and restart. `help` and `exit` remain available. A missing file or successfully loaded empty file does not cause this restriction. |
+| The requested data change cannot be saved | UC01, UC03, UC05, UC06, UC08, UC09, and UC10 when a change is available to undo | TeachAssist reports the appropriate [saving error](#saving-errors). It does not apply the change or overwrite the destination. A changed file requires restarting; an active writer requires retrying; storage failures require repairing the storage problem. |
+
+Successful viewing commands do not save student data. Successful data changes can be undone within the current
+session, subject to the history limit in UC10. A failed command never closes an open attendance view.
+
+#### UC01: Add a student
+
+**MSS**
+
+1. TA requests to add a student with a name, Student ID, email, and optional remark and group label.
+2. TeachAssist adds and saves the student.
+3. TeachAssist shows all students and confirms the added student's details and total student count.
+
    Use case ends.
 
 **Extensions**
-* 1a. The command format is invalid or required parameters are missing or empty.
-* 1a1. TeachAssist shows an error message naming the missing/empty parameter or explaining the invalid format.
-* Use case ends.
-* 1b. An unknown or repeated parameter is supplied.
-* 1b1. TeachAssist shows an error message naming the offending prefix. No student data changes.
-* Use case ends.
-* 1c. The student data file failed to load at startup.
-* 1c1. TeachAssist blocks the add command and asks the TA to fix the data file and restart.
-* Use case ends.
-* 2a. One or more field values are invalid (e.g., malformed student ID, invalid email format, or invalid name characters).
-* 2a1. TeachAssist shows an error message indicating the invalid field value.
-* Use case ends.
-* 2b. A student with the given student ID already exists in TeachAssist.
-* 2b1. TeachAssist shows an error message indicating that the student ID already exists.
-* Use case ends.
-* 3a. Saving data to the file fails.
-* 3a1. TeachAssist shows an error message indicating that it is unable to save student data.
-* 3a2. TeachAssist leaves existing student records, the displayed filter, and the previous saved file unchanged.
-* Use case ends.
 
----
+* 2a. The Student ID is already in use, ignoring case.
+  * 2a1. TeachAssist reports the duplicate ID without merging or changing either record.
 
-Use case: UC02 - Find a Student
-MSS:
-1. TA enters a search command specifying a name, student ID, email, remark, or label query.
-2. TeachAssist searches existing records for matches.
-3. TeachAssist displays the list of matching student records and the count of results.
+  Use case ends.
+
+#### UC02: Search student details
+
+**MSS**
+
+1. TA requests a search of one field: name, Student ID, email, or remark, with one or more keywords.
+2. TeachAssist shows students whose selected field contains any keyword, ignoring case, and reports the count.
+   The search covers all records and replaces the previous search or attendance view.
+
    Use case ends.
 
 **Extensions**
-* 1a. The command contains no search parameters, multiple search parameters, or empty query fields.
-* 1a1. TeachAssist shows an error message identifying the missing, repeated, mixed, or empty search parameter.
-* Use case ends.
-* 1b. A label search contains an invalid label value.
-* 1b1. TeachAssist shows the label constraint message. Name, Student ID, email, and remark searches accept
-  non-empty keywords without applying their corresponding stored-field constraints; command prefix rules still apply.
-* Use case ends.
-* 2a. No student records match the search query.
-* 2a1. TeachAssist displays a message indicating no matching students were found.
-* 2a2. TeachAssist clears the displayed student list.
-* Use case ends.
 
----
+* 2a. No students match.
+  * 2a1. TeachAssist shows an empty student list and reports `0 students listed.`
 
-Use case: UC03 - Edit a Student
-MSS:
-1. TA enters a Student ID and one or more field or label changes.
-2. TeachAssist validates the input and finds the student in the complete record list.
-3. TeachAssist prepares the updated record, removing requested labels before adding requested labels and retaining
-   attendance and all unspecified fields.
-4. TeachAssist saves the updated records, displays all students, and shows a confirmation message.
+  Use case ends.
+
+Group-label searches use the complete-label matching rule in UC04, rather than partial keywords.
+
+#### UC03: Edit a student
+
+**MSS**
+
+1. TA identifies a student by Student ID and requests changes to the name, email, remark, or group labels.
+2. TeachAssist saves the updated student, including when the student is hidden by a search. The Student ID,
+   attendance records, and unspecified fields are retained. Label removals take effect before additions.
+3. TeachAssist shows all students and confirms the updated details.
+
    Use case ends.
 
 **Extensions**
-* 1a. The input is malformed, a value is invalid, no change is specified, or label operations conflict.
-* 1a1. TeachAssist shows the corresponding error without changing the records or current view.
-* Use case ends.
-* 1b. Student data failed to load at startup.
-* 1b1. TeachAssist blocks editing and asks the TA to fix the data file and restart.
-* Use case ends.
-* 2a. The Student ID is not in the records.
-* 2a1. TeachAssist identifies the missing student in an error message.
-* Use case ends.
-* 3a. A label to remove is absent, or a label to add remains present after removals.
-* 3a1. TeachAssist rejects the entire edit and identifies the offending label.
-* Use case ends.
-* 4a. Saving fails.
-* 4a1. TeachAssist reports the storage error and preserves the records, view, saved file, and undo history.
-* Use case ends.
 
----
+* 2a. No student has the supplied Student ID.
+  * 2a1. TeachAssist reports that the student is not in the records.
 
-Use case: UC04 - Find Students by Group Label
-MSS:
-1. TA enters `find l/LABEL_NAME` to find students by a specific complete group label.
-2. TeachAssist scans stored records for matching group labels.
-3. TeachAssist displays only the students belonging to that group label.
+  Use case ends.
+* 2b. A label to remove is absent, or a label to add is still present after removals.
+  * 2b1. TeachAssist reports the conflicting label and rejects the entire edit, including other field changes.
+
+  Use case ends.
+
+An empty remark clears it. An empty `l/` clears all labels and cannot accompany other label changes.
+Student IDs cannot be edited; changing an ID requires a separate deletion and addition.
+
+#### UC04: Find students by group label
+
+**MSS**
+
+1. TA requests students with one complete group label.
+2. TeachAssist shows all matching students and the count, replacing the previous search or attendance view.
+   Matching ignores case but requires exact internal spacing. A multi-word label is one search value.
+
    Use case ends.
 
 **Extensions**
-* 1a. The group label parameter is missing or empty.
-* 1a1. TeachAssist shows an error message indicating the missing or empty parameter.
-* Use case ends.
-* 1b. Multiple label parameters are provided.
-* 1b1. TeachAssist shows an error message indicating that the parameter must be specified only once.
-* Use case ends.
-* 2a. No students have the specified group label.
-* 2a1. TeachAssist displays a message indicating no students were found with that label.
-* 2a2. TeachAssist clears the displayed student list.
-* Use case ends.
 
----
+* 2a. No students have the label.
+  * 2a1. TeachAssist shows an empty student list and reports `0 students listed.`
 
-Use case: UC05 - Delete a Student
-MSS:
-1. TA enters command to delete a student using their student ID.
-2. TeachAssist verifies that the student exists in the records.
-3. TeachAssist removes the student record and saves the changes to the data file.
-4. TeachAssist displays a confirmation message and updates the student list.
+  Use case ends.
+
+This is the label mode of `find`; there is no separate `filter` command.
+
+#### UC05: Delete a student
+
+**MSS**
+
+1. TA requests deletion using a Student ID.
+2. TeachAssist removes and saves the student and all their remarks, labels, and attendance records,
+   even when that student is hidden by a search.
+3. TeachAssist confirms the deletion and shows the student list with the previous search still applied.
+
    Use case ends.
 
 **Extensions**
-* 1a. The student ID parameter is missing, empty, or improperly formatted.
-* 1a1. TeachAssist shows an error message specifying the invalid parameter or usage format.
-* Use case ends.
-* 1b. The command contains a repeated Student ID or an unknown parameter.
-* 1b1. TeachAssist shows the error message naming the offending prefix without changing student records.
-* Use case ends.
-* 1c. The data file failed to load at startup.
-* 1c1. TeachAssist blocks deletion and asks the TA to fix the data file and restart.
-* Use case ends.
-* 2a. No student with the specified student ID exists in the records.
-* 2a1. TeachAssist shows an error message stating that the student is not in the records.
-* Use case ends.
-* 3a. Saving data to the file fails.
-* 3a1. TeachAssist shows an error message indicating that it is unable to save student data.
-* 3a2. TeachAssist retains the entire student record, current filter, and previous saved file.
-* Use case ends.
 
----
+* 2a. No student has the supplied Student ID.
+  * 2a1. TeachAssist reports that the student is not in the records.
 
-Use case: UC06 - Mark a Student's Attendance
-MSS:
-1. TA enters command to mark a student present with their student ID, a date, and a group label.
-2. TeachAssist verifies that the student exists, has the group label, and is not already marked for that date and group.
-3. TeachAssist records the attendance and saves the changes to the data file.
-4. TeachAssist displays a confirmation message, and refreshes the attendance view if it is open.
+  Use case ends.
+
+#### UC06: Mark attendance
+
+**MSS**
+
+1. TA requests to mark a student present for a date and group, identifying the student by Student ID.
+2. TeachAssist records and saves the attendance without changing other student details or attendance entries.
+3. TeachAssist confirms the Student ID, lowercase group name, and date. If an attendance view is open, it
+   refreshes that view; otherwise the current student search remains applied.
+
    Use case ends.
 
 **Extensions**
-* 1a. A parameter is missing, empty, repeated, unknown, or invalid, such as a date that does not exist.
-* 1a1. TeachAssist shows an error message naming the problem. No student data changes.
-* Use case ends.
-* 1b. The data file failed to load at startup.
-* 1b1. TeachAssist blocks marking and asks the TA to fix the data file and restart.
-* Use case ends.
-* 2a. The student does not exist or does not have the group label.
-* 2a1. TeachAssist shows an error message naming the student or group. No student data changes.
-* Use case ends.
-* 2b. The student is already marked present for that date and group.
-* 2b1. TeachAssist shows an error message. No student data changes.
-* Use case ends.
-* 3a. Saving data to the file fails.
-* 3a1. TeachAssist shows an error message indicating that it is unable to save student data.
-* 3a2. TeachAssist keeps the previous records, view, and saved file.
-* Use case ends.
 
----
+* 2a. The student does not exist.
+  * 2a1. TeachAssist reports the missing student.
 
-Use case: UC07 - View a Group's Attendance
-MSS:
-1. TA enters command to view attendance with a date and a group label.
-2. TeachAssist finds every student who currently has the group label.
-3. TeachAssist replaces the student list with the group members, each marked Present or Absent, and shows the totals.
+  Use case ends.
+* 2b. The student does not currently have the requested group label.
+  * 2b1. TeachAssist reports the missing group membership.
+
+  Use case ends.
+* 2c. The student is already marked for that date and group.
+  * 2c1. TeachAssist reports that attendance is already recorded.
+
+  Use case ends.
+
+#### UC07: View group attendance
+
+**MSS**
+
+1. TA requests attendance for a date and group.
+2. TeachAssist replaces the student list with all current members of that group in record order, including
+   students hidden by a search. Students with an attendance entry are Present; the others are Absent.
+   TeachAssist shows the present and absent totals.
+
    Use case ends.
 
 **Extensions**
-* 1a. A parameter is missing, empty, repeated, unknown, or invalid.
-* 1a1. TeachAssist shows an error message naming the problem. The current view is unchanged.
-* Use case ends.
-* 2a. No student has the group label.
-* 2a1. TeachAssist shows an empty attendance view with zero totals.
-* Use case ends.
-* 3a. TA marks or unmarks attendance for the displayed date and group (UC06 or UC08).
-* 3a1. TeachAssist refreshes the attendance view after saving.
-* Use case resumes at step 3.
-* 3b. TA enters another command, such as `list`.
-* 3b1. TeachAssist returns to the student list.
-* Use case ends.
 
----
+* 2a. No students currently have the label.
+  * 2a1. TeachAssist shows an empty attendance view with zero totals.
 
-Use case: UC08 - Unmark a Student's Attendance
-MSS:
-1. TA supplies the Student ID, date, and group of an attendance entry to remove.
-2. TeachAssist finds the student and the matching attendance entry, even if the student no longer has that group label.
-3. TeachAssist saves the records with that entry removed, preserving other attendance and student details.
-4. TeachAssist confirms removal and refreshes the attendance view if it is open.
+  Use case ends.
+
+The report uses current group membership. Removing a label excludes that student from later reports, while their
+attendance records are retained. Successful `mark` and `unmark` commands refresh the open report for its original
+date and group, even if the command changed a different date or group. Another `attendance` command selects a new
+report. Other successful commands return to the student list (or exit the app); failed commands keep the report open.
+
+#### UC08: Unmark attendance
+
+**MSS**
+
+1. TA identifies an attendance entry by Student ID, date, and group and requests its removal.
+2. TeachAssist removes and saves that entry, even if the student no longer has the group label.
+   Other attendance entries and student details are retained.
+3. TeachAssist confirms removal using the lowercase group name and refreshes an open attendance view.
+   If the student list is shown, its current search remains applied.
+
    Use case ends.
 
 **Extensions**
-* 1a. A parameter is missing, empty, repeated, unknown, or invalid.
-* 1a1. TeachAssist shows the corresponding error and leaves the records and view unchanged.
-* Use case ends.
-* 1b. Student data failed to load at startup.
-* 1b1. TeachAssist blocks removal and asks the TA to fix the data file and restart.
-* Use case ends.
-* 2a. The student or attendance entry does not exist.
-* 2a1. TeachAssist shows the corresponding error without changing data.
-* Use case ends.
-* 3a. Saving fails.
-* 3a1. TeachAssist reports the storage error and preserves the records, view, saved file, and undo history.
-* Use case ends.
 
----
+* 2a. The student does not exist.
+  * 2a1. TeachAssist reports the missing student.
 
-Use case: UC09 - Clear All Students
-MSS:
-1. TA enters `clear`.
-2. TeachAssist saves an empty address book, regardless of the current search or attendance view.
-3. TeachAssist displays an empty student list and confirms that the address book has been cleared.
+  Use case ends.
+* 2b. The student has no attendance entry for that date and group.
+  * 2b1. TeachAssist reports that the attendance is not marked.
+
+  Use case ends.
+
+#### UC09: Clear all students
+
+**MSS**
+
+1. TA requests to clear the student records.
+2. TeachAssist removes and saves all students and their associated data, including records hidden by a search,
+   without asking for confirmation.
+3. TeachAssist shows an empty student list and confirms the clear. The current student search remains applied.
+
    Use case ends.
 
 **Extensions**
-* 1a. Student data failed to load at startup.
-* 1a1. TeachAssist blocks clearing and asks the TA to fix the data file and restart.
-* Use case ends.
-* 2a. The address book is already empty.
-* 2a1. TeachAssist still saves the empty address book, without recording an undo snapshot.
-* Use case resumes at step 3.
-* 2b. Saving fails.
-* 2b1. TeachAssist reports the storage error and preserves the records, view, saved file, and undo history.
-* Use case ends.
 
-There is no confirmation prompt. Recovery uses UC10 while the snapshot remains in the current session.
+* 2a. There are already no students.
+  * 2a1. TeachAssist saves the empty records without adding a new change to undo history.
 
----
+  Use case resumes at step 3.
 
-Use case: UC10 - Undo a Data Change
-MSS:
-1. TA enters `undo`.
-2. TeachAssist selects the latest retained snapshot from before a successfully saved modifying command.
-3. TeachAssist saves that snapshot, restores its records, and consumes the snapshot.
-4. TeachAssist displays all students and reports `Undid last change.`
+The clear can be reversed using UC10 while that change remains available in the current session.
+
+#### UC10: Undo a data change
+
+**MSS**
+
+1. TA requests to undo the latest data change.
+2. TeachAssist restores and saves the records from before the latest successfully saved change.
+3. TeachAssist shows all students and reports `Undid last change.` An open attendance view closes.
+
    Use case ends.
 
 **Extensions**
-* 1a. Additional arguments are supplied.
-* 1a1. TeachAssist rejects the command with the undo usage message.
-* Use case ends.
-* 1b. Student data failed to load at startup.
-* 1b1. TeachAssist blocks undo and asks the TA to fix the data file and restart.
-* Use case ends.
-* 2a. No snapshot is available, including after restarting the app.
-* 2a1. TeachAssist reports `Nothing to undo.` without saving or changing records. An open attendance view closes;
-  the existing student filter is retained.
-* Use case ends.
-* 3a. Saving fails.
-* 3a1. TeachAssist reports the storage error and preserves the records, view, saved file, and snapshot for a later retry.
-* Use case ends.
+
+* 2a. No change is available to undo, including immediately after restarting.
+  * 2a1. TeachAssist reports `Nothing to undo.` without saving or changing records. The existing student
+    search is retained and an open attendance view closes.
+
+  Use case ends.
+
+Up to 100 changes are available in the current session. Commands that leave records unchanged do not add an undo
+step. There is no redo. Previous searches and window settings are not restored, and restarting clears undo history.
+
+#### UC11: List all students
+
+**MSS**
+
+1. TA requests the complete student list.
+2. TeachAssist replaces any search or attendance view with all students in record order and reports
+   `Listed all students.`
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. There are no students.
+  * 2a1. TeachAssist shows the empty list and reports `No students found.`
+
+  Use case ends.
+
+#### UC12: View help
+
+**MSS**
+
+1. TA requests help using `help`, the Help menu, or F1.
+2. TeachAssist opens the Help window with the User Guide address and a **Copy URL** button.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The Help window is already open or minimised.
+  * 2a1. TeachAssist restores and brings that window to the front.
+
+  Use case ends.
+
+Help remains available after a loading failure. A successful `help` command also returns an open attendance view
+to the student list. Opening the Help window through the menu or F1 does not execute that command.
+
+#### UC13: Exit TeachAssist
+
+**MSS**
+
+1. TA requests to exit using `exit` or closes the main window.
+2. TeachAssist closes. Student data from successful changes is already saved; it is loaded on the next launch.
+
+   Use case ends.
+
+Exit remains available after a loading failure. Undo history does not survive restarting.
 
 ### Non-Functional Requirements
 
@@ -1129,6 +1163,8 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 | 9 | `find r/` | `Parameter r/ cannot be empty.`; the empty view is preserved. |
 | 10 | `list` | Both students appear; `Listed all students.` |
 | 11 | `list 3` | `Invalid command format!` followed by `Usage: list`; both students remain visible. |
+| 12 | `add n/ i/A0345678D e/valid@example.com` | The empty name is rejected; the two baseline students remain. |
+| 13 | `find n/Alex i/A0123456B` | The mixed search fields are rejected; both students remain visible. |
 
 ### Editing students and labels
 
@@ -1136,20 +1172,22 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 |------|---------|-----------------|
 | 1 | `find n/Beth` | Only Beth appears. |
 | 2 | `edit i/a0123456b e/alex.new@example.com r/Revision complete` | Hidden student Alex is updated; both students appear. Feedback begins `Edited student: Alex Tan`; Alex's card shows the new remark. |
-| 3 | `edit i/A0123456B dl/Tutorial 1 l/Tutorial 2 l/Consultation` | Alex has Tutorial 2 and Consultation; Beth keeps Tutorial 1. |
-| 4 | `edit i/A0123456B n/Changed Name dl/Missing` | `Student A0123456B does not have label "Missing".`; Alex's name and labels are unchanged. |
-| 5 | `edit i/A0123456B l/Consultation` | `Student A0123456B already has label "Consultation".` |
+| 3 | `edit i/A0123456B dl/Tutorial 1 l/Tutorial 2 l/Consultation` | Alex has `tutorial 2` and `consultation`; Beth keeps `tutorial 1`. |
+| 4 | `edit i/A0123456B n/Changed Name dl/Missing` | `Student A0123456B does not have label "missing".`; Alex's name and labels are unchanged. |
+| 5 | `edit i/A0123456B l/Consultation` | `Student A0123456B already has label "consultation".` |
 | 6 | `edit i/A0123456B l/New l/new` | `Parameter l/ repeats label "new".`; neither label is added. |
 | 7 | `edit i/A0123456B` | `At least one field to edit must be provided.` |
 | 8 | `edit i/A0123456B l/ dl/Tutorial 2` | `An empty l/ cannot be combined with other label changes.` |
 | 9 | `edit i/A0123456B l/ r/` | All of Alex's labels and the remark are cleared; name and email are retained. |
+| 10 | `find r/Revision` | No results, because Alex's remark was cleared. |
+| 11 | `edit i/A0123456B l/Tutorial 1` | Alex's label is restored and both students are displayed. |
 
 ### Marking, viewing, and unmarking attendance
 
 | Step | Command | Expected result |
 |------|---------|-----------------|
 | 1 | `attendance d/2026-10-20 l/Tutorial 1` | Alex and Beth are Absent; totals are 0 present, 2 absent. |
-| 2 | `mark i/A0123456B d/2026-10-20 l/tutorial 1` | Alex becomes Present in the open view; totals become 1 present, 1 absent. |
+| 2 | `mark i/A0123456B d/2026-10-20 l/tutorial 1` | Feedback is `Marked student A0123456B present for tutorial 1 on 2026-10-20.` Alex becomes Present; totals become 1 present, 1 absent. |
 | 3 | Repeat step 2 | Already-marked error; the attendance view and totals are unchanged. |
 | 4 | `unmark i/A0123456B d/2026-10-20 l/Tutorial 1` | Alex becomes Absent; totals become 0 present, 2 absent. |
 | 5 | Repeat step 4 | Not-marked error; the view remains unchanged. |
@@ -1159,6 +1197,9 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 | 9 | `unmark i/A0123456B d/2026-10-20 l/Tutorial 1` | Removal succeeds even without current group membership; the view still contains only Beth. |
 | 10 | `attendance d/2026-10-20 l/Missing` | Empty attendance view with zero totals. |
 | 11 | `list` | Both students appear in the normal student list. |
+| 12 | `find n/Alex`, then `attendance d/2026-10-20 l/Tutorial 1` | Beth is shown as Absent despite being hidden by the preceding search; Alex is excluded because step 7 removed the label. |
+| 13 | `mark i/A0123456B d/2026-10-21 l/Tutorial 2` | Missing-group error; the open attendance view is unchanged. |
+| 14 | `attendance d/2026-10-20 i/A0123456B` | Unsupported-prefix error; the attendance view is unchanged. |
 
 ### Deleting, clearing, and undoing changes
 
@@ -1179,23 +1220,30 @@ The automated tests in `LogicManagerTest` cover eviction at the 100-snapshot his
 ### Help, exit, and restart persistence
 
 1. With the baseline students, run `mark i/A0123456B d/2026-10-20 l/Tutorial 1`.
-2. Run `help`. Confirm that the help window shows the UG address and that **Copy URL** copies it. Close that window.
-3. Run `exit`. Confirm that the application closes. Relaunch the same JAR from the same test folder.
-4. Expect `2 students loaded.`. Verify both students' details, Alex's remark, and both labels.
-5. Run `attendance d/2026-10-20 l/Tutorial 1`. Expect Alex Present and Beth Absent.
-6. Run `undo`. Expect `Nothing to undo.` because history is not persisted; the attendance view closes.
+2. Run `help`. Confirm that the help window shows the UG address and that **Copy URL** copies it.
+   Minimise the Help window, then run `help` again; it should be restored. Repeat with F1, then close that window.
+3. Run `help extra`. Expect an invalid-format message and help usage without changing student records.
+4. Run `exit`. Confirm that the application closes. Relaunch the same JAR from the same test folder.
+5. Expect `2 students loaded.`. Verify both students' details, Alex's remark, and both labels.
+6. Run `attendance d/2026-10-20 l/Tutorial 1`. Expect Alex Present and Beth Absent.
+7. Run `undo`. Expect `Nothing to undo.` because history is not persisted; the attendance view closes.
 
 ### Loading and saving failures
 
 Use separate copies of the baseline test folder for each case. Close the app before changing files, except for the
-failed-replacement scenario, which deliberately introduces an obstruction while the loaded app remains open.
+cases explicitly requiring a running app: the data-folder obstruction, failed replacement, and stale-window save.
 
 | Case | Preparation and action | Expected result |
 |------|------------------------|-----------------|
 | Invalid JSON | Back up `data/addressbook.json`, replace its contents with `{`, then launch. Run `list`, `find n/Alex`, `attendance d/2026-10-20 l/Tutorial 1`, then `clear`. | Startup reports corrupted or invalid data. Each command reports `Student data is unavailable because loading failed. Fix the data file and restart.`; no empty-list result or attendance report is shown. The invalid file remains untouched. Restore the backup and restart to recover both students. |
 | Duplicate ID | Duplicate a complete student object in the JSON `persons` array, then launch. | Startup reports the duplicate Student ID; modifying commands, `list`, `find`, and `attendance` are blocked. Restore the backup and restart. |
-| Cannot create data folder | In a fresh test folder, create a regular file named `data` beside the JAR. Launch and try a valid add. | `Unable to create data storage location.`; no student is added. Close the app, remove the test obstruction, and restart before retrying. |
+| Cannot create data folder | Start in a fresh test folder with no `data` path. Launch and confirm the no-existing-data startup message. While the app stays open, create a regular file named `data` beside the JAR, then try a valid add. | `Unable to create data storage location.`; no student is added. Remove the test obstruction and retry; the add now succeeds. Creating the obstruction before launch instead tests loading failure. |
 | Failed replacement | In a baseline folder, launch and run `find n/Beth`. While the app remains open, rename `data/addressbook.json` to `addressbook.backup.json` in the same folder. Create a non-empty directory named `addressbook.json` in its place, then run `delete i/A0123456B`. | `Unable to save student data.`; Beth remains the only visible student. `list` still shows both students. The backup file is unchanged. Close the app, remove the test directory, restore the backup filename, and restart. |
+| Stale window | Launch the same baseline JAR twice before editing, so both windows load Alex and Beth. In window A, mark Alex present for Tutorial 1 on 2026-10-20. In window B, try `edit i/A0234567C r/Changed in B`. | B reports `Student data has changed outside this window. Restart TeachAssist to load the latest data before editing.` Its attempted remark is not applied and A's attendance remains saved. Close B and restart it; Alex's attendance is loaded and Beth's remark is unchanged. |
+
+Lock contention is covered deterministically by `JsonAddressBookStorageConcurrencyTest`; racing two manual
+commands is unreliable because the lock is held only during saving. It should produce
+`Student data is being saved by another window. Please try again.` when another writer holds the lock.
 
 For the screen-size, scaling, and disconnected-monitor scenarios, follow
 [Display settings and window usability](Testing.md#display-settings-and-window-usability).
@@ -1314,8 +1362,8 @@ view, undo history, and the saved file. Shared errors below also apply to the co
 
 The general command parser runs before command-specific validation. Unicode space separators and Hangul fillers
 (`U+115F`, `U+1160`, `U+3164`, `U+FFA0`) count as spacing around commands and prefixes and are trimmed from value
-boundaries. Zero-width spaces and byte order marks are not normalized as whitespace. Internal label and remark
-characters are preserved; name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace-and-label-matching).
+boundaries. Zero-width spaces and byte order marks are not normalized as whitespace. Labels preserve internal spacing while letters are lowercased. Remarks preserve internal characters;
+name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace-and-label-matching).
 
 ### Field validation errors
 
@@ -1366,11 +1414,11 @@ before the empty name or invalid values.
 | Invalid Student ID, name, email, remark, or label | The corresponding field constraint message in [Field validation errors](#field-validation-errors); empty `n/` and `e/` also produce these messages | Follow the UG field rules and limits. |
 | No field to change, e.g., `edit i/A0123456B` | `At least one field to edit must be provided.` | Supply at least one field or label change. |
 | Empty label removal | `Parameter dl/ cannot be empty.` | Supply the required non-empty value. |
-| Same label repeated under one prefix | `Parameter l/ repeats label "Tutorial 1".` (or `dl/`, using the repeated value's spelling) | Specify each label only once per prefix. |
+| Same label repeated under one prefix | `Parameter l/ repeats label "tutorial 1".` (or `dl/`, using the normalized value) | Specify each label only once per prefix. |
 | Empty `l/` combined with another label change | `An empty l/ cannot be combined with other label changes.` | Clear all labels separately from other label changes. |
 | Student does not exist | `Student with ID A0123456B is not in the records.` | Use `list` or `find` to check the Student ID. |
-| Removing a label the student does not have | `Student A0123456B does not have label "Tutorial 1".` | Check the student’s labels and use the matching group name. |
-| Adding a label still present after removals | `Student A0123456B already has label "Tutorial 1".` | Omit the existing label, or remove it before adding its replacement. |
+| Removing a label the student does not have | `Student A0123456B does not have label "tutorial 1".` | Check the student’s labels and use the matching group name. |
+| Adding a label still present after removals | `Student A0123456B already has label "tutorial 1".` | Omit the existing label, or remove it before adding its replacement. |
 
 Validation order: unknown prefixes, preamble, duplicate single-value prefixes, required/non-empty/valid
 Student ID, supplied name, email, remark, label changes, then whether any field was supplied. Label additions are parsed
@@ -1412,21 +1460,21 @@ ID, data availability, student existence, then saving. For example, `delete i/12
 | Condition | Message | Recovery |
 |-----------|---------|----------|
 | Student does not exist | `Student with ID A0123456B is not in the records.` | Use `list` or `find` to check the Student ID. |
-| Student does not have the group label | `Student A0123456B does not have group label "Tutorial 1".` | Check the student’s labels and use the matching group name. |
-| Attendance already exists | `Student A0123456B is already marked present for Tutorial 1 on 2026-10-20.` | Use `attendance` to check the existing entry; use `unmark` to remove it. |
+| Student does not have the group label | `Student A0123456B does not have group label "tutorial 1".` | Check the student’s labels and use the matching group name. |
+| Attendance already exists | `Student A0123456B is already marked present for tutorial 1 on 2026-10-20.` | Use `attendance` to check the existing entry; use `unmark` to remove it. |
 
 After parsing, data availability, student existence, current group membership, and existing attendance
-are checked in that order, then saving. Success feedback uses the stored group label’s spelling.
+are checked in that order, then saving. Success feedback uses the stored lowercase group name.
 
 #### Unmark errors
 
 | Condition | Message | Recovery |
 |-----------|---------|----------|
 | Student does not exist | `Student with ID A0123456B is not in the records.` | Use `list` or `find` to check the Student ID. |
-| No attendance entry for the date and group | `Student A0123456B is not marked present for Tutorial 1 on 2026-10-20.` | Check the date and stored group spelling, including internal spacing. |
+| No attendance entry for the date and group | `Student A0123456B is not marked present for tutorial 1 on 2026-10-20.` | Check the date and stored group name, including internal spacing. |
 
 After parsing, data availability, student existence, and matching attendance are checked, then saving.
-Current group membership is not required. Success feedback uses the attendance entry’s stored group spelling.
+Current group membership is not required. Success feedback uses the attendance entry’s lowercase group name.
 
 #### Attendance parameter errors
 
@@ -1490,13 +1538,15 @@ The root object contains a `persons` array. For example, this is a valid minimal
 
 Loading trims surrounding ASCII control whitespace, Unicode space separators, and the four supported Hangul fillers
 from text fields, labels, dates, and attendance groups before validation. Names also normalize these Unicode spaces and
-fillers to ASCII spaces and collapse repeated spaces. Internal remark, label, and attendance-group characters are
-preserved. Student IDs become uppercase; only email domains become lowercase. Limits apply after this normalization.
+fillers to ASCII spaces and collapse repeated spaces. Internal spacing and punctuation in remarks, labels, and
+attendance groups are preserved. Student IDs become uppercase; email domains, labels, and attendance groups become
+lowercase. Label and group length checks count the lowercase `i` plus combining-dot sequence as one character.
+This preserves labels accepted before lowercasing was introduced, including their saved lowercase forms.
 Duplicate Student IDs, labels within a student, and attendance date/group pairs within a student are checked after
 normalization; label/group comparison ignores case but preserves internal spacing, Unicode spaces, and Hangul fillers.
 The normalized values are written on the next successful save.
 
-Attendance is stored as `attendance`: a list of `{"date": "2026-10-20", "group": "Tutorial 1"}` entries per student.
+Attendance is stored as `attendance`: a list of `{"date": "2026-10-20", "group": "tutorial 1"}` entries per student.
 Dates must be real calendar dates in `YYYY-MM-DD` format; group names follow label constraints.
 
 Successful startup reports `N students loaded.` (`1 student loaded.` for one student). A missing file reports
@@ -1510,9 +1560,12 @@ details. Dismissing it exits the application with failure status; this is separa
 | Condition | Message | Recovery |
 |-----------|---------|----------|
 | Storage folder cannot be created | `Unable to create data storage location.` | Use a writable home folder and remove any file obstructing the `data` folder. Retry the command. |
+| Data file differs from the last successful read or save | `Student data has changed outside this window. Restart TeachAssist to load the latest data before editing.` | Restart to load the current file, review the latest records, then retry the intended change. |
+| Another writer holds the data-file lock | `Student data is being saved by another window. Please try again.` | Wait for the other save to finish and retry. If the file has since changed, follow the changed-file recovery above. |
 | Writing or atomic replacement fails, including unsupported atomic replacement | `Unable to save student data.` | Restore writable storage supporting atomic file replacement, then retry. |
 
-Saving occurs after parsing, data-availability checks, and command-specific validation. A complete temporary file is
-written beside the destination, then atomically replaces it. Failures preserve live records, current view, undo history,
-and the previous data file. Successful modifying commands save even if the records are unchanged, but unchanged records
+Saving occurs after parsing, data-availability checks, and command-specific validation. Storage holds a sidecar
+file lock, writes a complete temporary file, checks the destination against the last remembered bytes, then replaces
+it atomically. See [Saving before publishing changes](#saving-before-publishing-changes).
+Failures preserve live records, current view, and undo history; the attempted save does not replace the destination. Successful modifying commands save even if the records are unchanged, but unchanged records
 do not create an undo snapshot. Undo with no history does not save.

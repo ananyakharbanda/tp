@@ -17,37 +17,38 @@ public class Label {
             + "contain at least one letter or digit, and only contain letters, digits, spaces, hyphens, "
             + "underscores, apostrophes, parentheses, and periods.";
 
-    /** Display order: by name ignoring case, as labels are matched, with the exact name breaking ties. */
-    public static final Comparator<Label> DISPLAY_ORDER = Comparator
-            .comparing((Label label) -> label.labelName.toLowerCase(Locale.ROOT))
-            .thenComparing(label -> label.labelName);
+    /** Display order: by the stored lowercase name. */
+    public static final Comparator<Label> DISPLAY_ORDER = Comparator.comparing(label -> label.labelName);
 
     public final String labelName;
 
     /**
-     * Constructs a {@code Label}.
+     * Constructs a {@code Label}, storing its name in lowercase.
      *
      * @param labelName A valid label name.
      */
     public Label(String labelName) {
         requireNonNull(labelName);
         checkArgument(isValidLabelName(labelName), MESSAGE_CONSTRAINTS);
-        this.labelName = labelName;
+        this.labelName = labelName.toLowerCase(Locale.ROOT);
     }
 
     /**
-     * Returns true if a given string is a valid label name.
+     * Returns true if a given string remains a valid label name after lowercasing.
      */
     public static boolean isValidLabelName(String test) {
         requireNonNull(test);
+        String lowercasedName = test.toLowerCase(Locale.ROOT);
+        String lengthCheckedName = lowercasedName.replace("i\u0307", "\u0130");
 
-        if (test.isBlank() || test.codePointCount(0, test.length()) > MAX_NAME_LENGTH) {
+        if (lowercasedName.isBlank()
+                || lengthCheckedName.codePointCount(0, lengthCheckedName.length()) > MAX_NAME_LENGTH) {
             return false;
         }
 
         boolean hasLetterOrDigit = false;
-        for (int i = 0; i < test.length(); i += Character.charCount(test.codePointAt(i))) {
-            int codePoint = test.codePointAt(i);
+        for (int i = 0; i < lowercasedName.length(); i += Character.charCount(lowercasedName.codePointAt(i))) {
+            int codePoint = lowercasedName.codePointAt(i);
             if (!isAllowedCodePoint(codePoint)) {
                 return false;
             }

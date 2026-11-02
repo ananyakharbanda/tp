@@ -200,7 +200,7 @@ public class MainAppTest {
                 """);
         Logic logic = new TestApp().loadLogic(storage);
         assertEquals("2 students loaded.", logic.getStartupMessage());
-        assertEquals("Attendance for Tutorial 1 on 2026-10-20: 0 present, 2 absent.",
+        assertEquals("Attendance for tutorial 1 on 2026-10-20: 0 present, 2 absent.",
                 logic.execute("attendance d/2026-10-20 l/Tutorial 1").getFeedbackToUser());
 
         CommandResult marked = logic.execute("mark i/A0123456B d/2026-10-20 l/tutorial 1");
@@ -209,14 +209,14 @@ public class MainAppTest {
 
         Logic restarted = new TestApp().loadLogic(storage);
         CommandResult shown = restarted.execute("attendance d/2026-10-20 l/Tutorial 1");
-        assertEquals("Attendance for Tutorial 1 on 2026-10-20: 1 present, 1 absent.", shown.getFeedbackToUser());
+        assertEquals("Attendance for tutorial 1 on 2026-10-20: 1 present, 1 absent.", shown.getFeedbackToUser());
         List<Boolean> statuses = shown.getAttendanceReport().orElseThrow().getEntries().stream()
                 .map(AttendanceEntry::isPresent).toList();
         assertEquals(List.of(true, false), statuses);
-        assertEquals("Attendance for Tutorial 2 on 2026-10-20: 1 present, 0 absent.",
+        assertEquals("Attendance for tutorial 2 on 2026-10-20: 1 present, 0 absent.",
                 restarted.execute("attendance d/2026-10-20 l/Tutorial 2").getFeedbackToUser());
         assertThrows(CommandException.class,
-                "Student A0123456B is already marked present for Tutorial 1 on 2026-10-20.", () ->
+                "Student A0123456B is already marked present for tutorial 1 on 2026-10-20.", () ->
                 restarted.execute("mark i/A0123456B d/2026-10-20 l/Tutorial 1"));
     }
 

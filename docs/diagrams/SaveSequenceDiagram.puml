@@ -1,0 +1,44 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+title Shared transaction for a modifying command
+participant ":LogicManager" as Logic LOGIC_COLOR
+participant "command:Command" as Command LOGIC_COLOR
+participant "live:ModelManager" as Live MODEL_COLOR
+participant "pending:ModelManager" as Pending MODEL_COLOR
+participant ":StorageManager" as Storage STORAGE_COLOR
+[-> Logic : executeAndSave(\ncommand)
+activate Logic
+note over Logic
+Capture previous address book,
+preferences, and current filter.
+end note
+create Pending
+Logic -> Pending : new ModelManager(\nrecords, preferences)
+Logic -> Pending : updateFilteredPersonList(filter)
+Logic -> Command : execute(pending)
+activate Command
+ref over Command, Pending
+Command-specific update
+(see feature diagrams)
+end ref
+Command --> Logic : result
+deactivate Command
+Logic -> Storage : saveAddressBook(updatedRecords)
+alt save succeeds
+    Storage --> Logic : saved
+    Logic -> Logic : recordUndoSnapshot(\nprevious, updatedRecords)
+    Logic -> Live : setAddressBook(updatedRecords)
+    Logic -> Live : updateFilteredPersonList(\npendingFilter)
+    [<-- Logic : result
+else save fails
+    Storage --> Logic : IOException
+    note over Logic, Live
+    Map the exception to the saving error.
+    Keep live records, filter, and history unchanged.
+    end note
+    [<-- Logic : CommandException
+end
+deactivate Logic
+@enduml

@@ -31,6 +31,8 @@ The following are selected contributions supported by commits and merged pull re
 * Added attendance records and JSON persistence, then implemented the mark command
   ([PR #140](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/140),
   [PR #141](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/141)).
+* Normalized group labels to lowercase across commands, attendance, JSON storage, and the UI, with regression tests
+  (commit `94eca132`).
 
 ### Reliability and code quality
 
@@ -61,5 +63,9 @@ The following are selected contributions supported by commits and merged pull re
 * Updated the User Guide screenshot and clarified attendance and data-file recovery guidance
   ([PR #123](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/123),
   [PR #256](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/256)).
+* Clarified remark prefix parsing and explained how attendance is retained and can be unmarked after label removal
+  (commits `6f4feb55`, `b4d3ba54`, `75d00d9a`).
+* Improved the edit, mark, and unmark sequence diagrams and their implementation walkthroughs
+  (commits `0e4d6f0d`, `dfdf5568`).
 
 [Team responsibilities](../AboutUs.md)

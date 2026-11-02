@@ -39,6 +39,27 @@ public class JsonAddressBookStorageTest {
     public Path testFolder;
 
     @Test
+    public void readAddressBook_legacyExpandedLabel_survivesSaveAndReload() throws Exception {
+        Path file = testFolder.resolve("legacy.json");
+        String group = "İ".repeat(60);
+        Files.writeString(file, """
+                {"persons":[{"name":"Alex Tan","studentId":"A0123456B","email":"alex@example.com",
+                "labels":["%s"],"attendance":[{"date":"2026-10-20","group":"%s"}]}]}
+                """.formatted(group, group));
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        ReadOnlyAddressBook loaded = storage.readAddressBook().orElseThrow();
+        Person student = loaded.getPersonList().get(0);
+        Label expected = new Label(group);
+        assertTrue(student.getLabels().contains(expected));
+        assertTrue(student.getAttendance().contains(
+                new AttendanceRecord(LocalDate.parse("2026-10-20"), expected)));
+        storage.saveAddressBook(loaded);
+        ReadOnlyAddressBook reloaded = new JsonAddressBookStorage(file).readAddressBook().orElseThrow();
+        assertEquals(loaded, reloaded);
+        assertTrue(Label.isValidLabelName(expected.labelName));
+    }
+
+    @Test
     public void saveAddressBook_replacementFailure_preservesFileAndRemovesTemporaryFile() throws Exception {
         Path file = testFolder.resolve("existing.json");
         JsonAddressBookStorage storage = new JsonAddressBookStorage(file);

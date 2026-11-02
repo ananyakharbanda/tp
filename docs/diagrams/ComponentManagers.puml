@@ -1,31 +1,18 @@
 @startuml
 !include style.puml
-skinparam arrowThickness 1.1
-skinparam arrowColor LOGIC_COLOR_T4
+skinparam ArrowFontStyle plain
+
+title Implementations depend on component interfaces
 skinparam classBackgroundColor LOGIC_COLOR
-
-package Logic as LogicPackage {
-Class "<<interface>>\nLogic" as Logic
-Class LogicManager
-}
-
-package Model as ModelPackage {
-Class "<<interface>>\nModel" as Model
-Class ModelManager
-}
-
-package Storage as StoragePackage {
-Class "<<interface>>\nStorage" as Storage
-Class StorageManager
-}
-
-Class HiddenOutside #FFFFFF
-HiddenOutside ..> Logic
-
-LogicManager .up.|> Logic
-ModelManager .up.|> Model
-StorageManager .up.|> Storage
-
+interface Logic <<interface>>
+class LogicManager
+interface Model <<interface>>
+class ModelManager
+interface Storage <<interface>>
+class StorageManager
+LogicManager ..|> Logic
+ModelManager ..|> Model
+StorageManager ..|> Storage
 LogicManager --> Model
 LogicManager --> Storage
 @enduml
