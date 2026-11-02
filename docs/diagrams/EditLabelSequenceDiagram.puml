@@ -3,7 +3,8 @@
 skinparam ArrowFontStyle plain
 skinparam ArrowColor #C62828
 skinparam SequenceLifeLineBorderColor #C62828
-skinparam ArrowThickness 2title Edit a student's group labels
+skinparam ArrowThickness 2
+title Edit a student's group labels
 box "Logic" #C8C8FA
 participant ":LogicManager" as Logic LOGIC_COLOR
 participant ":AddressBookParser" as Parser LOGIC_COLOR
