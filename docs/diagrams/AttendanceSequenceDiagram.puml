@@ -6,10 +6,13 @@ title AttendanceCommand: build a report
 participant "command:AttendanceCommand" as Command LOGIC_COLOR
 participant "model:ModelManager" as Model MODEL_COLOR
 participant "<<class>>\nAttendanceReport" as Report MODEL_COLOR
+participant "book:ReadOnlyAddressBook" as Book MODEL_COLOR
 [-> Command : execute(model)
 activate Command
-Command -> Model : getAddressBook().getPersonList()
-Model --> Command : all students
+Command -> Model : getAddressBook()
+Model --> Command : book
+Command -> Book : getPersonList()
+Book --> Command : all students
 Command -> Report : of(students, date, group)
 activate Report
 note over Report
