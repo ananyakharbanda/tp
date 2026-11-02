@@ -25,7 +25,7 @@ Examples below use the prefixed format.)
 * **`clean`**: Deletes the files created during the previous build tasks (e.g. files in the `build` folder).<br>
   For example: `./gradlew clean`
 
-* **`shadowJar`**: Uses the Shadow plugin to create the fat JAR file `build/libs/teach-assist-v1.5.jar`.<br>
+* **`shadowJar`**: Uses the Shadow plugin to create the fat JAR file `build/libs/teach-assist-v1.6.jar`.<br>
   For example: `./gradlew shadowJar`
 
 * **`run`**: Builds and runs the application.<br>

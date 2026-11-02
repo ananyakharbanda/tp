@@ -182,8 +182,8 @@ public class EditCommandTest {
     }
 
     @Test
-    public void execute_removeAndAddSameLabel_changesCapitalisation() {
-        // EP: remove and add the same label with different capitalisation
+    public void execute_removeAndAddSameLabel_keepsCanonicalName() {
+        // EP: removing and readding a label with different capitalization keeps its lowercase name
         Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person student = new PersonBuilder(original).withLabels("Tutorial A").build();
         model.setPerson(original, student);
@@ -243,7 +243,7 @@ public class EditCommandTest {
 
         // EP: remove a label the student does not have
         assertCommandFailure(missingLabel, model,
-                String.format(EditCommand.MESSAGE_LABEL_NOT_FOUND, student.getStudentId(), "Unknown"));
+                String.format(EditCommand.MESSAGE_LABEL_NOT_FOUND, student.getStudentId(), "unknown"));
         // EP: add a case-insensitive duplicate after removing a different label
         assertCommandFailure(duplicateAfterRemoval, model,
                 String.format(EditCommand.MESSAGE_DUPLICATE_LABEL, student.getStudentId(), "needs follow-up"));

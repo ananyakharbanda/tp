@@ -5,6 +5,14 @@
  '/
 
 
+'Use the bundled layout engine so documentation builds do not depend on a native Graphviz install.
+!pragma layout smetana
+
+skinparam DefaultFontName Arial
+skinparam DefaultFontSize 14
+skinparam ComponentFontColor #FFFFFF
+skinparam ComponentStyle rectangle
+
 'T1 through T4 are shades of the original color from lightest to darkest
 
 !define UI_COLOR #1D8900
@@ -29,7 +37,7 @@
 !define STORAGE_COLOR_T1 #FFE374
 !define STORAGE_COLOR_T2 #EDC520
 !define STORAGE_COLOR_T3 #806600
-!define STORAGE_COLOR_T2 #544400
+!define STORAGE_COLOR_T4 #544400
 
 !define USER_COLOR #000000
 
@@ -41,6 +49,7 @@ skinparam Package {
 
 skinparam Class {
     FontColor #FFFFFF
+    AttributeFontColor #FFFFFF
     FontSize 15
     BorderThickness 1
     BorderColor #FFFFFF
@@ -58,12 +67,12 @@ skinparam Sequence {
     MessageAlign center
     BoxFontSize 15
     BoxPadding 0
-    BoxFontColor #FFFFFF
+    BoxFontColor #222222
     FontName Arial
 }
 
 skinparam Participant {
-    FontColor #FFFFFFF
+    FontColor #FFFFFF
     Padding 20
 }
 

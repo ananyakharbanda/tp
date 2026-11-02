@@ -58,7 +58,7 @@ public class AttendanceCommandTest {
         AttendanceReport report = AttendanceReport.of(List.of(), DATE, GROUP);
 
         assertCommandSuccess(new AttendanceCommand(DATE, GROUP), model,
-                CommandResult.showingAttendance("Attendance for Tutorial 1 on 2026-10-20: 0 present, 0 absent.",
+                CommandResult.showingAttendance("Attendance for tutorial 1 on 2026-10-20: 0 present, 0 absent.",
                         report), expected);
     }
 

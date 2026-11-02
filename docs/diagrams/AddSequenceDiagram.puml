@@ -2,84 +2,20 @@
 !include style.puml
 skinparam ArrowFontStyle plain
 
-box Logic LOGIC_COLOR_T1
-participant ":LogicManager" as LogicManager LOGIC_COLOR
-participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
-participant ":AddCommandParser" as AddCommandParser LOGIC_COLOR
-participant ":ParserUtil" as ParserUtil LOGIC_COLOR
-participant "a:AddCommand" as AddCommand LOGIC_COLOR
-end box
-
-box Model MODEL_COLOR_T1
-participant "p:Person" as Person MODEL_COLOR
-participant "live:Model" as LiveModel MODEL_COLOR
-participant "pending:ModelManager" as PendingModel MODEL_COLOR
-end box
-participant ":Storage" as Storage STORAGE_COLOR
-
-[-> LogicManager : execute("add n/Alex Tan i/A0123456B e/alex@example.com r/Quiz: 8/10 l/Tutorial")
-activate LogicManager
-LogicManager -> AddressBookParser : parseCommand(commandText)
-activate AddressBookParser
-create AddCommandParser
-AddressBookParser -> AddCommandParser : new AddCommandParser()
-AddressBookParser -> AddCommandParser : parse(arguments)
-activate AddCommandParser
-note right of AddCommandParser
-Validate structure and required fields.
-Reject unknown or repeated prefixes.
+title AddCommand: update a pending model
+participant "command:AddCommand" as Command LOGIC_COLOR
+participant "pending:ModelManager" as Model MODEL_COLOR
+[-> Command : execute(pending)
+activate Command
+Command -> Model : hasPerson(toAdd)
+Model --> Command : false
+note over Command, Model
+If the ID exists, throw CommandException
+before changing the pending model.
 end note
-AddCommandParser -> ParserUtil : parseName, parseStudentId, parseEmail, parseLabel, parseRemark
-activate ParserUtil
-ParserUtil --> AddCommandParser : validated field values
-deactivate ParserUtil
-create Person
-AddCommandParser -> Person : new Person(name, studentId, email, labels, remark)
-create AddCommand
-AddCommandParser -> AddCommand : new AddCommand(p)
-AddCommandParser --> AddressBookParser : a
-deactivate AddCommandParser
-destroy AddCommandParser
-AddressBookParser --> LogicManager : a
-deactivate AddressBookParser
-
-note over LogicManager
-Block modifying commands if startup loading failed.
-The following path assumes loading succeeded.
-end note
-LogicManager -> LiveModel : getAddressBook(), getUserPrefs(), getFilteredPersonListPredicate()
-LiveModel --> LogicManager : current records, preferences, and filter
-LogicManager -> PendingModel : new ModelManager(records, preferences); apply filter
-LogicManager -> AddCommand : execute(pending)
-activate AddCommand
-AddCommand -> PendingModel : hasPerson(p)
-PendingModel --> AddCommand : false
-note right of AddCommand
-A duplicate Student ID throws CommandException
-before addPerson or saveAddressBook.
-end note
-AddCommand -> PendingModel : addPerson(p)
-PendingModel --> AddCommand
-AddCommand --> LogicManager : result: added student, remark, count
-deactivate AddCommand
-
-LogicManager -> Storage : saveAddressBook(pending.getAddressBook())
-activate Storage
-note right of Storage
-Write temporary JSON, then atomically replace data file.
-end note
-alt save succeeds
-Storage --> LogicManager : saved
-LogicManager -> LiveModel : setAddressBook(pending.getAddressBook())
-LogicManager -> LiveModel : updateFilteredPersonList(pending filter)
-[<-- LogicManager : result
-else save fails
-Storage --> LogicManager : IOException
-note over LiveModel
-Existing records and filter remain unchanged.
-end note
-[<-- LogicManager : CommandException("Unable to save student data.")
-end
-deactivate Storage
-deactivate LogicManager
+Command -> Model : addPerson(toAdd)
+Command -> Model : getAddressBook().getPersonList()
+Model --> Command : students
+[<-- Command : result
+deactivate Command
 @enduml

@@ -2,114 +2,23 @@
 !include style.puml
 skinparam ArrowFontStyle plain
 
-box UI UI_COLOR_T1
-participant ":MainWindow" as MainWindow UI_COLOR
-end box
-
-box Logic LOGIC_COLOR_T1
-participant ":LogicManager" as LogicManager LOGIC_COLOR
-participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
-participant "a:AttendanceCommand" as AttendanceCommand LOGIC_COLOR
-participant "m:MarkCommand" as MarkCommand LOGIC_COLOR
-end box
-
-box Model MODEL_COLOR_T1
-participant "live:Model" as LiveModel MODEL_COLOR
-participant "<<class>>\nAttendanceReport" as AttendanceReport MODEL_COLOR
-end box
-participant ":Storage" as Storage STORAGE_COLOR
-
-== attendance d/2026-10-20 l/Tutorial 1 ==
-
-[-> MainWindow : executeCommand("attendance ...")
-activate MainWindow
-MainWindow -> LogicManager : execute("attendance ...")
-activate LogicManager
-LogicManager -> AddressBookParser : parseCommand("attendance ...")
-activate AddressBookParser
-note right of AddressBookParser
-AttendanceCommandParser validates d/ and l/,
-then creates the command.
+title AttendanceCommand: build a report
+participant "command:AttendanceCommand" as Command LOGIC_COLOR
+participant "model:ModelManager" as Model MODEL_COLOR
+participant "<<class>>\nAttendanceReport" as Report MODEL_COLOR
+[-> Command : execute(model)
+activate Command
+Command -> Model : getAddressBook().getPersonList()
+Model --> Command : all students
+Command -> Report : of(students, date, group)
+activate Report
+note over Report
+Include current group members.
+Keep their record order.
+Present = matching entry.
 end note
-create AttendanceCommand
-AddressBookParser -> AttendanceCommand : new AttendanceCommand(date, group)
-AddressBookParser --> LogicManager : a
-deactivate AddressBookParser
-
-note over LogicManager
-Read-only: run on the live model without saving.
-end note
-LogicManager -> AttendanceCommand : execute(live)
-activate AttendanceCommand
-AttendanceCommand -> LiveModel : getAddressBook().getPersonList()
-LiveModel --> AttendanceCommand : all students
-AttendanceCommand -> AttendanceReport : of(students, date, group)
-activate AttendanceReport
-note right of AttendanceReport
-Keep current group members in list order.
-Present if they have the (date, group) record.
-end note
-AttendanceReport --> AttendanceCommand : report
-deactivate AttendanceReport
-AttendanceCommand --> LogicManager : CommandResult.showingAttendance(message, report)
-deactivate AttendanceCommand
-
-LogicManager -> LogicManager : displayedAttendance = report
-LogicManager --> MainWindow : result
-deactivate LogicManager
-MainWindow -> MainWindow : show AttendanceListPanel(report)
-[<-- MainWindow
-deactivate MainWindow
-
-== mark i/A0123456B d/2026-10-20 l/Tutorial 1 ==
-
-[-> MainWindow : executeCommand("mark ...")
-activate MainWindow
-MainWindow -> LogicManager : execute("mark ...")
-activate LogicManager
-LogicManager -> AddressBookParser : parseCommand("mark ...")
-activate AddressBookParser
-create MarkCommand
-AddressBookParser -> MarkCommand : new MarkCommand(studentId, date, group)
-AddressBookParser --> LogicManager : m
-deactivate AddressBookParser
-
-note over LogicManager
-Modifying: run on a pending copy of the live model.
-end note
-LogicManager -> MarkCommand : execute(pending)
-activate MarkCommand
-note right of MarkCommand
-Check the student exists, has the group,
-and is not already marked; add the record.
-end note
-MarkCommand --> LogicManager : CommandResult.updatingAttendance(message)
-deactivate MarkCommand
-
-LogicManager -> Storage : saveAddressBook(pending.getAddressBook())
-activate Storage
-alt save succeeds
-Storage --> LogicManager : saved
-deactivate Storage
-LogicManager -> LiveModel : setAddressBook(pending.getAddressBook())
-LogicManager -> AttendanceReport : of(students, displayed date, displayed group)
-activate AttendanceReport
-AttendanceReport --> LogicManager : refreshed report
-deactivate AttendanceReport
-LogicManager -> LogicManager : displayedAttendance = refreshed report
-LogicManager --> MainWindow : result.withAttendanceReport(refreshed report)
-MainWindow -> MainWindow : show AttendanceListPanel(refreshed report)
-[<-- MainWindow
-else save fails
-activate Storage
-Storage --> LogicManager : IOException
-deactivate Storage
-LogicManager --> MainWindow : CommandException("Unable to save student data.")
-note over MainWindow
-The displayed report and live records are unchanged.
-end note
-[<-- MainWindow
-end
-deactivate LogicManager
-deactivate MainWindow
+Report --> Command : report
+deactivate Report
+[<-- Command : result
+deactivate Command
 @enduml

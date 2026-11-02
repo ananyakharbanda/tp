@@ -284,6 +284,10 @@ public class ParserUtilTest {
     public void parseLabel_invalidValue_throwsParseException() {
         // EP: invalid value
         assertThrows(ParseException.class, () -> ParserUtil.parseLabel(INVALID_LABEL));
+
+        // EP: Unicode lowercasing expands a label beyond the maximum length
+        // BVA: 31 dotted capital I characters become 62 code points
+        assertThrows(ParseException.class, Label.MESSAGE_CONSTRAINTS, () -> ParserUtil.parseLabel("İ".repeat(31)));
     }
 
     @Test
@@ -291,6 +295,13 @@ public class ParserUtilTest {
         // EP: valid value without whitespace
         Label expectedLabel = new Label(VALID_LABEL);
         assertEquals(expectedLabel, ParserUtil.parseLabel(VALID_LABEL));
+
+        // EP: mixed-case label is stored in lowercase
+        assertEquals("tut1", ParserUtil.parseLabel("TuT1").labelName);
+
+        // EP: Unicode lowercasing expands to a label at the maximum length
+        // BVA: 30 dotted capital I characters become 60 code points
+        assertEquals(new Label("İ".repeat(30)), ParserUtil.parseLabel("İ".repeat(30)));
     }
 
     @Test

@@ -1,15 +1,15 @@
 @startuml
 !include style.puml
-title Bounded destructive undo history
+hide empty description
+title Example evolution of bounded destructive undo history
 
-state "Live records: C\nHistory (oldest to newest): A, B" as BeforeChange
-state "Live records: D\nHistory (oldest to newest): A, B, C" as AfterChange
-state "Live records: C\nHistory (oldest to newest): A, B" as AfterUndo
-state "Live records: E\nHistory (oldest to newest): A, B, C" as AfterNewChange
+state "Live records: C; history (oldest to newest): A, B" as BeforeChange
+state "Live records: D; history (oldest to newest): A, B, C" as AfterChange
+state "Live records: E; history (oldest to newest): A, B, C" as AfterNewChange
 
-BeforeChange --> AfterChange : successful normal change\nsave D, append C, publish D
-AfterChange --> AfterUndo : undo\nsave C, publish C, remove C
-AfterUndo --> AfterNewChange : successful normal change\nsave E, append C, publish E
+BeforeChange --> AfterChange : normal change succeeds /\nsave D; append C; publish D
+AfterChange --> BeforeChange : undo /\nsave C; publish C; remove C
+BeforeChange --> AfterNewChange : normal change succeeds /\nsave E; append C; publish E
 
 note bottom of AfterChange
 The newest snapshot is restored first.
@@ -17,7 +17,7 @@ At the 100-snapshot limit, discard the oldest snapshot
 before appending a new predecessor.
 end note
 
-note bottom of AfterUndo
+note bottom of BeforeChange
 No forward state D is retained.
 end note
 @enduml

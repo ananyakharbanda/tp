@@ -1,0 +1,28 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+title LogicManager: select the displayed attendance report
+participant ":LogicManager" as Logic LOGIC_COLOR
+participant "result:CommandResult" as Result LOGIC_COLOR
+participant "<<class>>\nAttendanceReport" as Report MODEL_COLOR
+[-> Logic : updateDisplayedAttendance(result)
+activate Logic
+Logic -> Result : getAttendanceReport()
+Result --> Logic : optionalReport
+alt a new report is present
+    note over Logic : displayedAttendance = new report
+    [<-- Logic : result
+else attendance was updated and a report is open
+    Logic -> Report : of(liveStudents, displayedDate, displayedGroup)
+    Report --> Logic : refreshedReport
+    note over Logic : displayedAttendance = refreshedReport
+    Logic -> Result : withAttendanceReport(refreshedReport)
+    Result --> Logic : resultWithReport
+    [<-- Logic : resultWithReport
+else no report to display
+    note over Logic : displayedAttendance = null
+    [<-- Logic : result
+end
+deactivate Logic
+@enduml
