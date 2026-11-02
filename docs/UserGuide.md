@@ -30,7 +30,6 @@ TeachAssist is a **desktop application for managing student records, optimized f
    If you downloaded a different version, use its actual filename.<br>
    A GUI similar to the one below should appear in a few seconds. With no saved data file, the student list starts empty.<br>
    ![Ui](images/Ui.png)
-   The screenshot shows an earlier label display; the current version displays group labels in lowercase.
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
