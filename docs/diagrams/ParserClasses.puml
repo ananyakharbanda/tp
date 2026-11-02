@@ -3,7 +3,9 @@
 skinparam ArrowFontStyle plain
 
 title Parsing classes: AddCommandParser as a representative
-skinparam classBackgroundColor LOGIC_COLOR
+skinparam classBackgroundColor LOGIC_COLOR_T1
+skinparam classFontColor #222222
+skinparam classStereotypeFontColor #222222
 interface "Parser<AddCommand>" as Parser <<interface>>
 class AddressBookParser
 class AddCommandParser
