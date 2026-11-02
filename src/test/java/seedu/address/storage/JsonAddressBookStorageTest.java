@@ -1,5 +1,6 @@
 package seedu.address.storage;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,6 +11,8 @@ import static seedu.address.testutil.TypicalPersons.IDA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -308,6 +311,60 @@ public class JsonAddressBookStorageTest {
         Files.writeString(file, "{ \"persons\": \"not a list\" }");
         assertThrows(DataLoadingException.class, JsonAddressBookStorage.MESSAGE_INVALID_FILE, () ->
                 new JsonAddressBookStorage(file).readAddressBook());
+    }
+
+    @Test
+    public void readAddressBook_malformedUtf8_rejectsAndPreservesBytes() throws Exception {
+        Path file = testFolder.resolve("malformedUtf8.json");
+        byte[] prefix = ("{\"persons\":[{\"name\":\"Alex Tan\",\"studentId\":\"A0123456B\","
+                + "\"email\":\"alex@example.com\",\"remark\":\"").getBytes(StandardCharsets.UTF_8);
+        byte[] suffix = "\"}]}".getBytes(StandardCharsets.UTF_8);
+        // Invalid leading byte, invalid continuation, truncated sequence, overlong encoding, and surrogate.
+        for (byte[] invalid : List.of(new byte[] {(byte) 0xff}, new byte[] {(byte) 0xc3, 0x28},
+                new byte[] {(byte) 0xe2, (byte) 0x82}, new byte[] {(byte) 0xc0, (byte) 0xaf},
+                new byte[] {(byte) 0xed, (byte) 0xa0, (byte) 0x80})) {
+            byte[] contents = ByteBuffer.allocate(prefix.length + invalid.length + suffix.length)
+                    .put(prefix).put(invalid).put(suffix).array();
+            Files.write(file, contents);
+
+            assertThrows(DataLoadingException.class, JsonAddressBookStorage.MESSAGE_INVALID_FILE, () ->
+                    new JsonAddressBookStorage(file).readAddressBook());
+            assertArrayEquals(contents, Files.readAllBytes(file));
+        }
+    }
+
+    @Test
+    public void readAddressBook_validUtf8_preservesUnicodeAndReplacementCharacter() throws Exception {
+        Path file = testFolder.resolve("validUtf8.json");
+        String remark = "\u4e2d\u6587 \u00e9 \uD83D\uDE00 \uFFFD";
+        Map<String, Object> student = validStudentFields();
+        student.put("remark", remark);
+        Files.writeString(file, JsonUtil.toJsonString(Map.of("persons", List.of(student))));
+
+        ReadOnlyAddressBook loaded = new JsonAddressBookStorage(file).readAddressBook().orElseThrow();
+        assertEquals(remark, loaded.getPersonList().getFirst().getRemark().value);
+    }
+
+    @Test
+    public void readAddressBook_unpairedSurrogateEscapes_rejectsAndPreservesFile() throws Exception {
+        for (String escaped : List.of("\\uD800", "\\uDC00", "\\uD800\\uD800", "\\uDC00\\uD800",
+                "before\\uD800after", "\\uD800\\u0041", "\\uD83D\\uDE00\\uD800")) {
+            assertInvalidFilePreserved("{\"persons\":[{\"name\":\"Alex Tan\",\"studentId\":\"A0123456B\","
+                    + "\"email\":\"alex@example.com\",\"remark\":\"" + escaped + "\"}]}");
+        }
+    }
+
+    @Test
+    public void readAddressBook_validSurrogatePairEscape_survivesSaveAndReload() throws Exception {
+        Path file = testFolder.resolve("surrogatePair.json");
+        Files.writeString(file, "{\"persons\":[{\"name\":\"Alex Tan\",\"studentId\":\"A0123456B\","
+                + "\"email\":\"alex@example.com\",\"remark\":\"\\uD83D\\uDE00\"}]}");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        ReadOnlyAddressBook loaded = storage.readAddressBook().orElseThrow();
+        assertEquals("\uD83D\uDE00", loaded.getPersonList().getFirst().getRemark().value);
+
+        storage.saveAddressBook(loaded);
+        assertEquals(loaded, new JsonAddressBookStorage(file).readAddressBook().orElseThrow());
     }
 
     @Test
