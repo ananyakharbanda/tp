@@ -807,6 +807,12 @@ TA refers to a teaching assistant. Story IDs are retained from the project notes
 | US37 | `* *` | TA | organize students using meaningful categories | I can retrieve groups of related students easily |
 | US38 | `* *` | experienced user | perform common operations efficiently | managing student information does not distract me from teaching |
 
+#### Recovering from mistakes
+
+| ID | Priority | As a/an ... | I want to ... | So that ... |
+|----|----------|--------|-------------|----------------|
+| US39 | `* *` | TA who made an accidental change | undo my latest saved data change | I can restore the previous student records |
+
 ### Use cases
 
 The **system** is TeachAssist and the **actor** is a Teaching Assistant (TA). These use cases describe the
