@@ -125,6 +125,7 @@ public class JsonUtil {
 
     /**
      * Prevents numbers and booleans from being silently converted into text fields.
+     * Rejects unpaired surrogates that cannot be preserved when saving as UTF-8.
      * Jackson continues to handle null values separately, preserving optional-field defaults.
      */
     private static class StrictStringDeserializer extends JsonDeserializer<String> {
@@ -133,7 +134,13 @@ public class JsonUtil {
             if (parser.getCurrentToken() != JsonToken.VALUE_STRING) {
                 throw JsonMappingException.from(parser, "Expected a JSON string.");
             }
-            return parser.getText();
+            String value = parser.getText();
+            // Valid surrogate pairs become supplementary code points; unpaired surrogates remain in this range.
+            if (value.codePoints().anyMatch(codePoint -> codePoint >= Character.MIN_SURROGATE
+                    && codePoint <= Character.MAX_SURROGATE)) {
+                throw JsonMappingException.from(parser, "JSON strings must not contain unpaired surrogates.");
+            }
+            return value;
         }
     }
 
