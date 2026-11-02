@@ -32,10 +32,8 @@ public class JsonUtil {
     private static final Logger logger = LogsCenter.getLogger(JsonUtil.class);
 
     private static ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules()
-            // @@author ananyakharbanda
             .registerModule(new SimpleModule().addDeserializer(String.class, new StrictStringDeserializer()))
             .configure(JsonParser.Feature.STRICT_DUPLICATE_DETECTION, true)
-            // @@author
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
@@ -71,11 +69,9 @@ public class JsonUtil {
 
         try {
             jsonFile = deserializeObjectFromJsonFile(filePath, classOfObjectToDeserialize);
-            // @@author ananyakharbanda
             if (jsonFile == null) {
                 throw JsonMappingException.from((JsonParser) null, "JSON document must not be null.");
             }
-            // @@author
         } catch (IOException e) {
             logger.warning("Error reading JSON file " + filePath + ": " + e.getClass().getSimpleName());
             throw new DataLoadingException(e);
@@ -127,7 +123,6 @@ public class JsonUtil {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(instance);
     }
 
-    // @@author ananyakharbanda
     /**
      * Prevents numbers and booleans from being silently converted into text fields.
      * Jackson continues to handle null values separately, preserving optional-field defaults.
@@ -141,6 +136,5 @@ public class JsonUtil {
             return parser.getText();
         }
     }
-    // @@author
 
 }

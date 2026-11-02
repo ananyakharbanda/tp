@@ -107,13 +107,11 @@ public class FindCommandTest {
     public void execute_singleMatch_usesSingularStudent() {
         // EP: exactly one result uses singular feedback.
         // BVA: one result, between zero and plural results.
-        // @@author ananyakharbanda
         NameContainsKeywordsPredicate predicate = preparePredicate("Elle");
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(new FindCommand(predicate), model, "1 student listed.", expectedModel);
         assertEquals(List.of(ELLE), model.getFilteredPersonList());
     }
-    // @@author
 
     @Test
     public void execute_emptyAddressBook_noMatches() throws ParseException {

@@ -40,10 +40,8 @@ public class MainAppTest {
         // EP: a missing file starts with available, empty student data
         assertEquals("No students found.", logic.execute("list").getFeedbackToUser());
         assertEquals("0 students listed.", logic.execute("find n/Alice").getFeedbackToUser());
-        // @@author ananyakharbanda
         assertEquals(0, logic.execute("attendance d/2026-10-20 l/Tutorial 1")
                 .getAttendanceReport().orElseThrow().getEntries().size());
-        // @@author
         logic.execute("add n/Samuel i/A0123456B e/sam@example.com");
         assertEquals(1, storage.readAddressBook().orElseThrow().getPersonList().size());
     }
@@ -61,14 +59,11 @@ public class MainAppTest {
         assertThrows(CommandException.class, LogicManager.MESSAGE_DATA_UNAVAILABLE, () -> logic.execute("list"));
         assertThrows(CommandException.class, LogicManager.MESSAGE_DATA_UNAVAILABLE, () ->
                 logic.execute("find n/Alice"));
-        // @@author ananyakharbanda
         assertThrows(CommandException.class, LogicManager.MESSAGE_DATA_UNAVAILABLE, () ->
                 logic.execute("attendance d/2026-10-20 l/Tutorial 1"));
-        // @@author
         assertEquals("corrupt data", Files.readString(storage.getAddressBookFilePath()));
     }
 
-    // @@author ananyakharbanda
     @Test
     public void startup_unreadableData_blocksAttendanceAndPreservesDirectory() throws Exception {
         Storage storage = createStorage();
@@ -119,9 +114,7 @@ public class MainAppTest {
             assertThrows(CommandException.class, LogicManager.MESSAGE_DATA_UNAVAILABLE, ()
                 -> logic.execute(command));
         }
-        // @@author
         logic.execute("help");
-        // @@author ananyakharbanda
         assertEquals(contents, Files.readString(storage.getAddressBookFilePath()));
     }
 
@@ -155,7 +148,6 @@ public class MainAppTest {
         assertEquals(getTypicalAddressBook().getPersonList().size() + 1,
                 storage.readAddressBook().orElseThrow().getPersonList().size());
     }
-    // @@author
 
     @Test
     public void startup_validData_reportsNumberOfStudentsLoaded() throws Exception {
@@ -235,13 +227,11 @@ public class MainAppTest {
 
     private static class TestApp extends MainApp {
         Logic loadLogic(Storage storage) {
-            // @@author ananyakharbanda
             return loadLogic(storage, new UserPrefs());
         }
 
         Logic loadLogic(Storage storage, UserPrefs prefs) {
             Model initialModel = initModelManager(storage, prefs);
-            // @@author
             return initLogic(initialModel, storage);
         }
     }

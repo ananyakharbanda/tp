@@ -1,4 +1,3 @@
-// @@author ananyakharbanda
 @startuml
 !include style.puml
 skinparam ArrowFontStyle plain
@@ -43,4 +42,3 @@ else save fails
 end
 deactivate Logic
 @enduml
-// @@author

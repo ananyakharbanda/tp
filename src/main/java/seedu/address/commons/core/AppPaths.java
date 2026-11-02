@@ -4,7 +4,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-// @@author ananyakharbanda
 /**
  * Resolves application files beside the running JAR, or in the working directory for development runs.
  * This class must not use logging because logging initialization depends on these paths.
@@ -55,4 +54,3 @@ public final class AppPaths {
         }
     }
 }
-// @@author

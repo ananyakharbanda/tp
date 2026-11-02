@@ -26,10 +26,8 @@ public class UiManagerTest {
     private static final String FAILURE_MESSAGE = "GUI settings unavailable";
 
     @BeforeAll
-    // @@author ananyakharbanda
     public static void startToolkit() throws Exception {
         FxTestUtil.initialize();
-        // @@author
     }
 
     @Test

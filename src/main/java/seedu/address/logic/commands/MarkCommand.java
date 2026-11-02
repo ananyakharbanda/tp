@@ -74,9 +74,7 @@ public class MarkCommand extends Command {
         assert matchedGroup != null;
         AttendanceRecord record = new AttendanceRecord(date, matchedGroup);
         if (student.getAttendance().contains(record)) {
-            // @@author ananyakharbanda
             logger.warning("Mark rejected: attendance already recorded.");
-            // @@author
             throw new CommandException(String.format(MESSAGE_ALREADY_MARKED, studentId, matchedGroup.labelName, date));
         }
 
@@ -85,9 +83,7 @@ public class MarkCommand extends Command {
         Person updatedStudent = new Person(student.getName(), student.getStudentId(), student.getEmail(),
                 student.getLabels(), student.getRemark(), updatedAttendance);
         model.setPerson(student, updatedStudent);
-        // @@author ananyakharbanda
         logger.info("Marked attendance.");
-        // @@author
         return CommandResult.updatingAttendance(
                 String.format(MESSAGE_SUCCESS, studentId, matchedGroup.labelName, date));
     }
@@ -98,9 +94,7 @@ public class MarkCommand extends Command {
                 .filter(person -> person.getStudentId().equals(studentId))
                 .findFirst()
                 .orElseThrow(() -> {
-                    // @@author ananyakharbanda
                     logger.warning("Mark rejected: student not found.");
-                    // @@author
                     return new CommandException(String.format(MESSAGE_STUDENT_NOT_FOUND, studentId));
                 });
     }
@@ -111,9 +105,7 @@ public class MarkCommand extends Command {
                 .filter(label -> label.equalsIgnoreCase(group))
                 .findFirst()
                 .orElseThrow(() -> {
-                    // @@author ananyakharbanda
                     logger.warning("Mark rejected: group not assigned to student.");
-                    // @@author
                     return new CommandException(String.format(MESSAGE_GROUP_NOT_FOUND,
                             studentId, group.labelName));
                 });

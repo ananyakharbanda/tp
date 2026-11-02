@@ -193,20 +193,16 @@ public class AddressBookParserTest {
     }
 
     @Test
-    // @@author ananyakharbanda
     public void parseCommand_findLabel() throws Exception {
         assertEquals(new FindCommand(new LabelMatchesPredicate(new Label("Discrete Math Tutorial"))),
                 parser.parseCommand("find l/Discrete Math Tutorial"));
-        // @@author
     }
 
     @Test
-    // @@author ananyakharbanda
     public void parseCommand_removedFilter_throwsUnknownCommand() {
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("filter"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, ()
             -> parser.parseCommand("filter l/Discrete Math Tutorial"));
-        // @@author
     }
 
     @Test
@@ -234,13 +230,11 @@ public class AddressBookParserTest {
     public void parseCommand_list() throws Exception {
         // EP: list is routed through its argument-validating parser.
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD) instanceof ListCommand);
-        // @@author ananyakharbanda
         String invalidCommand = ListCommand.COMMAND_WORD + " 3";
         Executable parseInvalidCommand = () -> parser.parseCommand(invalidCommand);
         assertThrows(ParseException.class,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, ListCommand.MESSAGE_USAGE),
                 parseInvalidCommand);
-        // @@author
     }
 
     @Test
@@ -251,12 +245,10 @@ public class AddressBookParserTest {
     }
 
     @Test
-    // @@author ananyakharbanda
     public void parseCommand_removedLabelCommand_throwsUnknownCommand() {
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("label"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, ()
             -> parser.parseCommand("label l/Discrete Math Tutorial i/A0101010A"));
-        // @@author
     }
 
     @Test

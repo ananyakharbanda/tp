@@ -26,16 +26,12 @@ checkstyle {
 
 test {
     useJUnitPlatform()
-// @@author ananyakharbanda
     // Bound the worker process as well as individual JavaFX waits in case native startup stalls.
     timeout = Duration.ofMinutes(5)
-// @@author
     finalizedBy jacocoTestReport
-// @@author ananyakharbanda
     testLogging {
         exceptionFormat = 'full'
     }
-// @@author
 }
 
 task coverage(type: JacocoReport) {
@@ -54,7 +50,6 @@ task coverage(type: JacocoReport) {
     }
 }
 
-// @@author ananyakharbanda
 // Match the Mac libraries to the JVM architecture, including Intel Java running under Rosetta.
 // Release builds can select either Mac architecture with -PjavafxMacPlatform=mac or mac-aarch64.
 String javaFxMacPlatform = providers.gradleProperty('javafxMacPlatform').getOrElse(
@@ -64,13 +59,11 @@ String javaFxMacPlatform = providers.gradleProperty('javafxMacPlatform').getOrEl
 if (!(javaFxMacPlatform in ['mac', 'mac-aarch64'])) {
     throw new GradleException('javafxMacPlatform must be mac or mac-aarch64.')
 }
-// @@author
 
 dependencies {
     String jUnitVersion = '5.14.4'
     String javaFxVersion = '17.0.7'
 
-// @@author ananyakharbanda
     ['base', 'controls', 'fxml', 'graphics'].each { module ->
         ['win', javaFxMacPlatform, 'linux'].each { platform ->
             implementation("org.openjfx:javafx-${module}:${javaFxVersion}:${platform}") {
@@ -79,7 +72,6 @@ dependencies {
             }
         }
     }
-// @@author
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.4'
@@ -91,10 +83,8 @@ dependencies {
 }
 
 shadowJar {
-// @@author ananyakharbanda
     // Intel and ARM Mac libraries have identical resource names and cannot share one fat JAR.
     archiveFileName = javaFxMacPlatform == 'mac-aarch64'
-// @@author
             ? 'teach-assist-v1.6-mac-aarch64.jar' : 'teach-assist-v1.6.jar'
 }
 

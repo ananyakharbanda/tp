@@ -50,7 +50,6 @@ public class JsonUserPrefsStorageTest {
                 : null;
     }
 
-    // @@author ananyakharbanda
     @Test
     public void readUserPrefs_nullJson_throwsDataLoadingExceptionAndPreservesFile() throws Exception {
         assertInvalidPrefsPreserved("null");
@@ -69,7 +68,6 @@ public class JsonUserPrefsStorageTest {
         assertThrows(DataLoadingException.class, storage::readUserPrefs);
         assertEquals(contents, Files.readString(file));
     }
-    // @@author
 
     @Test
     public void readUserPrefs_fileInOrder_successfullyRead() throws DataLoadingException {

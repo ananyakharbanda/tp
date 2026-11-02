@@ -29,10 +29,8 @@ import seedu.address.testutil.PersonBuilder;
 public class PersonCardTest {
 
     @BeforeAll
-    // @@author ananyakharbanda
     public static void startToolkit() throws Exception {
         FxTestUtil.initialize();
-        // @@author
     }
 
     @Test
@@ -69,14 +67,11 @@ public class PersonCardTest {
         });
     }
 
-    // @@author ananyakharbanda
     @Test
     public void longGroupLabel_narrowAndResizedList_wrapsWithoutClippingDetails() throws Exception {
         FxTestUtil.runAndWait(() -> {
-            // @@author
             // EP: a card with a long group label keeps all student details visible when resized
             // BVA: 60-character label at narrow and wide list widths
-            // @@author ananyakharbanda
             var person = new PersonBuilder().withName("Long Label Student")
                     .withStudentId("A0123460F")
                     .withEmail("a".repeat(64) + "@example.com")
@@ -109,9 +104,7 @@ public class PersonCardTest {
                             "Wrapped label has insufficient height");
                 }
                 Label group = (Label) card.lookupAll("#labels .label").stream()
-                        // @@author
                         .filter(node -> ((Label) node).getText().startsWith("w")).findFirst().orElseThrow();
-                // @@author ananyakharbanda
                 Label email = (Label) card.lookup("#email");
                 if (width <= 400) {
                     assertTrue(group.getHeight() > 2 * group.getFont().getSize(), "Group should wrap");
@@ -119,7 +112,6 @@ public class PersonCardTest {
                 }
                 root.lookupAll(".scroll-bar").stream().map(ScrollBar.class::cast)
                         .filter(bar -> bar.getOrientation() == javafx.geometry.Orientation.HORIZONTAL)
-                        // @@author
                         .forEach(bar -> assertFalse(bar.isVisible(), "List needs horizontal scrolling"));
             }
         });

@@ -37,12 +37,10 @@ import seedu.address.storage.Storage;
 public class LogicManager implements Logic {
     public static final String MESSAGE_SAVE_FAILURE = "Unable to save student data.";
     public static final String MESSAGE_STORAGE_LOCATION_FAILURE = "Unable to create data storage location.";
-    // @@author ananyakharbanda
     public static final String MESSAGE_DATA_CHANGED =
             "Student data has changed outside this window. Restart TeachAssist to load the latest data before editing.";
     public static final String MESSAGE_DATA_IN_USE =
             "Student data is being saved by another window. Please try again.";
-    // @@author
     public static final String MESSAGE_DATA_UNAVAILABLE =
             "Student data is unavailable because loading failed. Fix the data file and restart.";
 
@@ -99,19 +97,13 @@ public class LogicManager implements Logic {
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         requireNonNull(commandText);
-        // @@author ananyakharbanda
         logger.info("Processing command.");
-        // @@author
 
         Command command = addressBookParser.parseCommand(commandText);
-        // @@author ananyakharbanda
         logger.fine("Executing " + command.getClass().getSimpleName() + ".");
-        // @@author
         if (!isStudentDataAvailable
-                // @@author ananyakharbanda
                 && (command.isModifyingData() || command instanceof ListCommand || command instanceof FindCommand
                         || command instanceof AttendanceCommand)) {
-            // @@author
             throw new CommandException(MESSAGE_DATA_UNAVAILABLE);
         }
         if (!command.isModifyingData()) {
@@ -187,12 +179,10 @@ public class LogicManager implements Logic {
         requireNonNull(addressBook);
         try {
             storage.saveAddressBook(addressBook);
-        // @@author ananyakharbanda
         } catch (DataFileChangedException e) {
             throw new CommandException(MESSAGE_DATA_CHANGED, e);
         } catch (DataFileInUseException e) {
             throw new CommandException(MESSAGE_DATA_IN_USE, e);
-        // @@author
         } catch (DataStorageLocationException dsle) {
             logger.warning("Unable to create data storage location: " + dsle.getClass().getSimpleName());
             throw new CommandException(MESSAGE_STORAGE_LOCATION_FAILURE, dsle);

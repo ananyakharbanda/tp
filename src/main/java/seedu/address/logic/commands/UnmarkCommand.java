@@ -75,9 +75,7 @@ public class UnmarkCommand extends Command {
                 .filter(requestedRecord::equals)
                 .findFirst()
                 .orElseThrow(() -> {
-                    // @@author ananyakharbanda
                     logger.warning("Unmark rejected: attendance not recorded.");
-                    // @@author
                     return new CommandException(String.format(MESSAGE_NOT_MARKED,
                             studentId, group.labelName, date));
                 });
@@ -87,9 +85,7 @@ public class UnmarkCommand extends Command {
         Person updatedStudent = new Person(student.getName(), student.getStudentId(), student.getEmail(),
                 student.getLabels(), student.getRemark(), updatedAttendance);
         model.setPerson(student, updatedStudent);
-        // @@author ananyakharbanda
         logger.info("Unmarked attendance.");
-        // @@author
         return CommandResult.updatingAttendance(
                 String.format(MESSAGE_SUCCESS, studentId, matchedRecord.getGroup().labelName, date));
     }
@@ -99,9 +95,7 @@ public class UnmarkCommand extends Command {
                 .filter(person -> person.getStudentId().equals(studentId))
                 .findFirst()
                 .orElseThrow(() -> {
-                    // @@author ananyakharbanda
                     logger.warning("Unmark rejected: student not found.");
-                    // @@author
                     return new CommandException(String.format(MESSAGE_STUDENT_NOT_FOUND, studentId));
                 });
     }

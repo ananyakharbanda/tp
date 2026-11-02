@@ -38,10 +38,8 @@ public class AttendanceListPanelTest {
     private static final seedu.address.model.label.Label GROUP = new seedu.address.model.label.Label("Tutorial 1");
 
     @BeforeAll
-    // @@author ananyakharbanda
     public static void startToolkit() throws Exception {
         FxTestUtil.initialize();
-        // @@author
     }
 
     @Test
@@ -76,12 +74,10 @@ public class AttendanceListPanelTest {
     @Test
     public void attendanceCard_entry_showsStudentAndStatusBadge() throws Exception {
         // EP: present and absent entry cards render their student details and distinct status badges
-        // @@author ananyakharbanda
         Node presentCard = FxTestUtil.callAndWait(() ->
                 new AttendanceCard(new AttendanceEntry(ALICE, true), 1).getRoot());
         Node absentCard = FxTestUtil.callAndWait(() ->
                 new AttendanceCard(new AttendanceEntry(BENSON, false), 2).getRoot());
-        // @@author
 
         assertEquals("1. ", ((Label) presentCard.lookup("#id")).getText());
         assertEquals("Alice Pauline", ((Label) presentCard.lookup("#name")).getText());
@@ -113,14 +109,11 @@ public class AttendanceListPanelTest {
         });
     }
 
-    // @@author ananyakharbanda
     @Test
     public void attendanceCard_longNames_wrapAndKeepStatusVisibleWhenResized() throws Exception {
         FxTestUtil.callAndWait(() -> {
-            // @@author
             // EP: present and absent students both keep their badges visible with long names
             // BVA: the present student's name is exactly the 100-character maximum
-            // @@author ananyakharbanda
             Person present = new PersonBuilder(ALICE).withName("M".repeat(100)).withLabels("Tutorial 1")
                     .withAttendance(new AttendanceRecord(DATE, GROUP)).build();
             Person absent = new PersonBuilder(BENSON).withName("Long ".repeat(19) + "Name")
@@ -169,10 +162,8 @@ public class AttendanceListPanelTest {
             return null;
         });
     }
-    // @@author
 
     @Test
-    // @@author ananyakharbanda
     public void constructor_longGroupHeading_remainsReadableInSmallAndResizedWindows() throws Exception {
         FxTestUtil.callAndWait(() -> {
             var group = new seedu.address.model.label.Label("W".repeat(60));
@@ -218,7 +209,6 @@ public class AttendanceListPanelTest {
                                     + "; bottom was " + listBounds.getMaxY());
                 }
             }
-            // @@author
             return null;
         });
     }

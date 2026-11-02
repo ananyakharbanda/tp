@@ -6,7 +6,6 @@ import java.util.List;
 import javafx.geometry.Rectangle2D;
 import seedu.address.commons.core.GuiSettings;
 
-// @@author ananyakharbanda
 /**
  * Fits restored window settings into a screen's usable area, measured in JavaFX logical coordinates.
  */
@@ -51,4 +50,3 @@ final class WindowPlacement {
         return Math.min(Math.max(preferredSize, minimumSize), availableSize);
     }
 }
-// @@author

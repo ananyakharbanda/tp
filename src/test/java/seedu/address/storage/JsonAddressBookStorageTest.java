@@ -38,7 +38,6 @@ public class JsonAddressBookStorageTest {
     @TempDir
     public Path testFolder;
 
-    // @@author ananyakharbanda
     @Test
     public void readAddressBook_legacyExpandedLabel_survivesSaveAndReload() throws Exception {
         Path file = testFolder.resolve("legacy.json");
@@ -59,7 +58,6 @@ public class JsonAddressBookStorageTest {
         assertEquals(loaded, reloaded);
         assertTrue(Label.isValidLabelName(expected.labelName));
     }
-    // @@author
 
     @Test
     public void saveAddressBook_replacementFailure_preservesFileAndRemovesTemporaryFile() throws Exception {
@@ -78,7 +76,6 @@ public class JsonAddressBookStorageTest {
         }
     }
 
-    // @@author ananyakharbanda
     @Test
     public void saveAddressBook_cleanupFails_preservesOriginalFailureAndDataWithoutLoggingStudentValues()
             throws Exception {
@@ -106,7 +103,6 @@ public class JsonAddressBookStorageTest {
             assertTrue(logs.getOutput().contains("Unable to remove temporary data file"));
             assertTrue(logs.getOutput().contains("DirectoryNotEmptyException"));
             assertFalse(logs.getOutput().contains("PrivateStudentMarker"));
-            // @@author
         }
     }
 
@@ -278,7 +274,6 @@ public class JsonAddressBookStorageTest {
                 new JsonAddressBookStorage(file).readAddressBook());
     }
 
-    // @@author ananyakharbanda
     @Test
     public void readAddressBook_nullJson_throwsInvalidFileMessageAndPreservesFile() throws Exception {
         Path file = testFolder.resolve("nullAddressBook.json");
@@ -289,7 +284,6 @@ public class JsonAddressBookStorageTest {
             -> new JsonAddressBookStorage(file).readAddressBook());
         assertEquals(originalContents, Files.readString(file));
     }
-    // @@author
 
     @Test
     public void readAddressBook_trailingContent_throwsInvalidFileMessageAndPreservesFile() throws Exception {
@@ -316,7 +310,6 @@ public class JsonAddressBookStorageTest {
                 new JsonAddressBookStorage(file).readAddressBook());
     }
 
-    // @@author ananyakharbanda
     @Test
     public void readAddressBook_trailingContent_rejectsAndPreservesFile() throws Exception {
         String validJson = JsonUtil.toJsonString(new JsonSerializableAddressBook(getTypicalAddressBook()));
@@ -396,7 +389,6 @@ public class JsonAddressBookStorageTest {
                 new JsonAddressBookStorage(file).readAddressBook());
         assertEquals(contents, Files.readString(file));
     }
-    // @@author
 
     @Test
     public void readAddressBook_unreadableFile_throwsUnreadableFileMessage() throws Exception {

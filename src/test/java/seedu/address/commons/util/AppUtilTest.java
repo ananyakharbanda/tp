@@ -10,10 +10,8 @@ import seedu.address.testutil.FxTestUtil;
 public class AppUtilTest {
 
     @Test
-    // @@author ananyakharbanda
     public void getImage_exitingImage() throws Exception {
         FxTestUtil.runAndWait(() -> assertNotNull(AppUtil.getImage("/images/address_book_32.png")));
-        // @@author
     }
 
     @Test

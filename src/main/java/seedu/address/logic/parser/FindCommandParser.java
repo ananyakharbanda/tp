@@ -29,13 +29,11 @@ import seedu.address.model.person.StudentIdContainsKeywordsPredicate;
  */
 public class FindCommandParser implements Parser<FindCommand> {
     private static final Pattern PARAMETER_PREFIX = Pattern.compile("(?:^|\\p{javaWhitespace})([A-Za-z]+/)");
-    // @@author ananyakharbanda
     private static final Set<Prefix> SUPPORTED_PREFIXES =
             Set.of(PREFIX_NAME, PREFIX_STUDENT_ID, PREFIX_EMAIL, PREFIX_REMARK, PREFIX_LABEL);
     private static final String SEARCH_PARAMETER =
             PREFIX_NAME + ", " + PREFIX_STUDENT_ID + ", " + PREFIX_EMAIL
                     + ", " + PREFIX_REMARK + ", or " + PREFIX_LABEL;
-    // @@author
     private static final String MESSAGE_UNKNOWN_PARAMETER = "Unknown parameter: %s.";
     private static final String MESSAGE_REPEATED_PARAMETER = "Parameter %s must be specified only once.";
     private static final String MESSAGE_MISSING_PARAMETER = "Missing required parameter: %s.";
@@ -49,10 +47,8 @@ public class FindCommandParser implements Parser<FindCommand> {
     public FindCommand parse(String args) throws ParseException {
         String trimmedArgs = StringUtil.trimSpaces(args);
         ArgumentMultimap argMultimap =
-                // @@author ananyakharbanda
                 ArgumentTokenizer.tokenize(trimmedArgs, PREFIX_NAME, PREFIX_STUDENT_ID,
                         PREFIX_EMAIL, PREFIX_REMARK, PREFIX_LABEL);
-        // @@author
         validateStructure(trimmedArgs, argMultimap);
 
         Predicate<Person> predicate;
@@ -64,10 +60,8 @@ public class FindCommandParser implements Parser<FindCommand> {
             predicate = new EmailContainsKeywordsPredicate(parseKeywords(argMultimap, PREFIX_EMAIL));
         } else if (argMultimap.getValue(PREFIX_REMARK).isPresent()) {
             predicate = new RemarkContainsKeywordsPredicate(parseKeywords(argMultimap, PREFIX_REMARK));
-        // @@author ananyakharbanda
         } else {
             predicate = new LabelMatchesPredicate(ParserUtil.parseLabel(parseSearchValue(argMultimap, PREFIX_LABEL)));
-            // @@author
         }
 
         return new FindCommand(predicate);
@@ -117,13 +111,11 @@ public class FindCommandParser implements Parser<FindCommand> {
         return List.of(StringUtil.normaliseSpaces(parseSearchValue(argumentMultimap, prefix)).split("\\s+"));
     }
 
-    // @@author ananyakharbanda
     private static String parseSearchValue(ArgumentMultimap argumentMultimap, Prefix prefix) throws ParseException {
         String value = argumentMultimap.getValue(prefix).orElseThrow();
         if (value.isBlank()) {
             throw new ParseException(String.format(MESSAGE_EMPTY_PARAMETER, prefix));
         }
         return value;
-        // @@author
     }
 }

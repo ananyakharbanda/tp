@@ -1,8 +1,5 @@
 @startuml
 !include style.puml
-/'
-// @@author ananyakharbanda
-'/
 skinparam ArrowFontStyle plain
 
 title Alternative label ownership (not implemented)
@@ -17,7 +14,4 @@ AddressBook *--> "1" UniqueLabelList
 UniquePersonList --> "0..*" Person
 UniqueLabelList --> "0..*" Label
 Person --> "0..*" Label
-/'
-// @@author
-'/
 @enduml

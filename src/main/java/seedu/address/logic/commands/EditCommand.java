@@ -43,9 +43,7 @@ public class EditCommand extends Command {
             + "Parameters: " + PREFIX_STUDENT_ID + "STUDENT_ID "
             + "[" + PREFIX_NAME + "NAME] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
-            // @@author ananyakharbanda
             + "[" + PREFIX_REMARK + "REMARK] "
-            // @@author
             + "[" + PREFIX_LABEL + "LABEL_NAME]... "
             + "[" + PREFIX_DELETE_LABEL + "LABEL_NAME]...\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_STUDENT_ID + "A0123456B "
@@ -92,18 +90,14 @@ public class EditCommand extends Command {
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
 
         if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
-            // @@author ananyakharbanda
             logger.warning("Edit rejected: duplicate student ID.");
-            // @@author
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
 
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         assert model.hasPerson(editedPerson);
-        // @@author ananyakharbanda
         logger.info("Edited student.");
-        // @@author
         return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)));
     }
 
@@ -118,9 +112,7 @@ public class EditCommand extends Command {
                 .filter(person -> person.getStudentId().equals(targetStudentId))
                 .findFirst()
                 .orElseThrow(() -> {
-                    // @@author ananyakharbanda
                     logger.warning("Edit rejected: student not found.");
-                    // @@author
                     return new CommandException(String.format(MESSAGE_STUDENT_NOT_FOUND, targetStudentId));
                 });
     }
@@ -147,9 +139,7 @@ public class EditCommand extends Command {
         Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
         StudentId updatedStudentId = personToEdit.getStudentId();
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
-        // @@author ananyakharbanda
         Remark updatedRemark = editPersonDescriptor.getRemark().orElse(personToEdit.getRemark());
-        // @@author
         Set<Label> updatedLabels = updateLabels(personToEdit, editPersonDescriptor);
 
         return new Person(updatedName, updatedStudentId, updatedEmail,
@@ -181,9 +171,7 @@ public class EditCommand extends Command {
 
         for (Label labelToRemove : toRemove) {
             Label existingLabel = findMatchingLabel(labels, labelToRemove).orElseThrow(() -> {
-                // @@author ananyakharbanda
                 logger.warning("Edit rejected: label not assigned to student.");
-                // @@author
                 return new CommandException(String.format(MESSAGE_LABEL_NOT_FOUND,
                         studentId, labelToRemove.labelName));
             });
@@ -199,9 +187,7 @@ public class EditCommand extends Command {
 
         for (Label labelToAdd : toAdd) {
             if (findMatchingLabel(labels, labelToAdd).isPresent()) {
-                // @@author ananyakharbanda
                 logger.warning("Edit rejected: duplicate label.");
-                // @@author
                 throw new CommandException(String.format(MESSAGE_DUPLICATE_LABEL,
                         studentId, labelToAdd.labelName));
             }
@@ -247,9 +233,7 @@ public class EditCommand extends Command {
     public static class EditPersonDescriptor {
         private Name name;
         private Email email;
-        // @@author ananyakharbanda
         private Remark remark;
-        // @@author
         private List<Label> labelsToAdd = new ArrayList<>();
         private List<Label> labelsToRemove = new ArrayList<>();
         private boolean isClearingLabels;
@@ -267,9 +251,7 @@ public class EditCommand extends Command {
         public EditPersonDescriptor(EditPersonDescriptor toCopy) {
             setName(toCopy.name);
             setEmail(toCopy.email);
-            // @@author ananyakharbanda
             setRemark(toCopy.remark);
-            // @@author
             setLabelsToAdd(toCopy.labelsToAdd);
             setLabelsToRemove(toCopy.labelsToRemove);
             setClearingLabels(toCopy.isClearingLabels);
@@ -315,20 +297,16 @@ public class EditCommand extends Command {
          * Sets the replacement remark, or null to leave the student's remark unchanged.
          * An empty {@code Remark} clears the existing remark.
          */
-        // @@author ananyakharbanda
         public void setRemark(Remark remark) {
             this.remark = remark;
         }
-        // @@author
 
         /**
          * Returns the replacement remark, if one was requested.
          */
-        // @@author ananyakharbanda
         public Optional<Remark> getRemark() {
             return Optional.ofNullable(remark);
         }
-        // @@author
 
         /**
          * Copies the labels to add so later changes to {@code labelsToAdd} do not affect this descriptor.
@@ -385,9 +363,7 @@ public class EditCommand extends Command {
 
             return Objects.equals(name, otherEditPersonDescriptor.name)
                     && Objects.equals(email, otherEditPersonDescriptor.email)
-                    // @@author ananyakharbanda
                     && Objects.equals(remark, otherEditPersonDescriptor.remark)
-                    // @@author
                     && labelsToAdd.equals(otherEditPersonDescriptor.labelsToAdd)
                     && labelsToRemove.equals(otherEditPersonDescriptor.labelsToRemove)
                     && isClearingLabels == otherEditPersonDescriptor.isClearingLabels;
@@ -398,9 +374,7 @@ public class EditCommand extends Command {
             return new ToStringBuilder(this)
                     .add("name", name)
                     .add("email", email)
-                    // @@author ananyakharbanda
                     .add("remark", remark)
-                    // @@author
                     .add("labelsToAdd", labelsToAdd)
                     .add("labelsToRemove", labelsToRemove)
                     .add("isClearingLabels", isClearingLabels)

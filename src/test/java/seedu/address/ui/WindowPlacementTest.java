@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import javafx.geometry.Rectangle2D;
 import seedu.address.commons.core.GuiSettings;
 
-// @@author ananyakharbanda
 public class WindowPlacementTest {
 
     private static final double MINIMUM_WIDTH = 450;
@@ -115,4 +114,3 @@ public class WindowPlacementTest {
         assertTrue(point.getY() + settings.getWindowHeight() <= screen.getMaxY());
     }
 }
-// @@author

@@ -1,8 +1,5 @@
 @startuml
 !include style.puml
-/'
-// @@author ananyakharbanda
-'/
 skinparam ArrowFontStyle plain
 
 title Parsing classes: AddCommandParser as a representative
@@ -29,7 +26,4 @@ AddCommandParser ..> ArgumentMultimap : reads values
 AddCommandParser ..> ParserUtil : validates fields
 AddCommandParser ..> CliSyntax : uses prefix constants
 CliSyntax --> Prefix
-/'
-// @@author
-'/
 @enduml

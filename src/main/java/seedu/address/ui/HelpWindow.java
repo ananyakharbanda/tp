@@ -15,10 +15,8 @@ import seedu.address.commons.core.LogsCenter;
  */
 public class HelpWindow extends UiPart<Stage> {
 
-    // @@author ananyakharbanda
     public static final String USERGUIDE_URL =
             "https://ay2627s1-cs2103t-f12-1.github.io/tp/UserGuide.html";
-    // @@author
     public static final String HELP_MESSAGE = "Refer to the user guide: " + USERGUIDE_URL;
 
     private static final Logger logger = LogsCenter.getLogger(HelpWindow.class);
@@ -90,10 +88,8 @@ public class HelpWindow extends UiPart<Stage> {
      * Restores the help window if minimized and brings it to the front.
      */
     public void focus() {
-        // @@author ananyakharbanda
         getRoot().setIconified(false);
         getRoot().toFront();
-        // @@author
         getRoot().requestFocus();
     }
 

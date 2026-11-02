@@ -71,10 +71,8 @@ public class LabelTest {
         assertTrue(Label.isValidLabelName("A")); // BVA: minimum valid length
         assertTrue(Label.isValidLabelName("a".repeat(Label.MAX_NAME_LENGTH - 1))); // BVA: one below maximum
         assertTrue(Label.isValidLabelName("a".repeat(Label.MAX_NAME_LENGTH))); // BVA: maximum length
-        // @@author ananyakharbanda
         assertTrue(Label.isValidLabelName("İ".repeat(60))); // BVA: maximum before lowercase expansion
         assertTrue(Label.isValidLabelName("i\u0307".repeat(60))); // EP: persisted lowercase equivalent
-        // @@author
 
         // EP: valid label with supported punctuation and spacing
         assertTrue(Label.isValidLabelName("Discrete Math Tutorial"));

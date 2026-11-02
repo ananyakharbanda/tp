@@ -3,7 +3,6 @@
   title: "Ananya Kharbanda's Project Portfolio Page"
 ---
 
-<!-- @@author ananyakharbanda -->
 # Ananya Kharbanda
 
 ## Project: TeachAssist
@@ -80,10 +79,8 @@ generated on 2 November 2026 at 11:41 SGT recognises my Git author name, `Ananya
 | Reliability fixes | The report credits my work in `AppPaths`, startup handling, JSON validation, concurrent-write protection, and private diagnostic logging; the corresponding PRs are linked above. |
 | Regression tests | My contributions remain visible in listing, label-search, application lifecycle, logging, JSON validation, and storage tests. |
 
-The review found no missing account alias. The retained remark-parsing contribution from
-[PR #66](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/66) received a narrow attribution correction in
-[PR #309](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/309), resolving
-[issue #290](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/290). Shared code is attributed by verified contribution boundaries.
+The review found no missing account alias. My contributions are documented through Git history and the
+linked pull requests, including the original remark-editing implementation in
+[PR #66](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/66).
 
 [Team responsibilities](../AboutUs.md)
-<!-- @@author -->
