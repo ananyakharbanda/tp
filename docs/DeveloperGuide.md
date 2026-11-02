@@ -312,7 +312,8 @@ are in [Appendix: Errors](#appendix-errors).
   of 63, and a final label of 2–63 letters. Only the domain is lowercased using `Locale.ROOT`.
 * `Remark` accepts at most 4,000 Unicode code points; command parsing trims only surrounding whitespace.
   Empty or omitted remarks become empty strings. `r/` can appear anywhere and does not consume later parameters.
-* `Label` accepts 1–60 Unicode code points after lowercasing and requires at least one letter or digit. It permits
+* `Label` accepts 1–60 characters and requires at least one letter or digit. For length checking, lowercase
+  `i` plus combining dot counts as the single `İ` from which it can expand. It permits
   letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Empty labels
   are rejected, omitted labels become an empty label set, and `l/` can appear anywhere without consuming later parameters.
 
@@ -1539,7 +1540,8 @@ Loading trims surrounding ASCII control whitespace, Unicode space separators, an
 from text fields, labels, dates, and attendance groups before validation. Names also normalize these Unicode spaces and
 fillers to ASCII spaces and collapse repeated spaces. Internal spacing and punctuation in remarks, labels, and
 attendance groups are preserved. Student IDs become uppercase; email domains, labels, and attendance groups become
-lowercase. Label and group length limits apply after lowercasing, which can expand some Unicode letters.
+lowercase. Label and group length checks count the lowercase `i` plus combining-dot sequence as one character.
+This preserves labels accepted before lowercasing was introduced, including their saved lowercase forms.
 Duplicate Student IDs, labels within a student, and attendance date/group pairs within a student are checked after
 normalization; label/group comparison ignores case but preserves internal spacing, Unicode spaces, and Hangul fillers.
 The normalized values are written on the next successful save.
