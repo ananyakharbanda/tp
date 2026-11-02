@@ -31,6 +31,10 @@
 * OpenAI Codex assisted @amberrrruby with implementing test cases, functional code, UML diagrams and documentation.
   TDD is used throughout, and generated changes are verified to fit the intended behavior with implemented tests.
   Diagrams and documentation are manually checked later.
+* Claude Code assisted @8ryanl33 with implementation code, test cases, sequence diagrams, and documentation for
+  student data loading, the attendance view, and bug fixes. The contributor gave explicit requirements, reviewed the
+  generated changes against the intended behavior, and validated them with automated tests, Checkstyle, and manual
+  testing before accepting them.
 
 --------------------------------------------------------------------------------------------------------------------
 
