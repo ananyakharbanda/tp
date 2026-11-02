@@ -213,15 +213,17 @@ shared [save-before-publish flow](#saving-before-publishing-changes); error path
 
 <puml src="diagrams/EditLabelSequenceDiagram.puml" alt="EditCommand updates labels on the pending model" />
 
-1. `EditCommandParser` checks the command structure and parses the Student ID and requested changes.
-   It collects repeated `l/` and `dl/` values in an `EditPersonDescriptor`.
-2. `EditCommand` reads the complete student list and finds the target by Student ID. A filtered view
-   does not affect which student is edited.
-3. The command builds a replacement `Person`, retaining fields not supplied in the command, the Student ID,
-   and attendance. It copies the existing labels, removes each `dl/` label, then adds each `l/` label.
-4. Once the changes are valid, the command replaces the student in the pending model and shows the full
-   student list. `LogicManager` saves the pending model before publishing it to the live model, as described
-   in the shared [save-before-publish flow](#saving-before-publishing-changes).
+1. `EditCommandParser#parse` checks the command structure and parses the Student ID and requested changes.
+   Its `parseLabelChanges` method collects repeated `l/` and `dl/` values in an `EditPersonDescriptor`.
+2. `EditCommand#execute` calls its `findStudent` method to search the complete student list by Student ID.
+   A filtered view does not affect which student is edited.
+3. `EditCommand#execute` then calls its `createEditedPerson` method to build a replacement `Person`, retaining fields
+   not supplied in the command, the Student ID, and attendance. `EditCommand#updateLabels` copies the existing labels,
+   calls `removeLabels` for each `dl/`, then `addLabels` for each `l/`.
+4. Once the changes are valid, `EditCommand#execute` calls `Model#setPerson` to replace the student in the pending
+   model and `Model#updateFilteredPersonList` to show the full student list. `LogicManager#executeAndSave` saves the
+   pending model before publishing it to the live model, as described in the
+   shared [save-before-publish flow](#saving-before-publishing-changes).
 
 Label names are lowercased when constructed, so matching remains case-insensitive. Removing a missing label or
 adding one already present throws a
@@ -257,22 +259,27 @@ Each `Person` owns a set of `AttendanceRecord` values covering all tutorial grou
 marked present. Each record contains a date and a group. The commands search only the target student's set for
 a record with the requested date and group; they do not search a separate attendance list for each tutorial.
 
-1. `AddressBookParser` routes the input to `MarkCommandParser` or `UnmarkCommandParser`. The parsers accept `i/`,
-   `d/`, and `l/` in any order, each exactly once and with a non-empty value. They reuse `ParserUtil` to validate
-   the Student ID, a real `YYYY-MM-DD` date, and the group label before creating the command.
-2. The command searches the complete student list by Student ID, including students hidden by the active filter.
-   A missing student causes a `CommandException` before any record is changed.
+1. `AddressBookParser#parseCommand` routes the input to `MarkCommandParser#parse` or `UnmarkCommandParser#parse`.
+   Both call `MarkUnmarkCommandParserSupport#parseArguments` to accept `i/`, `d/`, and `l/` in any order, each
+   exactly once and with a non-empty value. The support class reuses `ParserUtil` to validate the Student ID,
+   a real `YYYY-MM-DD` date, and the group label before the parser creates the command.
+2. `MarkCommand#findStudent` or `UnmarkCommand#findStudent` searches the complete student list by Student ID,
+   including students hidden by the active filter. A missing student causes a `CommandException` before any record
+   is changed.
 3. The commands apply different attendance checks:
-   * **Mark:** Find a current group label, then check the student's attendance set for the same date and group.
-     Reject a matching record; otherwise, add the new `AttendanceRecord` to a copy of that set.
-   * **Unmark:** Find a record with the same date and group in the student's set, then remove it from a copy. Current
-     group membership is not required: `EditCommand` retains historical attendance after a label is removed.
-     Success feedback uses the matched record's lowercase group name.
-4. Each command builds a replacement `Person` with the updated attendance and unchanged other fields, then
-   replaces the student in the pending model. Other attendance entries and the active filter remain unchanged.
-5. `LogicManager` saves the pending model before publishing it to the live model and refreshing any open attendance
-   report. Parsing, command, or save failures leave the live records, filter, and saved file unchanged. A successful
-   change can later be reversed with `undo`. The existing attendance JSON format is reused.
+   * **Mark:** `MarkCommand#findStudentGroup` finds a current group label. `MarkCommand#execute` then checks the
+     student's attendance set for the same date and group. It rejects a matching record; otherwise, it adds a new
+     `AttendanceRecord` to a copy of that set.
+   * **Unmark:** `UnmarkCommand#execute` finds a record with the same date and group in the student's set, then
+     removes it from a copy. Current group membership is not required: `EditCommand` retains historical attendance
+     after a label is removed. Success feedback uses the matched record's lowercase group name.
+4. Each command's `execute` method builds a replacement `Person` with the updated attendance and unchanged other
+   fields, then calls `Model#setPerson` to replace the student in the pending model. Other attendance entries and
+   the active filter remain unchanged.
+5. `LogicManager#executeAndSave` saves the pending model before publishing it to the live model.
+   `LogicManager#updateDisplayedAttendance` then refreshes any open attendance report. Parsing, command, or save
+   failures leave the live records, filter, and saved file unchanged. A successful change can later be reversed
+   with `undo`. The existing attendance JSON format is reused.
 
 The general command parser rejects multiline input first. Command-specific structure checks then reject unknown
 prefixes, text before the first prefix, repeated prefixes, and missing or empty values in that order. Repeated and
