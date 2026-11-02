@@ -36,12 +36,14 @@ TeachAssist allows users to:
 
 Remarks can be used to record information such as learning difficulties, consultation details, assessment progress, or intended follow-up actions.
 
+Group labels are stored and displayed in lowercase. Matching ignores case but preserves internal spacing.
+
 ## Example commands
 
 Add a student:
 
 ```text
-add n/Samuel Tan i/A0123456B e/samuel@example.com r/Struggles with recursion l/Tutorial T01
+add n/Samuel Tan i/A0123456B e/samuel@example.com r/Struggles with recursion l/tutorial t01
 ```
 
 Find a student:
@@ -59,7 +61,7 @@ undo
 Display students from a tutorial group:
 
 ```text
-find l/Tutorial T01
+find l/tutorial t01
 ```
 
 Display the complete student list:
@@ -83,3 +85,5 @@ It is not intended to replace a Learning Management System for distributing cour
 ## Acknowledgements
 
 TeachAssist is based on the [AddressBook Level 3](https://se-education.org/addressbook-level3/) project created by the [SE-EDU initiative](https://se-education.org).
+
+See the [Developer Guide acknowledgements](docs/DeveloperGuide.md#acknowledgements) for third-party libraries, tools, and AI-assisted work.

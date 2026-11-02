@@ -17,9 +17,11 @@
 * Application libraries: [JavaFX](https://openjfx.io/) for the graphical interface and [Jackson](https://github.com/FasterXML/jackson) for JSON persistence.
 * Testing and build tools: [JUnit 5](https://junit.org/junit5/), [Gradle](https://gradle.org/), [Shadow](https://gradleup.com/shadow/), [Checkstyle](https://checkstyle.org/) and [JaCoCo](https://www.jacoco.org/jacoco/).
 * Documentation tools: [MarkBind](https://markbind.org/) for the website and [PlantUML](https://plantuml.com/) for UML diagrams.
-* Ananya Kharbanda used an AI coding assistant for implementation suggestions, regression tests, code review,
-  UML revisions, and documentation checks. Suggested changes were checked against the implementation and
-  validated using relevant automated tests, code-style checks, diagram rendering, and documentation builds.
+* Ananya Kharbanda used OpenAI Codex to generate and revise implementation code, regression tests, UML diagrams,
+  and documentation, and to assist with repository reviews and authorship checks. The work included student
+  listing and remark editing, UI and reliability fixes, and guide updates. Changes were checked against the
+  implementation or repository history and validated using relevant automated tests, code-style checks,
+  diagram rendering, and documentation builds.
 * OpenAI Codex assisted @sammeowwww with implementation code, test cases, sequence diagrams, and documentation for
   student, label, and attendance features. The contributor gave explicit requirements, reviewed the generated changes
   against the intended behavior, and validated them with automated tests, Checkstyle, and manual testing before
@@ -44,8 +46,8 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 The diagrams use three distinct views. Component diagrams describe responsibilities and dependencies; class
 and sequence diagrams describe selected implementation relationships; activity diagrams describe decisions in a
-workflow. Each caption states the scope and any omitted steps. A message written as an action in a component
-sequence is conceptual, while messages in an object sequence use the implemented operations.
+workflow. Each caption states the scope and any omitted steps. The component sequence and the simplified
+edit, mark, and unmark sequences use action descriptions. Other object sequences name implemented operations.
 
 ### Architecture
 
@@ -205,6 +207,22 @@ An optional group label is assigned when creating a student with `add ... l/LABE
 `JsonAdaptedLabel` and `JsonAdaptedPerson` persist labels under each student's `labels` JSON field.
 `EditCommand` preserves labels unless label changes are requested, and `PersonCard` renders them in its `FlowPane`.
 Existing saved labels remain compatible, including records containing multiple labels.
+
+### Listing students
+
+`ListCommandParser` accepts `list` without arguments and rejects additional non-whitespace input.
+`ListCommand#execute` resets the live model's filter to `Model.PREDICATE_SHOW_ALL_PERSONS`, then reports
+`Listed all students.` or `No students found.` according to whether the complete list is empty.
+It preserves master-list order and does not change or save student records or create undo history.
+`LogicManager` blocks listing after a startup loading failure; a successful list closes an attendance view.
+
+The sequence below shows parsing and execution after the input reaches `LogicManager`. The startup
+data-availability check and the UI's switch back to the student list are omitted.
+
+<puml src="diagrams/ListSequenceDiagram.puml" alt="ListCommand restores the complete student view without saving" />
+
+`ListCommandParserTest`, `ListCommandTest`, and `LogicManagerTest` cover argument rejection, empty and filtered
+lists, read-only execution, and the startup loading guard.
 
 ### Edit command
 
@@ -407,8 +425,8 @@ records, and active filter remain unchanged. They also check temporary-file clea
 
 ### Find command
 
-Command format: `find n/KEYWORD [MORE_KEYWORDS]...`, `find i/KEYWORD [MORE_KEYWORDS]...`,
-`find e/KEYWORD [MORE_KEYWORDS]...`, `find r/KEYWORD [MORE_KEYWORDS]...`, or `find l/LABEL_NAME`.
+Command format: `find n/KEYWORD [MORE_KEYWORDS]`, `find i/KEYWORD [MORE_KEYWORDS]`,
+`find e/KEYWORD [MORE_KEYWORDS]`, `find r/KEYWORD [MORE_KEYWORDS]`, or `find l/LABEL_NAME`.
 Supply exactly one search field. Label searches replace the former standalone filter command.
 See the [User Guide](UserGuide.md#finding-students-by-name-student-id-email-remark-or-label-find) for examples and
 [Find errors](#find-errors) for error messages and validation order.
@@ -1380,7 +1398,8 @@ name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace
 | Invalid date, e.g., `2026-02-30` or `2026-2-03` | `Date must use a valid YYYY-MM-DD date.` | Use a real calendar date with zero-padded month and day. |
 
 The label constraint also applies to attendance groups. Empty edit names and emails produce their field constraint
-messages. Length limits apply after trimming/normalization and count Unicode code points for names, labels, and remarks.
+messages. Length limits apply after trimming/normalization and count Unicode code points for names and remarks.
+Labels use the same count except that lowercase `i` plus combining dot counts as one character, as described above.
 
 Email validation accepts at most 254 characters and exactly one `@`. The local part has 1–64 ASCII letters, digits,
 periods, underscores, plus signs, or hyphens; it cannot begin/end with a period or contain consecutive periods.
@@ -1524,6 +1543,11 @@ loading. Exactly one student-data object is accepted, with optional surrounding 
 return, line feed). A `null` root is rejected. JSON syntax whitespace is distinct from Unicode padding inside strings.
 After deserialization, model conversion checks students in file order, stopping at the first failure. No partial
 student list is published. On failure the file is preserved; `help` and `exit` remain available.
+
+**Known encoding limitation:** The byte-to-string conversion currently replaces malformed UTF-8 sequences instead
+of rejecting them. If the replacement occurs inside a remark, that record can pass validation and a subsequent save
+persists the replacement character. This is separate from the JSON syntax and field-type checks above; see the
+[User Guide recovery advice](UserGuide.md#known-issues).
 
 Each student requires valid `name`, `studentId`, and `email` values. Missing/null `remark` becomes empty text;
 missing/null `labels` and `attendance` become empty collections. Legacy `tags` and other unknown properties are ignored

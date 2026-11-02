@@ -248,7 +248,7 @@ Shows present and absent students for a group and date, with totals.
 * This command changes no data. It is blocked after a loading failure; fix or restore the data file and restart.
   A missing file or a successfully loaded empty file still permits an attendance report with zero totals.
 
-**Example:** 
+**Example:**
 1. `mark i/A0234567C d/2026-10-20 l/tutorial 1`
 2. `attendance d/2026-10-20 l/tutorial 1`
 
@@ -334,7 +334,12 @@ For exact messages and validation order, see [Developer Guide — Appendix: Erro
 --------------------------------------------------------------------------------------------------------------------
 
 ## Known issues
-- None thus far. 
+
+* A manually edited data file containing invalid UTF-8 bytes inside a remark can load with replacement characters
+  (`�`) instead of reporting a loading error. A later successful data change saves that altered text. Keep a backup
+  before editing the file and save it as valid UTF-8. If loaded text looks corrupted, close the app without changing
+  student data and restore the backup before restarting.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## Command summary
