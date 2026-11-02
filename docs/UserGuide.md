@@ -159,7 +159,7 @@ Updates a student identified by Student ID, including one hidden by the current 
 
 * `edit i/A0123456B dl/tutorial 1 l/tutorial 2` replaces a label.
 * `edit i/A0123456B l/ r/` clears all labels and the remark.
-
+<!-- @@author DaRealTristan -->
 ### Finding students by name, student ID, email, remark, or label: `find`
 
 Searches the complete student list and replaces the previous search results.
@@ -180,7 +180,7 @@ or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find
   the label remains stored and displayed as `tutorial 1`.
 
 The former `filter` command has been replaced by `find l/LABEL_NAME`.
-
+<!-- @@author -->
 <!-- @@author sammeowwww -->
 ### Deleting a student: `delete`
 
@@ -209,7 +209,7 @@ Records a student as present for a date and group.
 **Example:** `mark i/A0123456B d/2026-10-20 l/tutorial 1`
 
 <!-- @@author -->
-
+<!-- @@author DaRealTristan -->
 ### Removing attendance: `unmark`
 
 Removes an existing attendance entry for a student, date, and group.
@@ -224,7 +224,7 @@ Removes an existing attendance entry for a student, date, and group.
 * Success uses the attendance entry’s stored lowercase group name and refreshes an open attendance view.
 
 **Example:** `unmark i/A0123456B d/2026-10-20 l/tutorial 1`
-
+<!-- @@author -->
 ### Viewing attendance: `attendance`
 
 Shows present and absent students for a group and date, with totals.
