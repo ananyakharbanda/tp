@@ -9,15 +9,15 @@ component Logic LOGIC_COLOR
 component Model MODEL_COLOR
 component Storage STORAGE_COLOR
 component Commons #666666
-Main --> UI : initialises
-Main --> Logic : initialises
-Main --> Model : initialises
-Main --> Storage : initialises
-UI --> Logic
-UI --> Model
-Logic --> Model
-Logic --> Storage
-Storage --> Model
+Main ..> UI : initialises
+Main ..> Logic : initialises
+Main ..> Model : initialises
+Main ..> Storage : initialises
+UI ..> Logic
+UI ..> Model
+Logic ..> Model
+Logic ..> Storage
+Storage ..> Model
 note bottom of Commons
 Shared utilities used by the components.
 Utility dependencies are omitted.
