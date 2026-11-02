@@ -441,6 +441,8 @@ feedback with/without remarks, JSON round trips, filtered-list handling, startup
 Replacement-failure tests simulate an error after the temporary file is written and check that the original file,
 records, and active filter remain unchanged. They also check temporary-file cleanup and failed first saves.
 
+<!-- @@author DaRealTristan -->
+
 ### Find command
 
 Command format: `find n/KEYWORD [MORE_KEYWORDS]...`, `find i/KEYWORD [MORE_KEYWORDS]...`,
@@ -459,6 +461,10 @@ See the [User Guide](UserGuide.md#finding-students-by-name-student-id-email-rema
   `StudentIdContainsKeywordsPredicate`, `EmailContainsKeywordsPredicate`, and `RemarkContainsKeywordsPredicate`
   match any keyword using
   `StringUtil#containsIgnoreCase`, including partial matches.
+* Keyword matching lowercases the field and keyword separately with `Locale.ROOT` before substring comparison;
+  it does not perform full Unicode case folding or Unicode normalization, so context-sensitive case mappings
+  (such as Greek sigma), multi-character expansions (such as `ß` to `ss`), and canonically equivalent encodings
+  may not match.
 * `RemarkContainsKeywordsPredicate` searches `Person#getRemark().value` only. Empty remarks do not match
   non-empty keywords. Numeric slash text such as `8/10` is accepted under the existing prefix rules.
 * A label value is kept whole, validated by `ParserUtil#parseLabel`, and passed to `LabelMatchesPredicate`.
@@ -668,8 +674,10 @@ MainApp#initLogic → LogicManager
 
 1. `JsonAddressBookStorage#readAddressBook` returns `Optional.empty()` if the data file does not exist.
 2. For an existing file, `JsonAddressBookStorage` reads its bytes once with `Files.readAllBytes`, decodes them as
-   UTF-8, and parses them with `JsonUtil#fromJsonString`. Failure to read the bytes gives
-   `Unable to load student data.`; invalid JSON gives
+   UTF-8 using a decoder configured with `CodingErrorAction.REPORT`, and parses them with `JsonUtil#fromJsonString`.
+   `StrictStringDeserializer` rejects unpaired surrogates after JSON escapes are decoded; valid surrogate pairs
+   remain accepted. Failure to read the bytes gives `Unable to load student data.`; malformed UTF-8, unpaired
+   surrogates in string fields, or invalid JSON give
    `Unable to load student data. The data file may be corrupted or invalid.`
    Both are reported as `DataLoadingException`.
 3. `JsonSerializableAddressBook#toModelType` converts records in file order. A missing or invalid field throws
@@ -721,6 +729,9 @@ Saving is described in [Saving before publishing changes](#saving-before-publish
 IDs. It checks that modifying commands and student-data queries are blocked and the file is unchanged after a failed
 load. Missing files and successfully loaded empty files remain usable.
 `JsonAddressBookStorageTest` covers unreadable files, invalid JSON, invalid values, and duplicate Student IDs.
+It also checks rejection of malformed UTF-8 and unpaired surrogate escapes without changing the original file,
+acceptance of valid Unicode text and an explicitly encoded replacement character, and valid emoji surrogate pairs
+surviving a save and reload.
 
 ### Undoing data changes
 
@@ -1652,9 +1663,14 @@ preserves the current student filter, and closes any attendance view. It does no
 | Condition | Message | Recovery |
 |-----------|---------|----------|
 | File cannot be read, e.g., permission denied | `Unable to load student data.` | Close the app, restore read access or a readable backup, and restart. |
-| Malformed JSON, extra root values/trailing garbage, `null` root, wrong structure, or invalid record | `Unable to load student data. The data file may be corrupted or invalid.` | Close the app, fix or restore the file, and restart. |
+| Malformed UTF-8, unpaired surrogates in string fields, malformed JSON, extra root values/trailing garbage, `null` root, wrong structure, or invalid record | `Unable to load student data. The data file may be corrupted or invalid.` | Close the app, fix or restore the file, and restart. |
 | Duplicate Student ID after normalization | `Unable to load student data: duplicate Student ID A0123456B detected.` | Give each student a unique ID, then restart. |
 | Valid modifying command, `list`, `find`, or `attendance` after startup loading failed | `Student data is unavailable because loading failed. Fix the data file and restart.` | Fix or restore the data file with the app closed, then restart. |
+
+The file must contain valid UTF-8. Malformed byte sequences are rejected rather than replaced with `U+FFFD`.
+After JSON escape decoding, string fields must not contain unpaired surrogates, such as `\uD800` on its own.
+Valid surrogate pairs, including emoji, are accepted. This string validation belongs to the shared `JsonUtil`;
+current preferences contain only numeric window settings and coordinates, so they are unaffected.
 
 The entire JSON document is deserialized before model validation. `JsonUtil#fromJsonString` uses a Jackson 2.7 parser
 and explicitly checks `nextToken()` after binding the root value; additional tokens or invalid trailing content fail

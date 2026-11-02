@@ -180,6 +180,8 @@ or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find
 
 * Supply exactly one non-empty search parameter. Matching ignores case.
 * Name, ID, email, and remark searches match **any** supplied keyword, including partial matches.
+* Keyword matching has Unicode limitations: some case variants (such as Greek sigma), character expansions
+  (such as `ß` versus `ss`), and visually identical characters with different Unicode encodings may not match.
 * Label searches match a complete label using [exact internal spacing](#whitespace-and-label-matching), including
   Unicode spaces and Hangul fillers. A multi-word label is one search value.
 * Reports the number of matches, including zero. Use `list` to restore all students; no records are changed.
@@ -310,6 +312,8 @@ view, undo history, and the previous saved file are preserved. Restore writable 
 ### Editing the data file
 
 Close TeachAssist and back up `data/addressbook.json` before editing it. Use valid field values and unique Student IDs.
+Save the file as UTF-8. Invalid UTF-8 or unpaired Unicode surrogate escapes, such as `\uD800` without a matching low
+surrogate, prevent loading. Valid pairs, including emoji, are supported. Rejected files are preserved unchanged.
 Invalid JSON or records prevent loading, including extra text or a second JSON value after the student-data object.
 See [Loading the data](#loading-the-data) for recovery, and the [DG data-file reference](DeveloperGuide.md#loading-errors)
 for JSON structure, normalization, optional fields, and duplicate rules.
