@@ -19,6 +19,7 @@ Logic -> Parser : Parse command
 activate Parser
 Parser --> Logic : Mark command
 deactivate Parser
+create Pending
 Logic -> Pending : Create pending copy
 Pending --> Logic : Pending model
 Logic -> Command : Execute on pending model
