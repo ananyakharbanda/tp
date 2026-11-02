@@ -315,11 +315,12 @@ public class JsonAddressBookStorageTest {
 
     @Test
     public void readAddressBook_malformedUtf8_rejectsAndPreservesBytes() throws Exception {
+        // EP: Invalid leading/continuation bytes, truncated sequences, overlong encodings, and encoded surrogates.
+        // BVA: The truncated three-byte sequence has only two bytes, one below its required length.
         Path file = testFolder.resolve("malformedUtf8.json");
         byte[] prefix = ("{\"persons\":[{\"name\":\"Alex Tan\",\"studentId\":\"A0123456B\","
                 + "\"email\":\"alex@example.com\",\"remark\":\"").getBytes(StandardCharsets.UTF_8);
         byte[] suffix = "\"}]}".getBytes(StandardCharsets.UTF_8);
-        // Invalid leading byte, invalid continuation, truncated sequence, overlong encoding, and surrogate.
         for (byte[] invalid : List.of(new byte[] {(byte) 0xff}, new byte[] {(byte) 0xc3, 0x28},
                 new byte[] {(byte) 0xe2, (byte) 0x82}, new byte[] {(byte) 0xc0, (byte) 0xaf},
                 new byte[] {(byte) 0xed, (byte) 0xa0, (byte) 0x80})) {
@@ -335,6 +336,7 @@ public class JsonAddressBookStorageTest {
 
     @Test
     public void readAddressBook_validUtf8_preservesUnicodeAndReplacementCharacter() throws Exception {
+        // EP: Valid non-ASCII text, supplementary characters, and an intentionally encoded U+FFFD are preserved.
         Path file = testFolder.resolve("validUtf8.json");
         String remark = "\u4e2d\u6587 \u00e9 \uD83D\uDE00 \uFFFD";
         Map<String, Object> student = validStudentFields();
@@ -347,6 +349,8 @@ public class JsonAddressBookStorageTest {
 
     @Test
     public void readAddressBook_unpairedSurrogateEscapes_rejectsAndPreservesFile() throws Exception {
+        // EP: Lone, repeated, reversed, embedded, and trailing unpaired surrogate escapes are rejected.
+        // BVA: One surrogate code unit is insufficient for the required high/low pair of two code units.
         for (String escaped : List.of("\\uD800", "\\uDC00", "\\uD800\\uD800", "\\uDC00\\uD800",
                 "before\\uD800after", "\\uD800\\u0041", "\\uD83D\\uDE00\\uD800")) {
             assertInvalidFilePreserved("{\"persons\":[{\"name\":\"Alex Tan\",\"studentId\":\"A0123456B\","
@@ -356,6 +360,8 @@ public class JsonAddressBookStorageTest {
 
     @Test
     public void readAddressBook_validSurrogatePairEscape_survivesSaveAndReload() throws Exception {
+        // EP: A correctly ordered escaped high/low surrogate pair remains valid across loading and saving.
+        // BVA: Exactly two UTF-16 code units form the minimum complete surrogate pair.
         Path file = testFolder.resolve("surrogatePair.json");
         Files.writeString(file, "{\"persons\":[{\"name\":\"Alex Tan\",\"studentId\":\"A0123456B\","
                 + "\"email\":\"alex@example.com\",\"remark\":\"\\uD83D\\uDE00\"}]}");
