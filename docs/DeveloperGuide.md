@@ -240,8 +240,9 @@ The diagram follows a successful edit that replaces `tutorial 1` with `tutorial 
 pending-model update. It expands Logic while keeping Model at a high level. The reference frame points to the
 shared [save-before-publish flow](#saving-before-publishing-changes); error paths are omitted.
 
-
+<!-- @@author sammeowwww -->
 <puml src="diagrams/EditLabelSequenceDiagram.puml" alt="EditCommand updates labels on the pending model" />
+
 
 
 1. `EditCommandParser#parse` checks the command structure and parses the Student ID and requested changes.
@@ -260,7 +261,7 @@ Label names are lowercased when constructed, so matching remains case-insensitiv
 adding one already present throws a
 `CommandException`, leaving the record unchanged. An empty `l/` clears all labels and cannot be combined
 with another label change. An empty `r/` becomes an empty remark.
-
+<!-- @@author  -->
 ### Mark and unmark attendance
 
 Command formats:
@@ -279,10 +280,11 @@ They expand Logic while keeping Model at a high level. The pending copy retains 
 The reference frames point to the shared [save-before-publish flow](#saving-before-publishing-changes);
 error paths are omitted.
 
-
+<!-- @@author sammeowwww -->
 <puml src="diagrams/MarkSequenceDiagram.puml" alt="MarkCommand adds attendance to the pending model" />
 
 <puml src="diagrams/UnmarkSequenceDiagram.puml" alt="UnmarkCommand removes attendance from the pending model" />
+<!-- @@author  -->
 
 
 <!-- @@author sammeowwww -->
