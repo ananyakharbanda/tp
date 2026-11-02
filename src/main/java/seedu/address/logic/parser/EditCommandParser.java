@@ -79,9 +79,11 @@ public class EditCommandParser implements Parser<EditCommand> {
         if (arguments.getValue(PREFIX_EMAIL).isPresent()) {
             descriptor.setEmail(ParserUtil.parseEmail(arguments.getValue(PREFIX_EMAIL).orElseThrow()));
         }
+        // @@author ananyakharbanda
         if (arguments.getValue(PREFIX_REMARK).isPresent()) {
             descriptor.setRemark(ParserUtil.parseRemark(arguments.getValue(PREFIX_REMARK).orElseThrow()));
         }
+        // @@author
         parseLabelChanges(arguments, descriptor);
         return descriptor;
     }
