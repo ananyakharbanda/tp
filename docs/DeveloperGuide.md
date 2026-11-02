@@ -28,6 +28,9 @@
   find and unmark features as well as bug fixes for storage. The contributor gave explicit requirements, 
   reviewed the generated changes against the intended behavior, and validated them with automated tests, Checkstyle, 
   and manual testing before accepting them.
+* OpenAI Codex assisted @amberrrruby with implementing test cases, functional code, UML diagrams and documentation.
+  TDD is used throughout, and generated changes are verified to fit the intended behavior with implemented tests.
+  Diagrams and documentation are manually checked later.
 
 --------------------------------------------------------------------------------------------------------------------
 
