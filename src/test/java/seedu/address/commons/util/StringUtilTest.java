@@ -213,6 +213,21 @@ public class StringUtilTest {
         assertTrue(StringUtil.containsIgnoreCase("aaa bbb ccc", "  aaa bb  "));
     }
 
+    @Test
+    public void containsIgnoreCase_fourLanguageExamples_matchesLiteralSubstring() {
+        // EP: English text with a matching substring
+        assertTrue(StringUtil.containsIgnoreCase("Needs help", "help"));
+
+        // EP: Malay text with a matching substring
+        assertTrue(StringUtil.containsIgnoreCase("Perlu bantuan", "bantuan"));
+
+        // EP: Mandarin Chinese text with a matching substring
+        assertTrue(StringUtil.containsIgnoreCase("需要帮助", "帮助"));
+
+        // EP: Tamil text with a matching substring
+        assertTrue(StringUtil.containsIgnoreCase("உதவி தேவை", "உதவி"));
+    }
+
     //---------------- Tests for getDetails --------------------------------------
 
     /*

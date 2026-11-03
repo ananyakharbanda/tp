@@ -54,6 +54,18 @@ public class NameTest {
         assertTrue(Name.isValidName("D’Arcy"));
         assertTrue(Name.isValidName("José 王小明"));
         assertTrue(Name.isValidName("Jose\u0301"));
+
+        // EP: English name using valid Latin letters
+        assertTrue(Name.isValidName("Alex Tan"));
+
+        // EP: Malay name using valid Latin letters
+        assertTrue(Name.isValidName("Nur Aisyah"));
+
+        // EP: Mandarin name in Chinese characters
+        assertTrue(Name.isValidName("王小明"));
+
+        // EP: Tamil-script name with combining marks
+        assertTrue(Name.isValidName("அருண்"));
     }
 
     @Test
@@ -78,6 +90,28 @@ public class NameTest {
         assertFalse(Name.isValidName("A".repeat(Name.MAX_LENGTH + 1))); // BVA: one above maximum
         assertThrows(IllegalArgumentException.class, Name.MESSAGE_CONSTRAINTS, ()
             -> new Name("A".repeat(Name.MAX_LENGTH + 1)));
+    }
+
+    @Test
+    public void isValidName_chineseLengthBoundary_countsCodePoints() {
+        // EP: valid Mandarin Chinese name
+        assertTrue(Name.isValidName("王".repeat(Name.MAX_LENGTH - 1))); // BVA: 99 code points
+        assertTrue(Name.isValidName("王".repeat(Name.MAX_LENGTH))); // BVA: 100 code points
+
+        // EP: Mandarin Chinese name exceeds the maximum length
+        assertFalse(Name.isValidName("王".repeat(Name.MAX_LENGTH + 1))); // BVA: 101 code points
+    }
+
+    @Test
+    public void isValidName_tamilLengthBoundary_countsCombiningMarks() {
+        // EP: valid Tamil name; each கி contains a letter and a combining mark
+        String belowLimit = "கி".repeat(49) + "க";
+        String atLimit = "கி".repeat(50);
+        assertTrue(Name.isValidName(belowLimit)); // BVA: 99 code points
+        assertTrue(Name.isValidName(atLimit)); // BVA: 100 code points
+
+        // EP: Tamil name exceeds the maximum length
+        assertFalse(Name.isValidName(atLimit + "க")); // BVA: 101 code points
     }
 
     @Test

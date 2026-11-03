@@ -81,6 +81,40 @@ public class LabelTest {
         assertTrue(Label.isValidLabelName("Today's Tutorial"));
         assertTrue(Label.isValidLabelName("Tutorial (Monday)"));
         assertTrue(Label.isValidLabelName("Tutorial 1.2"));
+
+        // EP: English label using valid Latin letters
+        assertTrue(Label.isValidLabelName("Tutorial"));
+
+        // EP: Malay label using valid Latin letters
+        assertTrue(Label.isValidLabelName("Kumpulan"));
+
+        // EP: Mandarin Chinese label using valid Chinese characters
+        assertTrue(Label.isValidLabelName("中文"));
+
+        // EP: Tamil label using valid Tamil letters and combining marks
+        assertTrue(Label.isValidLabelName("தமிழ்"));
+    }
+
+    @Test
+    public void isValidLabelName_chineseLengthBoundary_countsCodePoints() {
+        // EP: valid Mandarin Chinese label
+        assertTrue(Label.isValidLabelName("中".repeat(Label.MAX_NAME_LENGTH - 1))); // BVA: 59 code points
+        assertTrue(Label.isValidLabelName("中".repeat(Label.MAX_NAME_LENGTH))); // BVA: 60 code points
+
+        // EP: Mandarin Chinese label exceeds the maximum length
+        assertFalse(Label.isValidLabelName("中".repeat(Label.MAX_NAME_LENGTH + 1))); // BVA: 61 code points
+    }
+
+    @Test
+    public void isValidLabelName_tamilLengthBoundary_countsCombiningMarks() {
+        // EP: valid Tamil label; each கி contains a letter and a combining mark
+        String belowLimit = "கி".repeat(29) + "க";
+        String atLimit = "கி".repeat(30);
+        assertTrue(Label.isValidLabelName(belowLimit)); // BVA: 59 code points
+        assertTrue(Label.isValidLabelName(atLimit)); // BVA: 60 code points
+
+        // EP: Tamil label exceeds the maximum length
+        assertFalse(Label.isValidLabelName(atLimit + "க")); // BVA: 61 code points
     }
 
     @Test
