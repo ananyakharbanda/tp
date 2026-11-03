@@ -52,6 +52,7 @@
         "common-classes": "Common classes",
         "implementation": "Implementation",
         "group-labels": "Group labels",
+        "listing-students": "Listing students",
         "edit-command": "Edit command",
         "mark-and-unmark-attendance": "Mark and unmark attendance",
         "adding-student-information": "Adding student information",
@@ -180,7 +181,12 @@
       "headings": {
         "bryan-lee-jun-you": "Bryan Lee Jun You",
         "project-teachassist": "Project: TeachAssist",
-        "selected-contributions": "Selected contributions"
+        "selected-contributions": "Selected contributions",
+        "features": "Features",
+        "data-loading-and-saving": "Data loading and saving",
+        "bug-fixes": "Bug fixes",
+        "testing": "Testing",
+        "documentation": "Documentation"
       },
       "headingKeywords": {}
     },
@@ -206,6 +212,7 @@
         "startup-storage-and-privacy": "Startup, storage, and privacy",
         "testing-and-bug-reporting": "Testing and bug reporting",
         "documentation-and-project-maintenance": "Documentation and project maintenance",
+        "final-documentation-proposals": "Final documentation proposals",
         "authorship-verification": "Authorship verification"
       },
       "headingKeywords": {}
