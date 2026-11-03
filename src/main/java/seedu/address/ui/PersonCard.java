@@ -1,5 +1,6 @@
 package seedu.address.ui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -65,6 +66,8 @@ public class PersonCard extends UiPart<Region> {
                     groupBadge.setMinWidth(0);
                     // A single long badge must fit within the row, just like multiple short badges.
                     groupBadge.maxWidthProperty().bind(labels.widthProperty());
+                    // Recompute wrapped height after the current parent layout has finished.
+                    labels.widthProperty().addListener(unused -> Platform.runLater(groupBadge::requestLayout));
                     groupBadge.getStyleClass().add("group_label_badge");
                     labels.getChildren().add(groupBadge);
                 });
