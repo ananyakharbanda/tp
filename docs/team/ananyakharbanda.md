@@ -43,6 +43,7 @@ My work covers student listing and remark editing, UI improvements, application 
 
 ### Testing and bug reporting
 
+* Added regression coverage and proposed a fix for slow command parsing with large runs of whitespace ([issue #330](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/330), [PR #331](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/331)).
 * Added the original remark-editing tests for clearing remarks, parameter order, unknown prefixes, and the remark-length boundary in [PR #66](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/66) ([original implementation](https://github.com/AY2627S1-CS2103T-F12-1/tp/commit/da5ac3850fbd69489c8d6d8b53b6e38c57206832)). Sam subsequently revised these tests for Student ID targeting and added further cases and comments; the current tests include both contributions.
 * Made JavaFX test initialization reliable and bounded so initialization failures or timeouts fail explicitly ([issue #239](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/239), [PR #251](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/251)).
 * Recorded the team's alpha-testing task split and completion of my assigned testing areas: adding and deleting students, marking and unmarking attendance, viewing attendance, and clearing records ([issue #190](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/190)).
