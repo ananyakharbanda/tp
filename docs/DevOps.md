@@ -25,8 +25,8 @@ Examples below use the prefixed format.)
 * **`clean`**: Deletes the files created during the previous build tasks (e.g. files in the `build` folder).<br>
   For example: `./gradlew clean`
 
-* **`shadowJar`**: Uses the Shadow plugin to create the fat JAR file `build/libs/teach-assist-v1.6.jar`.<br>
-  For example: `./gradlew shadowJar`
+* **`shadowJar`**: Uses the Shadow plugin to create a fat JAR in `build/libs`.<br>
+  For the standard release JAR `teach-assist-v1.6.jar`: `./gradlew shadowJar -PjavafxMacPlatform=mac`
 
 * **`run`**: Builds and runs the application.<br>
   **`runShadow`**: Builds the application as a fat JAR, then runs it.
@@ -80,13 +80,11 @@ Any warnings or errors will be printed out to the console.
 Here are the steps to create a new release.
 
 1. Update `MainApp.VERSION` in [`MainApp.java`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/src/main/java/seedu/address/MainApp.java) and the release JAR filename in [`build.gradle`](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/build.gradle). Keep the launch command in the User Guide consistent with that filename.
-1. Generate the release JARs in `build/libs`, selecting the Mac Java architecture explicitly:
-   * `./gradlew shadowJar -PjavafxMacPlatform=mac` produces `teach-assist-v1.6.jar` for Windows, Linux,
-     and Intel Java on macOS (including Intel Java under Rosetta).
-   * `./gradlew shadowJar -PjavafxMacPlatform=mac-aarch64` produces `teach-assist-v1.6-mac-aarch64.jar`
-     for native Apple Silicon Java on macOS. This JAR also includes the Windows and Linux libraries.
-   Without the property, Gradle selects the Mac libraries from the build JVM's architecture; builds on other
-   operating systems default to `mac`. The two Mac native-library sets cannot share one JAR because their
-   resource names collide. Upload both named JARs when supporting both Mac Java architectures.
+1. Generate the single release JAR with `./gradlew shadowJar -PjavafxMacPlatform=mac`.
+   This produces `build/libs/teach-assist-v1.6.jar` for Windows, Linux, and macOS (Intel or Apple Silicon).
+   Mac users must use the prescribed [Java 25 JDK+FX (`25.0.3.fx-zulu`)](https://se-education.org/guides/tutorials/javaInstallationMac.html),
+   which supplies the JavaFX runtime for their Mac architecture. Upload this standard JAR for all supported platforms.
+   Always supply `-PjavafxMacPlatform=mac` for releases: without it, a native ARM Mac build defaults to the
+   `-mac-aarch64.jar` variant.
 1. Tag the repo with the version number. e.g. `v0.1`
 1. [Create a new release using GitHub](https://help.github.com/articles/creating-releases/). Upload the JAR file you created.
