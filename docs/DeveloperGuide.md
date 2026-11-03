@@ -371,18 +371,19 @@ are in [Appendix: Errors](#appendix-errors).
   Repeated/missing/empty checks follow `n/`, `i/`, `e/` order; repeated `r/` and `l/` are checked after them.
 * `ParserUtil` trims values and converts invalid fields into `ParseException`s. Model constructors also validate,
   so records created by storage or other callers follow the same rules.
-* `Name` accepts 1–100 Unicode code points after trimming and collapsing repeated spaces, requires a letter,
-  and permits Unicode letters/combining marks, spaces, apostrophes, hyphens, and periods. Case is preserved.
+* `Name` accepts 1–100 Unicode code points after trimming and collapsing repeated spaces, requires at least one
+  Unicode letter, and permits Unicode letters/combining marks, spaces, apostrophes, hyphens, and periods.
+  Case is preserved.
 * `StudentId` accepts nine ASCII alphanumeric characters and stores uppercase using `Locale.ROOT`.
   `Person#isSamePerson` compares this normalised ID, not the name or email.
 * `Email` enforces the supported ASCII format, local-part limit of 64, overall limit of 254, domain-label limits
   of 63, and a final label of 2–63 letters. Only the domain is lowercased using `Locale.ROOT`.
 * `Remark` accepts at most 4,000 Unicode code points; command parsing trims only surrounding whitespace.
   Empty or omitted remarks become empty strings. `r/` can appear anywhere and does not consume later parameters.
-* `Label` accepts 1–60 characters and requires at least one letter or digit. For length checking, lowercase
-  `i` plus combining dot counts as the single `İ` from which it can expand. It permits
-  letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Empty labels
-  are rejected, omitted labels become an empty label set, and `l/` can appear anywhere without consuming later parameters.
+* `Label` accepts 1–60 Unicode code points and requires at least one Unicode letter or digit. For length checking,
+  lowercase `i` plus combining dot counts as the single `İ` from which it can expand. It permits letters, combining
+  marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Empty labels are rejected,
+  omitted labels become an empty label set, and `l/` can appear anywhere without consuming later parameters.
 
 For example, `add n/  Alex   Tan i/a0123456b e/Alex@EXAMPLE.COM l/Tutorial 1 r/Quiz: 8/10`
 creates a student with name `Alex Tan`, ID `A0123456B`, email `Alex@example.com`, label `tutorial 1`,
@@ -853,11 +854,15 @@ The following guides cover development workflows:
 
 **Target user profile**:
 
-TeachAssist is for teaching assistants (TAs) who support a fixed group of undergraduate students through weekly tutorials and consultations throughout a semester.
+TeachAssist is for teaching assistants (TAs) in Singapore who support a fixed group of undergraduate students through weekly tutorials and consultations throughout a semester.
 They need to retrieve and update student information quickly while handling teaching, assessment, and follow-up tasks.
 They can type quickly and prefer entering text commands over mouse-driven input.
 
 **Value proposition**: Help teaching assistants organise student information and learning progress so they can remember individual students' needs and provide consistent, targeted support throughout the semester.
+
+**Language support**: Names, labels, and remarks can contain English, Malay, Mandarin Chinese, and Tamil text that
+meets the field rules. Tests cover representative examples of all four languages. Other scripts are also accepted
+when they meet the same rules. See the [User Guide's known issues](UserGuide.md#known-issues) for matching limits.
 
 TeachAssist supports the management of student information, learning progress, interactions, and follow-up needs. It does not aim to replace a learning management system (LMS) for distributing teaching materials, conducting assessments, calculating official grades, or communicating directly with students.
 
@@ -1584,8 +1589,9 @@ name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace
 | Invalid date, e.g., `2026-02-30` or `2026-2-03` | `Date must use a valid YYYY-MM-DD date.` | Use a real calendar date with zero-padded month and day. |
 
 The label constraint also applies to attendance groups. Empty edit names and emails produce their field constraint
-messages. Length limits apply after trimming/normalization and count Unicode code points for names and remarks.
-Labels use the same count except that lowercase `i` plus combining dot counts as one character, as described above.
+messages. Length limits apply after trimming/normalization and count Unicode code points for names, labels, and
+remarks. For labels, lowercase `i` plus a combining dot counts as one toward the limit, as described above.
+The user-facing error messages say “characters” for these limits; this is their exact current wording.
 
 Email validation accepts at most 254 characters and exactly one `@`. The local part has 1–64 ASCII letters, digits,
 periods, underscores, plus signs, or hyphens; it cannot begin/end with a period or contain consecutive periods.

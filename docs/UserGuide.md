@@ -10,6 +10,11 @@
 TeachAssist is a **desktop application for managing student records, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, TeachAssist can help you manage student information faster than traditional GUI applications.
 <!-- @@author -->
 
+TeachAssist is intended for teaching assistants in Singapore. You can enter names, labels, and remarks in English,
+Malay, Mandarin Chinese, and Tamil, subject to the [field rules](#field-rules). We test representative text from all
+four languages. Text in other languages is also accepted when it meets the same rules. See [Known issues](#known-issues)
+for limits on finding and matching text.
+
 <!-- * Table of Contents -->
 <page-nav-print />
 
@@ -91,17 +96,33 @@ groups. `I` matches `i`; dotless `ı` is a different character.
 
 ### Field rules
 
-These rules apply wherever a command accepts the field, the only exception being `find` which can accept partial inputs for names, student IDs, emails, and remarks (label searches require a complete label). Name and remark limits count Unicode code points after
-whitespace handling. For labels, the lowercase `i` + combining dot produced from `İ` counts as one character,
-so converting an existing label to lowercase does not invalidate its length.
+These rules apply wherever a command accepts the field, the only exception being `find` which can accept partial inputs for names, student IDs, emails, and remarks (label searches require a complete label).
+
+The name, label, and remark length limits count **Unicode code points**, not necessarily the letters you see on
+screen. A code point is a numbered unit in Unicode that can represent a letter, a mark, or another symbol. These
+examples show how text used in the four supported languages is counted:
+
+| Language | Example | Code points counted |
+|----------|---------|---------------------|
+| English | `A` | 1: the letter `A` |
+| Malay | `a` | 1: the letter `a`; Malay is commonly written with Latin letters |
+| Mandarin Chinese | `中` | 1: the Chinese character `中` |
+| Tamil | `அ` | 1: the Tamil letter `அ` |
+| Tamil | `கி` | 2: the Tamil letter `க` plus the vowel mark `ி`, although they look like one unit |
+
+These are examples, not a rule that every visible character in a language counts as one code point. For instance,
+50 copies of `கி` reach the 100-code-point name limit. Names are counted after their spaces are normalized;
+remarks are counted after surrounding whitespace is removed from a command. For labels, `İ` and its lowercase form
+(`i` plus a combining dot) each count as one toward the limit, so lowercasing a label does not invalidate its length.
+Validation error messages use the word “characters” for these limits.
 
 | Field | Rules |
 |-------|-------|
-| Name | 1–100 characters, including a letter. Allows Unicode letters, combining marks, spaces, apostrophes (`'`, `’`), hyphens, and periods. Repeated spaces collapse; capitalization is preserved. |
+| Name | 1–100 code points and must contain at least one Unicode letter. Allows Unicode letters, combining marks, spaces, apostrophes (`'`, `’`), hyphens, and periods. A name made only of marks, spaces, or punctuation is invalid. Repeated spaces collapse; capitalization is preserved. |
 | Student ID | Exactly nine ASCII letters or digits, stored in uppercase. Matching ignores case. No internal spaces or punctuation. Each student needs a unique ID; names can be shared. |
 | Email | A supported `name@example.com` address, at most 254 characters, without spaces. The local part allows ASCII letters, digits, `.`, `_`, `+`, and `-`; the domain needs at least two dot-separated parts and a final part of 2–63 letters. Only the domain is lowercased. Mailbox existence is not checked. [Full constraints](DeveloperGuide.md#field-validation-errors). |
-| Remark | Optional, at most 4,000 characters. Internal spacing and capitalization are preserved; dates and grades are not checked. Text starting after a space or similar separator with ASCII letters immediately followed by `/` is read as a parameter prefix, even in remarks. |
-| Label / group | 1–60 characters using the counting rule above, including a letter or digit. Allows Unicode letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. Internal spacing is preserved; capitalization is converted to lowercase for storage and display. |
+| Remark | Optional, at most 4,000 code points. Internal spacing and capitalization are preserved; dates and grades are not checked. Text starting after a space or similar separator with ASCII letters immediately followed by `/` is read as a parameter prefix, even in remarks. |
+| Label / group | 1–60 code points using the `İ` counting rule above and must contain at least one Unicode letter or digit. Allows Unicode letters, combining marks, digits, spaces, hyphens, underscores, apostrophes, parentheses, and periods. A label made only of marks, spaces, or punctuation is invalid. Internal spacing is preserved; capitalization is converted to lowercase for storage and display. |
 | Date | A real calendar date in `YYYY-MM-DD` format, with zero-padded month and day, e.g., `2026-01-20`. |
 
 For example, `r/Discussed algebra/ today` is rejected with `Unknown parameter: algebra/.` because
@@ -177,8 +198,8 @@ or `find e/KEYWORD [MORE_KEYWORDS]` or `find r/KEYWORD [MORE_KEYWORDS]` or `find
 
 * Supply exactly one non-empty search parameter. Matching ignores case.
 * Name, ID, email, and remark searches match **any** supplied keyword, including partial matches.
-* Keyword matching has Unicode limitations: some case variants (such as Greek sigma), character expansions
-  (such as `ß` versus `ss`), and visually identical characters with different Unicode encodings may not match.
+* Keyword matching has [Unicode limitations](#known-issues), including some case variants and different encodings
+  of visually identical text.
 * Label searches match a complete label using [exact internal spacing](#whitespace-and-label-matching), including
   Unicode spaces and Hangul fillers. A multi-word label is one search value.
 * Reports the number of matches, including zero. Use `list` to restore all students; no records are changed.
@@ -342,7 +363,12 @@ For exact messages and validation order, see [Developer Guide — Appendix: Erro
 
 ## Known issues
 
-- None thus far.
+- Names, labels, and remarks in English, Malay, Mandarin Chinese, and Tamil are supported when they meet the field
+  rules. Basic searches using the same characters work for representative examples in all four languages. However,
+  two pieces of text can look alike on screen yet be stored as different characters. For example, `é` can be entered
+  as one character or as `e` followed by a separate accent mark. Searching for one form may not find the other.
+  Some less common uppercase and lowercase forms may also fail to match. This limitation applies to any language.
+- Text in other languages is accepted if it meets the field rules, but matching has not been tested to the same extent.
 
 --------------------------------------------------------------------------------------------------------------------
 
