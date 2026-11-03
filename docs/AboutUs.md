@@ -40,7 +40,7 @@ For TeachAssist questions and bug reports, use the [project issue tracker](https
 [[github](https://github.com/8ryanl33)] [[portfolio](team/8ryanl33.md)]
 
 * Role: Developer
-* Responsibilities: Data
+* Responsibilities: Student data loading and storage errors, attendance command and view, bug fixes, testing, and documentation
 
 ### Gou Guan Lin
 
