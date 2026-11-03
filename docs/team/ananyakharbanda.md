@@ -11,7 +11,7 @@ TeachAssist is a Java desktop application that helps teaching assistants manage 
 
 ## Contributions
 
-My work covers student listing and remark editing, UI improvements, application reliability, testing, and project documentation. The contributions below link to merged pull requests, project commits, and issue reports. Related issues are grouped where they describe the same work.
+My work covers student listing and remark editing, UI improvements, application reliability, testing, and project documentation. The contributions below link to pull requests, project commits, and issue reports; pending and unmerged submissions are identified separately. Related issues are grouped where they describe the same work.
 
 ### Features
 
@@ -60,11 +60,22 @@ The tab-separator report in issue #217 was resolved by Tristan's documentation c
 * Added the Student Listing sequence diagram and its PlantUML source ([issue #97](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/97), [PR #98](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/98)).
 * Cleaned up TeachAssist branding, website content, setup documentation, portfolio placeholders, and student-facing terminology ([issue #160](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/160), [issue #161](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/161), [PR #163](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/163)).
 * Completed and corrected the User Guide, Developer Guide, testing guidance, and architecture diagrams ([issue #167](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/167), [PR #168](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/168)).
+* Wrote the DG manual-test scenarios, synthetic performance dataset, and startup measurement procedure in PR #168, then expanded the scenarios in PR #266. Sam later corrected label capitalization and formatting in the edit and attendance tables.
 * Rewrote the Developer Guide use cases to cover all implemented commands, shared failure handling, and recovery behaviour; simplified the UML explanations in [PR #266](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/266) ([implementation commit](https://github.com/AY2627S1-CS2103T-F12-1/tp/commit/e0949ad043024698e0b00636301fd338fe8ecedd)).
 * Authored four UML diagrams in that PR: [saving before publishing](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/docs/diagrams/SaveSequenceDiagram.puml), [attendance report refresh](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/docs/diagrams/AttendanceRefreshSequenceDiagram.puml), [student data classes](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/docs/diagrams/StudentDataClassDiagram.puml), and [attendance model classes](https://github.com/AY2627S1-CS2103T-F12-1/tp/blob/master/docs/diagrams/AttendanceModelClassDiagram.puml).
 * Aligned guide expectations with undo behaviour and startup loading failures ([issue #241](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/241), [PR #249](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/249)).
 * Updated the application screenshot and corrected the label-search activity diagram ([issue #253](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/253), [PR #254](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/254)).
 * Added my profile photo and updated my About Us entry and portfolio ([issue #10](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/10), [issue #26](https://github.com/AY2627S1-CS2103T-F12-1/tp/issues/26), [PR #19](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/19), [PR #30](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/30)).
+* Expanded my portfolio and About Us responsibilities, and verified RepoSense identity and attribution ([PR #260](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/260), [PR #310](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/310), [PR #311](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/311)).
+* Reviewed shared DG authorship boundaries and annotated verified UG/DG contributions ([PR #308](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/308), [PR #315](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/315)).
+* Added remark-parser attribution comments in [PR #309](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/309); these comments were subsequently removed in PR #315, retaining contribution evidence through Git history and this portfolio.
+* Added my AI usage acknowledgement to the DG ([PR #312](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/312)).
+
+### Final documentation proposals
+
+Submitted final guide alignment and AI acknowledgement updates ([PR #321](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/321)), single-JAR release instructions ([PR #328](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/328)), and pending-model creation notation corrections ([PR #329](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/329)). These PRs were awaiting merge when this record was updated on 3 November 2026; their links show the current status.
+
+Other submissions closed without merge: the tutorial remark-command work ([PR #8](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/8)), an earlier documentation cleanup incorporated through PR #163 ([PR #162](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/162)), and an earlier diagram-notation proposal ([PR #297](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/297)).
 
 ### Authorship verification
 

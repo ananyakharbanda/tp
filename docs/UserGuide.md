@@ -253,7 +253,7 @@ Shows present and absent students for a group and date, with totals.
 * This command changes no data. It is blocked after a loading failure; fix or restore the data file and restart.
   A missing file or a successfully loaded empty file still permits an attendance report with zero totals.
 
-**Example:** 
+**Example:**
 1. `mark i/A0234567C d/2026-10-20 l/tutorial 1`
 2. `attendance d/2026-10-20 l/tutorial 1`
 
@@ -341,7 +341,9 @@ For exact messages and validation order, see [Developer Guide — Appendix: Erro
 --------------------------------------------------------------------------------------------------------------------
 
 ## Known issues
-- None thus far. 
+
+- None thus far.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## Command summary

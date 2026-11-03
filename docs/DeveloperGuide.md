@@ -17,9 +17,13 @@
 * Application libraries: [JavaFX](https://openjfx.io/) for the graphical interface and [Jackson](https://github.com/FasterXML/jackson) for JSON persistence.
 * Testing and build tools: [JUnit 5](https://junit.org/junit5/), [Gradle](https://gradle.org/), [Shadow](https://gradleup.com/shadow/), [Checkstyle](https://checkstyle.org/) and [JaCoCo](https://www.jacoco.org/jacoco/).
 * Documentation tools: [MarkBind](https://markbind.org/) for the website and [PlantUML](https://plantuml.com/) for UML diagrams.
-* Ananya Kharbanda used an AI coding assistant for implementation suggestions, regression tests, code review,
-  UML revisions, and documentation checks. Suggested changes were checked against the implementation and
-  validated using relevant automated tests, code-style checks, diagram rendering, and documentation builds.
+  <!-- @@author ananyakharbanda -->
+* Ananya Kharbanda used OpenAI Codex to generate and revise implementation code, regression tests, UML diagrams,
+  and documentation, and to assist with repository reviews and authorship checks. The work included student
+  listing and remark editing, UI and reliability fixes, and guide updates. Changes were checked against the
+  implementation or repository history and validated using relevant automated tests, code-style checks,
+  diagram rendering, and documentation builds.
+  <!-- @@author -->
 * OpenAI Codex assisted @sammeowwww with implementation code, test cases, sequence diagrams, and documentation for
   student, label, and attendance features. The contributor gave explicit requirements, reviewed the generated changes
   against the intended behavior, and validated them with automated tests, Checkstyle, and manual testing before
@@ -49,8 +53,8 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 <!-- @@author ananyakharbanda -->
 The diagrams use three distinct views. Component diagrams describe responsibilities and dependencies; class
 and sequence diagrams describe selected implementation relationships; activity diagrams describe decisions in a
-workflow. Each caption states the scope and any omitted steps. A message written as an action in a component
-sequence is conceptual, while messages in an object sequence use the implemented operations.
+workflow. Each caption states the scope and any omitted steps. The component sequence and the simplified
+edit, mark, and unmark sequences use action descriptions. Other object sequences name implemented operations.
 <!-- @@author -->
 
 ### Architecture
@@ -234,6 +238,24 @@ An optional group label is assigned when creating a student with `add ... l/LABE
 `JsonAdaptedLabel` and `JsonAdaptedPerson` persist labels under each student's `labels` JSON field.
 `EditCommand` preserves labels unless label changes are requested, and `PersonCard` renders them in its `FlowPane`.
 Existing saved labels remain compatible, including records containing multiple labels.
+<!-- @@author -->
+
+<!-- @@author ananyakharbanda -->
+### Listing students
+
+`ListCommandParser` accepts `list` without arguments and rejects additional non-whitespace input.
+`ListCommand#execute` resets the live model's filter to `Model.PREDICATE_SHOW_ALL_PERSONS`, then reports
+`Listed all students.` or `No students found.` according to whether the complete list is empty.
+It preserves master-list order and does not change or save student records or create undo history.
+`LogicManager` blocks listing after a startup loading failure; a successful list closes an attendance view.
+
+The sequence below shows parsing and execution after the input reaches `LogicManager`. The startup
+data-availability check and the UI's switch back to the student list are omitted.
+
+<puml src="diagrams/ListSequenceDiagram.puml" alt="ListCommand restores the complete student view without saving" />
+
+`ListCommandParserTest`, `ListCommandTest`, and `LogicManagerTest` cover argument rejection, empty and filtered
+lists, read-only execution, and the startup loading guard.
 <!-- @@author -->
 
 ### Edit command
@@ -435,6 +457,7 @@ Field parsing and the shared save transaction are outside its scope.
    the previous state for `undo` and publish the pending model, as shown in the
    [shared save sequence](#saving-before-publishing-changes). A save failure leaves the live records unchanged.
 
+<!-- @@author ananyakharbanda -->
 If startup loading fails, `MainApp` keeps the original file and starts with an empty fallback model.
 `LogicManager` blocks modifying commands, `list`, `find`, and `attendance` until the file is fixed and the
 application is restarted. See [Blocking student-data commands after a failed load](#blocking-student-data-commands-after-a-failed-load).
@@ -457,9 +480,11 @@ records, and active filter remain unchanged. They also check temporary-file clea
 
 ### Find command
 
-Command format: `find n/KEYWORD [MORE_KEYWORDS]...`, `find i/KEYWORD [MORE_KEYWORDS]...`,
-`find e/KEYWORD [MORE_KEYWORDS]...`, `find r/KEYWORD [MORE_KEYWORDS]...`, or `find l/LABEL_NAME`.
+<!-- @@author ananyakharbanda -->
+Command format: `find n/KEYWORD [MORE_KEYWORDS]`, `find i/KEYWORD [MORE_KEYWORDS]`,
+`find e/KEYWORD [MORE_KEYWORDS]`, `find r/KEYWORD [MORE_KEYWORDS]`, or `find l/LABEL_NAME`.
 Supply exactly one search field. Label searches replace the former standalone filter command.
+<!-- @@author DaRealTristan -->
 See the [User Guide](UserGuide.md#finding-students-by-name-student-id-email-remark-or-label-find) for examples and
 [Find errors](#find-errors) for error messages and validation order.
 
@@ -473,10 +498,12 @@ See the [User Guide](UserGuide.md#finding-students-by-name-student-id-email-rema
   `StudentIdContainsKeywordsPredicate`, `EmailContainsKeywordsPredicate`, and `RemarkContainsKeywordsPredicate`
   match any keyword using
   `StringUtil#containsIgnoreCase`, including partial matches.
+  <!-- @@author DaRealTristan -->
 * Keyword matching lowercases the field and keyword separately with `Locale.ROOT` before substring comparison;
   it does not perform full Unicode case folding or Unicode normalization, so context-sensitive case mappings
   (such as Greek sigma), multi-character expansions (such as `ß` to `ss`), and canonically equivalent encodings
   may not match.
+  <!-- @@author ananyakharbanda -->
 * `RemarkContainsKeywordsPredicate` searches `Person#getRemark().value` only. Empty remarks do not match
   non-empty keywords. Numeric slash text such as `8/10` is accepted under the existing prefix rules.
 * A label value is kept whole, validated by `ParserUtil#parseLabel`, and passed to `LabelMatchesPredicate`.
@@ -1273,18 +1300,22 @@ Exit remains available after a loading failure. Undo history does not survive re
 ### Non-Functional Requirements
 
 1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
+    <!-- @@author ananyakharbanda -->
 2.  Should support 1000 students. The release acceptance target is a usable window within 5 seconds of launching
     the JAR, and visible command feedback and list updates within 1 second in at least 19 of 20 measured runs per
     command on the recorded test machine, using a local writable disk. This is a verification target, not a claim
     that benchmarking has passed. See [Performance verification](#performance-verification) for the dataset and procedure.
+    <!-- @@author -->
 
 ### Glossary
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
+  <!-- @@author ananyakharbanda -->
 * **TA**: Teaching Assistant, the intended user of TeachAssist.
 * **Student ID**: The unique identifier used to distinguish student records.
 * **Group label**: A name assigned to students to organise and find them by group, such as a tutorial group.
 * **Remark**: Optional free-text notes attached to a student record.
+  <!-- @@author -->
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -1299,14 +1330,12 @@ the JAR. With no `data/addressbook.json`, expect an empty list and
 `No existing student data found. Starting with an empty student list.`
 
 Before each scenario below, start a fresh application session with no data file in the test folder and enter:
-<!-- @@author -->
 
 ```text
 add n/Alex Tan i/A0123456B e/alex@example.com r/Needs help with recursion l/Tutorial 1
 add n/Beth Lim i/A0234567C e/beth@example.com l/Tutorial 1
 ```
 
-<!-- @@author ananyakharbanda -->
 Expect Alex and Beth to appear, with `1 student listed.` after the first add and `2 students listed.` after the second.
 Unless stated otherwise, run each scenario's steps in order. For rejected commands, verify that student details,
 the current view, and the contents of `data/addressbook.json` are unchanged.
@@ -1334,6 +1363,7 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 
 ### Editing students and labels
 
+<!-- @@author ananyakharbanda -->
 | Step | Command | Expected result |
 |------|---------|-----------------|
 | 1 | `find n/Beth` | Only Beth appears. |
@@ -1347,9 +1377,11 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 | 9 | `edit i/A0123456B l/ r/` | All of Alex's labels and the remark are cleared; name and email are retained. |
 | 10 | `find r/Revision` | No results, because Alex's remark was cleared. |
 | 11 | `edit i/A0123456B l/Tutorial 1` | Alex's label is restored and both students are displayed. |
+<!-- @@author -->
 
 ### Marking, viewing, and unmarking attendance
 
+<!-- @@author ananyakharbanda -->
 | Step | Command | Expected result |
 |------|---------|-----------------|
 | 1 | `attendance d/2026-10-20 l/Tutorial 1` | Alex and Beth are Absent; totals are 0 present, 2 absent. |
@@ -1366,6 +1398,7 @@ the current view, and the contents of `data/addressbook.json` are unchanged.
 | 12 | `find n/Alex`, then `attendance d/2026-10-20 l/Tutorial 1` | Beth is shown as Absent despite being hidden by the preceding search; Alex is excluded because step 7 removed the label. |
 | 13 | `mark i/A0123456B d/2026-10-21 l/Tutorial 2` | Missing-group error; the open attendance view is unchanged. |
 | 14 | `attendance d/2026-10-20 i/A0123456B` | Unsupported-prefix error; the attendance view is unchanged. |
+<!-- @@author -->
 
 ### Deleting, clearing, and undoing changes
 
@@ -1428,7 +1461,6 @@ RAM, disk type, screen settings, dataset, timings, and any failures in the relea
 
 1. Copy the release JAR into a fresh test folder. With the app closed, run the Python 3 script below from that folder
    to create 1000 synthetic students. The script refuses to overwrite an existing data file.
-   <!-- @@author -->
 
    ```python
    import json
@@ -1453,6 +1485,7 @@ RAM, disk type, screen settings, dataset, timings, and any failures in the relea
 
 2. Measure three launches from starting the Java process until the window is usable and reports `1000 students loaded.`.
    Each launch should take at most 5 seconds. Retain the original fixture for repeatable runs.
+   <!-- @@author -->
 3. After one warm-up of each operation, measure 20 runs each of `find n/Performance`, `list`, and
    `attendance d/2026-10-20 l/Tutorial 1`. Time from pressing Enter until both feedback and the resulting view
    finish updating, using a screen recording or equivalent timing tool. For at least 19 runs per command, the
@@ -1551,7 +1584,8 @@ name spacing is normalized. See [UG whitespace handling](UserGuide.md#whitespace
 | Invalid date, e.g., `2026-02-30` or `2026-2-03` | `Date must use a valid YYYY-MM-DD date.` | Use a real calendar date with zero-padded month and day. |
 
 The label constraint also applies to attendance groups. Empty edit names and emails produce their field constraint
-messages. Length limits apply after trimming/normalization and count Unicode code points for names, labels, and remarks.
+messages. Length limits apply after trimming/normalization and count Unicode code points for names and remarks.
+Labels use the same count except that lowercase `i` plus combining dot counts as one character, as described above.
 
 Email validation accepts at most 254 characters and exactly one `@`. The local part has 1–64 ASCII letters, digits,
 periods, underscores, plus signs, or hyphens; it cannot begin/end with a period or contain consecutive periods.
