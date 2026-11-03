@@ -35,8 +35,21 @@ public class StringUtil {
      */
     public static String trimSpaces(String text) {
         requireNonNull(text);
-        return text.replaceAll("\\A[\\x00-\\x20\\p{Zs}\\u115F\\u1160\\u3164\\uFFA0]+"
-                + "|[\\x00-\\x20\\p{Zs}\\u115F\\u1160\\u3164\\uFFA0]+\\z", "");
+        int start = 0;
+        int end = text.length();
+        while (start < end && isTrimmedSpace(text.charAt(start))) {
+            start++;
+        }
+        while (end > start && isTrimmedSpace(text.charAt(end - 1))) {
+            end--;
+        }
+        return text.substring(start, end);
+    }
+
+    private static boolean isTrimmedSpace(char character) {
+        return character <= ' ' || Character.getType(character) == Character.SPACE_SEPARATOR
+                || character == '\u115f' || character == '\u1160'
+                || character == '\u3164' || character == '\uffa0';
     }
 
     /**

@@ -25,6 +25,16 @@ public class StringUtilTest {
     }
 
     @Test
+    public void trimSpaces_allCharacters_preservesExistingPaddingRules() {
+        for (int value = Character.MIN_VALUE; value <= Character.MAX_VALUE; value++) {
+            String padding = String.valueOf((char) value);
+            String text = padding + "text" + padding;
+            assertEquals(StringUtil.normaliseSpaces(text).trim(), StringUtil.trimSpaces(text),
+                    "Padding character U+" + Integer.toHexString(value));
+        }
+    }
+
+    @Test
     public void normaliseSpaces_unicodeSeparators_returnsAsciiSpaces() {
         // EP: Every Unicode space separator, including non-breaking spaces, is an ordinary space.
         String separators = " \u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007"
