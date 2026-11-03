@@ -1,11 +1,13 @@
 package seedu.address.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.testutil.Assert.assertThrows;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +41,13 @@ import seedu.address.testutil.PersonUtil;
 public class AddressBookParserTest {
 
     private final AddressBookParser parser = new AddressBookParser();
+
+    @Test
+    public void parseCommand_largeInternalWhitespace_normalizesWithoutStalling() throws Exception {
+        String command = "add n/A" + " ".repeat(20000) + "B i/A0123456B e/a@example.com";
+        assertEquals(parser.parseCommand("add n/A B i/A0123456B e/a@example.com"),
+                assertTimeout(Duration.ofSeconds(2), () -> parser.parseCommand(command)));
+    }
 
     @Test
     public void parseCommand_unicodeSpaces_matchesAsciiCommand() throws Exception {
