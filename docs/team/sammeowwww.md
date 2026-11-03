@@ -49,6 +49,8 @@ The following are selected contributions supported by commits and merged pull re
   related tests ([PR #212](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/212)).
 * Improved add, delete, and edit test coverage using equivalence partitioning and boundary value analysis
   ([PR #174](https://github.com/AY2627S1-CS2103T-F12-1/tp/pull/174)).
+* Added representative English, Malay, Mandarin Chinese, and Tamil tests for field validation and text matching,
+  with Unicode code point boundary tests for names, labels, and remarks (commit `a1e18aee`).
 
 ### Documentation
 
@@ -67,5 +69,7 @@ The following are selected contributions supported by commits and merged pull re
   (commits `6f4feb55`, `b4d3ba54`, `75d00d9a`).
 * Improved the edit, mark, and unmark sequence diagrams and their implementation walkthroughs
   (commits `0e4d6f0d`, `dfdf5568`).
+* Clarified Singapore-focused language support, Unicode matching limits, and code point length rules in the User
+  Guide and Developer Guide, including examples for all four languages (commit `7777fbe9`).
 
 [Team responsibilities](../AboutUs.md)
